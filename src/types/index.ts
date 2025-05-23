@@ -8,9 +8,7 @@ export interface NavItem {
 
 export interface ApiData {
   display_features?: NavItem[];
-
 }
-
 
 // General conference data interface
 export interface GeneralData {
@@ -69,6 +67,12 @@ export interface PagesData {
 
 // Navigation item interface
 export interface NavItem {
+  title: string;
+  link: string;
+  subItems?: SubItem[];
+}
+
+interface SubItem {
   title: string;
   link: string;
 }

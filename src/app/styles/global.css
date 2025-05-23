@@ -1,0 +1,20 @@
+/* styles/global.css */
+
+@import './animate.css';
+@import './bootstrap.css';
+@import './common.css';
+@import './flaticon.css';
+@import './font-awesome.css';
+@import './hover.css';
+@import './jquery.fancybox.css';
+@import './owl.css';
+@import './responsive.css';
+@import './revolution-slider.css';
+@import './style-header.css';
+@import './style.css';
+@import './theme.css';
+@import './boxicons.min.css'
+
+
+
+/* Add more imports as needed */

@@ -1,36 +1,41 @@
-// context/AppDataContext.tsx
-"use client";
+'use client';
 
-import React, { createContext, useContext } from "react";
-import { GeneralData, PagesData } from "@/types";
+import { createContext, useContext, ReactNode } from 'react';
+import { GeneralData, PagesData, NavItem, SocialLinks } from '@/types';
 
 interface AppDataContextType {
   general: GeneralData;
   pages: PagesData;
+  navItems: NavItem[];
+  socialLinks: SocialLinks;
 }
 
 const AppDataContext = createContext<AppDataContextType | undefined>(undefined);
 
-export const AppDataProvider = ({
+export function AppDataProvider({ 
+  children,
   general,
   pages,
-  children,
-}: {
+  navItems,
+  socialLinks
+}: { 
+  children: ReactNode;
   general: GeneralData;
   pages: PagesData;
-  children: React.ReactNode;
-}) => {
+  navItems: NavItem[];
+  socialLinks: SocialLinks;
+}) {
   return (
-    <AppDataContext.Provider value={{ general, pages }}>
+    <AppDataContext.Provider value={{ general, pages, navItems, socialLinks }}>
       {children}
     </AppDataContext.Provider>
   );
-};
+}
 
-export const useAppData = () => {
+export function useAppData() {
   const context = useContext(AppDataContext);
   if (!context) {
-    throw new Error("useAppData must be used within AppDataProvider");
+    throw new Error('useAppData must be used within an AppDataProvider');
   }
   return context;
-};
+}

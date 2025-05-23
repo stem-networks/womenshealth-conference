@@ -3,9 +3,16 @@ import { Inter } from "next/font/google";
 import { NavProvider } from "@/context/NavContext";
 import { fetchDataServer } from "@/lib/api";
 import Script from "next/script";
-import "./globals.css";
-import { GeneralData, PagesData } from "@/types";
+// import "./globals.css";
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import { GeneralData, PagesData, NavItem, SocialLinks } from "@/types";
 import { AppDataProvider } from "@/context/AppDataContext";
+// import Header from "./components/Header/Header";
+import Header from "./components/Header";
+// import Footer from "@/components/Footer";
+// import MediaCollaborators from "@/components/MediaCollaborators";
+// import PartneredContent from "@/components/PartneredContent";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -67,6 +74,12 @@ export default async function RootLayout({
   const data = await fetchDataServer();
   const general: GeneralData = data?.data || ({} as GeneralData);
   const pageData: PagesData = data?.pages || ({} as PagesData);
+  const navItems: NavItem[] = data?.display_features || [];
+  const socialLinks: SocialLinks = data?.social_links || {
+    facebook: { link: "", title: "" },
+    linkedin: { link: "", title: "" },
+    instagram: { link: "", title: "" }
+  };
 
   const eventName = `${general?.clname || "Annual Tech Conference"} ${
     general?.year || ""
@@ -135,8 +148,19 @@ export default async function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <AppDataProvider general={general} pages={pageData}>
-          <NavProvider initialData={data}>{children}</NavProvider>
+        <AppDataProvider 
+          general={general} 
+          pages={pageData}
+          navItems={navItems}
+          socialLinks={socialLinks}
+        >
+          <NavProvider initialData={data}>
+            <Header />
+            {children}
+            {/* <MediaCollaborators />
+            <PartneredContent />
+            <Footer /> */}
+          </NavProvider>
         </AppDataProvider>
       </body>
     </html>

@@ -35,3 +35,34 @@ export const fetchDataServer = async (): Promise<ApiResponse | null> => {
     return null;
   }
 };
+
+export async function fetchDiscounts() {
+  try {
+    const response = await fetch(`${process.env.API_URL}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        module_name: "reg_page_data",
+        keys: { data: [] },
+        cid: process.env.CID,
+      }),
+      cache: 'no-store' // Ensure fresh data
+    });
+
+    const data = await response.json();
+    const { increment_price } = data;
+
+    const sortedData = Object.keys(increment_price).map((type) => ({
+      type,
+      total: parseInt(increment_price[type].total, 10) || 0,
+    }));
+
+    const presenterData = sortedData.find(item => item.type === "Presenter (In-Person)");
+    return presenterData?.total || 0;
+  } catch (error) {
+    console.error("Error fetching discount data:", error);
+    return 0;
+  }
+}
