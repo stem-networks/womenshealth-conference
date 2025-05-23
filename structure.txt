@@ -1,0 +1,47 @@
+Folder PATH listing for volume Sharath
+Volume serial number is 328A-9827
+D:.
+¦   .env
+¦   .gitignore
+¦   eslint.config.mjs
+¦   next-env.d.ts
+¦   next.config.ts
+¦   package-lock.json
+¦   package.json
+¦   postcss.config.mjs
+¦   structure.txt
+¦   tsconfig.json
+¦   
++---public
+¦       file.svg
+¦       globe.svg
+¦       next.svg
+¦       vercel.svg
+¦       window.svg
+¦       
++---src
+    +---app
+    ¦   ¦   favicon.ico
+    ¦   ¦   globals.css
+    ¦   ¦   layout.tsx
+    ¦   ¦   page.tsx
+    ¦   ¦   
+    ¦   +---api
+    ¦   ¦   +---data
+    ¦   ¦   ¦       route.ts
+    ¦   ¦   ¦       
+    ¦   ¦   +---proxy
+    ¦   ¦           route.ts
+    ¦   ¦           
+    ¦   +---components
+    ¦           NavBar.tsx
+    ¦           
+    +---context
+    ¦       NavContext.tsx
+    ¦       
+    +---lib
+    ¦       api.ts
+    ¦       
+    +---types
+            index.ts
+            
