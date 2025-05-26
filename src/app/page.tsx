@@ -13,6 +13,24 @@ import Slider from "react-slick";
 import Image from "next/image";
 import { OnelinerData, SessionItem } from "@/types";
 
+// Images 
+import img4 from '../../public/images/images/img4.webp';
+import icon1 from '../../public/images/images/icon_1.png';
+import icon2 from '../../public/images/images/icon_2.png';
+import icon3 from '../../public/images/images/icon_3.png';
+import icon4 from '../../public/images/images/icon_4.png';
+import icon5 from '../../public/images/images/icon_5.png';
+import icon6 from '../../public/images/images/icon_6.png';
+import icon7 from '../../public/images/images/icon_7.png';
+import icon8 from '../../public/images/images/icon_8.png';
+import edit from '../../public/images/images/edit.png';
+import dow from '../../public/images/images/dow.png';
+import backgroundImage2 from '../../public/images/images/bg2.webp';
+import mess from '../../public/images/images/mess.png';
+import mess1 from '../../public/images/images/mess1.png';
+import mess2 from '../../public/images/images/mess2.png';
+import ph from '../../public/images/images/ph.png';
+
 interface VenueImage {
   image: string;
   alt_text: string;
@@ -70,6 +88,11 @@ const Home = () => {
 
   // const importantDatesContent = oneliner?.important_dates?.content || "";
   const importantDatesContent = oneliner.important_dates?.content || "";
+  const submitAbstractContent = oneliner.Submit_Your_Abstract?.content || "";
+  const networkingHeading = oneliner.Explore_Our_Comprehensive_Networking_Services?.headding || "";
+  const networkingContent = oneliner.Explore_Our_Comprehensive_Networking_Services?.content || "";
+  const valunteerContent = oneliner.Be_A_Volunteer?.content || "";
+
 
   const sliderSettings = {
     dots: true,
@@ -102,6 +125,26 @@ const Home = () => {
   const venueImages: VenueImages = indexPageData?.venueImages || {};
 
   console.log("venue images", venueImages);
+
+  // Sample PPT download 
+  const handleDownloadPPT = () => {
+    const link: HTMLAnchorElement = document.createElement("a");
+    link.href = "/Sample PPT.pptx"; // File must exist in the public folder
+    link.setAttribute("download", "Sample PPT.pptx");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Sample Abstract Download 
+  const handleDownloadAbstract = () => {
+    const link: HTMLAnchorElement = document.createElement("a");
+    link.href = "/Sample Abstract.docx"; // File must exist in the public folder
+    link.setAttribute("download", "Sample Abstract.docx");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div>
@@ -225,7 +268,7 @@ const Home = () => {
               <button
                 type="button"
                 title={`${general?.clogotext}_Brochure`}
-                // onClick={openBrochureModal}
+              // onClick={openBrochureModal}
               >
                 Download Brochure
               </button>
@@ -346,7 +389,7 @@ const Home = () => {
                   title="Contact"
                   className="index-contact"
                   tabIndex={0}
-                  // onClick={() => toggleModal2("sponsor", "Sponsorship Form")}
+                // onClick={() => toggleModal2("sponsor", "Sponsorship Form")}
                 >
                   Contact
                 </button>
@@ -369,7 +412,7 @@ const Home = () => {
                   title="Contact"
                   className="index-contact"
                   tabIndex={0}
-                  // onClick={() => toggleModal2('exhibitor', 'Exhibitor Form')}
+                // onClick={() => toggleModal2('exhibitor', 'Exhibitor Form')}
                 >
                   Contact
                 </button>
@@ -490,41 +533,38 @@ const Home = () => {
                   <ul className="accordion-box">
                     {firstHalf
                       ? firstHalf.map((faq, index) => (
-                          <li
-                            key={faq.faq_id}
-                            className={`accordion block wow fadeInUp ${
-                              activeIndexLeft === index ? "active-block" : ""
+                        <li
+                          key={faq.faq_id}
+                          className={`accordion block wow fadeInUp ${activeIndexLeft === index ? "active-block" : ""
                             }`}
-                            data-wow-delay={`${index * 200}ms`}
-                            data-wow-duration="1500ms"
+                          data-wow-delay={`${index * 200}ms`}
+                          data-wow-duration="1500ms"
+                        >
+                          <div
+                            className={`acc-btn ${activeIndexLeft === index ? "active" : ""
+                              }`}
+                            onClick={() => toggleAccordionLeft(index)}
                           >
-                            <div
-                              className={`acc-btn ${
-                                activeIndexLeft === index ? "active" : ""
-                              }`}
-                              onClick={() => toggleAccordionLeft(index)}
-                            >
-                              <div className="icon-outer">
-                                <i className="bx bxs-arrow-from-left hide5"></i>
-                                <i className="bx bxs-arrow-from-top show5"></i>
-                              </div>
-                              {faq ? faq.faq_question : ""}
+                            <div className="icon-outer">
+                              <i className="bx bxs-arrow-from-left hide5"></i>
+                              <i className="bx bxs-arrow-from-top show5"></i>
                             </div>
-                            <div
-                              className={`acc-content ${
-                                activeIndexLeft === index ? "current" : ""
+                            {faq ? faq.faq_question : ""}
+                          </div>
+                          <div
+                            className={`acc-content ${activeIndexLeft === index ? "current" : ""
                               }`}
-                            >
-                              <div className="content clearfix">
-                                <p
-                                  dangerouslySetInnerHTML={{
-                                    __html: faq ? faq.faq_ans : "",
-                                  }}
-                                />
-                              </div>
+                          >
+                            <div className="content clearfix">
+                              <p
+                                dangerouslySetInnerHTML={{
+                                  __html: faq ? faq.faq_ans : "",
+                                }}
+                              />
                             </div>
-                          </li>
-                        ))
+                          </div>
+                        </li>
+                      ))
                       : ""}
                   </ul>
                 </div>
@@ -536,41 +576,38 @@ const Home = () => {
                   <ul className="accordion-box">
                     {secondHalf
                       ? secondHalf.map((faq, index) => (
-                          <li
-                            key={faq.faq_id}
-                            className={`accordion block wow fadeInUp ${
-                              activeIndexRight === index ? "active-block" : ""
+                        <li
+                          key={faq.faq_id}
+                          className={`accordion block wow fadeInUp ${activeIndexRight === index ? "active-block" : ""
                             }`}
-                            data-wow-delay={`${index * 200}ms`}
-                            data-wow-duration="1500ms"
+                          data-wow-delay={`${index * 200}ms`}
+                          data-wow-duration="1500ms"
+                        >
+                          <div
+                            className={`acc-btn ${activeIndexRight === index ? "active" : ""
+                              }`}
+                            onClick={() => toggleAccordionRight(index)}
                           >
-                            <div
-                              className={`acc-btn ${
-                                activeIndexRight === index ? "active" : ""
-                              }`}
-                              onClick={() => toggleAccordionRight(index)}
-                            >
-                              <div className="icon-outer">
-                                <i className="bx bxs-arrow-from-left hide5"></i>
-                                <i className="bx bxs-arrow-from-top show5"></i>
-                              </div>
-                              {faq ? faq.faq_question : ""}
+                            <div className="icon-outer">
+                              <i className="bx bxs-arrow-from-left hide5"></i>
+                              <i className="bx bxs-arrow-from-top show5"></i>
                             </div>
-                            <div
-                              className={`acc-content ${
-                                activeIndexRight === index ? "current" : ""
+                            {faq ? faq.faq_question : ""}
+                          </div>
+                          <div
+                            className={`acc-content ${activeIndexRight === index ? "current" : ""
                               }`}
-                            >
-                              <div className="content clearfix">
-                                <p
-                                  dangerouslySetInnerHTML={{
-                                    __html: faq ? faq.faq_ans : "",
-                                  }}
-                                />
-                              </div>
+                          >
+                            <div className="content clearfix">
+                              <p
+                                dangerouslySetInnerHTML={{
+                                  __html: faq ? faq.faq_ans : "",
+                                }}
+                              />
                             </div>
-                          </li>
-                        ))
+                          </div>
+                        </li>
+                      ))
                       : ""}
                   </ul>
                 </div>
@@ -606,9 +643,8 @@ const Home = () => {
                   return (
                     <div
                       key={`venue-img-${index}`}
-                      className={`add_bh15${index + 4} ${
-                        index % 2 === 0 ? "add_bh154" : "add_bh155"
-                      } wow fadeInUp`}
+                      className={`add_bh15${index + 4} ${index % 2 === 0 ? "add_bh154" : "add_bh155"
+                        } wow fadeInUp`}
                       data-wow-delay={`${200 + index * 100}ms`}
                       data-wow-duration="1000ms"
                     >
@@ -638,6 +674,261 @@ const Home = () => {
           </div>
         </div>
       </div>
+
+      <div className="spek_wrap">
+        <div className="set_gray_wrap1 wow fadeInUp" data-wow-delay="300ms" data-wow-duration="1000ms">
+          <div className="add_style1">
+            <hr />
+            <h3> {submitAbstractContent ? submitAbstractContent : ""}</h3>
+            <Link href="/call-for-abstract-submission" title='Submit Your Abstract'>Submit Your Abstract</Link>
+          </div>
+        </div>
+        <div className="set_gray_wrap2 wow fadeInUp" data-wow-delay="500ms" data-wow-duration="1000ms"><Image
+          src={img4} alt={general.clname ? general.clname : ""} title={general.clname ? general.clname : ""} loading="lazy" /></div>
+      </div>
+
+      <div className="import_wrap2">
+        <div className="auto-container">
+          <div className="row clearfix">
+            <div className="col-md-12 session_wrap_style1 wow fadeInUp" data-wow-delay="200ms"
+              data-wow-duration="1000ms">
+              <h3>{networkingHeading ? networkingHeading : ""}</h3>
+              <p>{networkingContent ? networkingContent : ""}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="enhan_wrap">
+        <div className="auto-container clearfix">
+          <div className="row clearfix">
+            <div className="col-md-3 col-sm-6  wow fadeInUp" data-wow-delay="200ms" data-wow-duration="1000ms">
+              <div className="wrap_iocn1">
+                <Image src={icon1} alt="Personal encounters" title="Personal encounters" loading="lazy" />
+                <p>Personal encounters</p>
+              </div>
+            </div>
+            <div className="col-md-3 col-sm-6 wow fadeInUp" data-wow-delay="400ms" data-wow-duration="1000ms">
+              <div className="wrap_iocn1">
+                <Image src={icon2} alt="Networking opportunities" title="Networking opportunities" loading="lazy" />
+                <p>Networking opportunities</p>
+              </div>
+            </div>
+            <div className="col-md-3 col-sm-6 wow fadeInUp" data-wow-delay="600ms" data-wow-duration="1000ms">
+              <div className="wrap_iocn1 top156">
+                <Image src={icon3} alt="Career Growth" title="Career Growth" loading="lazy" />
+                <p> Career Growth</p>
+              </div>
+            </div>
+            <div className="col-md-3 col-sm-6 wow fadeInUp" data-wow-delay="800ms" data-wow-duration="1000ms">
+              <div className="wrap_iocn2 top156">
+                <Image src={icon8} alt="Scholars help" title="Scholars help" loading="lazy" />
+                <p>Scholars help</p>
+              </div>
+            </div>
+            <div className="col-md-12 wow fadeInUp" data-wow-delay="1000ms" data-wow-duration="1000ms">
+              <hr />
+            </div>
+            <div className="col-md-3 col-sm-6 wow fadeInUp" data-wow-delay="1100ms" data-wow-duration="1000ms">
+              <div className="wrap_iocn1 top156">
+                <Image src={icon4} alt="New learnings" title="New learnings" loading="lazy" />
+                <p>New learnings</p>
+              </div>
+            </div>
+            <div className="col-md-3 col-sm-6 wow fadeInUp" data-wow-delay="1200ms" data-wow-duration="1000ms">
+              <div className="wrap_iocn1">
+                <Image src={icon5} alt="Contribute to research advancements" title="Contribute to research advancements" loading="lazy" />
+                <p>Contribute to research advancements</p>
+              </div>
+            </div>
+            <div className="col-md-3 col-sm-6 wow fadeInUp" data-wow-delay="1300ms" data-wow-duration="1000ms">
+              <div className="wrap_iocn1">
+                <Image src={icon6} alt="Exchange of ideas" title="Exchange of ideas" loading="lazy" />
+                <p>Exchange of ideas</p>
+              </div>
+            </div>
+            <div className="col-md-3 col-sm-6 wow fadeInUp" data-wow-delay="1400ms" data-wow-duration="1000ms">
+              <div className="wrap_iocn2 top156">
+                <Image src={icon7} alt="Knowledge sharing" title="Knowledge sharing" loading="lazy" />
+                <p>Knowledge sharing</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Downloads  */}
+      <div className="down_wrap_style wow fadeInUp" data-wow-delay="300ms" data-wow-duration="1000ms">
+        <div className="auto-container">
+          <div className="row">
+            <div className="col-md-10 mar_wrap55">
+              <div className="ess_wrap5">
+                <div className="row">
+                  <div className="col-md-12">
+                    <h3>Essential <span>Downloads</span></h3>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="box_st1">
+                      <Image src={edit} className="pol55" alt="Sample PPT" title="Sample PPT" loading="lazy" />
+                      <h3>Sample PPT</h3>
+                      <button type="button" title="Sample PPT" onClick={handleDownloadPPT}>
+                        Download{" "}
+                        <Image
+                          src={dow}
+                          alt="Sample PPT"
+                          title="Sample PPT"
+                          loading="lazy"
+                        />
+                      </button>
+                    </div>
+                    <div className="blue_wrap55"></div>
+                  </div>
+
+                  <div className="col-md-4">
+                    <div className="box_st1">
+                      <Image src={edit} className="pol55" alt="Brochure" title="Brochure" loading="lazy" />
+                      <h3>Brochure</h3>
+                      <button type='button' title={`${general.clogotext}_Brochure`}
+                      // onClick={openBrochureModal}
+                      >Download <Image src={dow}
+                        alt={`${general.clogotext}_Brochure`} title={`${general.clogotext}_Brochure`} loading="lazy" /></button>
+                    </div>
+                    <div className="blue_wrap55"></div>
+                  </div>
+
+                  <div className="col-md-4">
+                    <div className="box_st1">
+                      <Image src={edit} className="pol55" alt="Sample Abstract" title="Sample Abstract" loading="lazy" />
+                      <h3>Sample Abstract</h3>
+
+                      <button type='button' title="Sample Abstract" onClick={handleDownloadAbstract}>Download{" "}<Image src={dow}
+                        alt="Sample Abstract" title="Sample Abstract" loading="lazy" /></button>
+                    </div>
+                    <div className="blue_wrap55"></div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="volue_wrap" style={{ backgroundImage: `url(${backgroundImage2.src})` }}>
+        <div className="auto-container">
+          <div className="row clearfix">
+            <div className="col-md-7 amr_wrap15">
+              <div className="box_wrap155"></div>
+
+              <div className="volu_wrap wow fadeInUp" data-wow-delay="300ms" data-wow-duration="1000ms">
+                <h3>Be A Volunteer</h3>
+              </div>
+
+              <div className="box_wrap_add1 wow fadeInUp" data-wow-delay="400ms" data-wow-duration="1000ms">
+
+                <h3 dangerouslySetInnerHTML={{ __html: valunteerContent || '' }} />
+              </div>
+
+              <div className="box_wrap154"></div>
+
+              <div className="apple_wrap wow fadeInUp" data-wow-delay="500ms" data-wow-duration="1000ms">
+                <button
+                  type="button"
+                  title='Apply Now'
+                  className='apply-now-btn'
+                  id="volunteerapplybtn"
+                // onClick={toggleModal}
+                >
+                  Apply Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="cont_wrap_add  wow fadeInUp" data-wow-delay="400ms" data-wow-duration="1000ms">
+        <div className="auto-container clearfix">
+          <div className="row clearfix">
+            <div className="col-md-9 mar_wrap1579">
+              <div className="call_cont_st1">
+                <div className="wr_sty1">
+                  <div className="logo_cont15"><Image src="/images/images/logo-hd-1.svg" alt={general.clname ? general.clname : ""} title={general.clname ? general.clname : ""} loading="lazy" width={200} height={80}/></div>
+                  <div className="cont_head_st1">
+                    <h3>Discover Whats Next in {general.clname ? general.clname : ""}</h3>
+                    <p>Join our community today for the latest news, exclusive interviews, and unique insights from world-renowned speakers and experts.</p>
+                  </div>
+                  <form id="joinourcommunityform" method="post">
+                    <div className="row">
+                      <div className="col-md-12 cont_wrap14666">
+                        <label>Email Address:*</label>
+                        <input
+                          name="email"
+                          type="email"
+                          placeholder='Enter Email'
+                          id="joinourcommunityemail"
+                        // value={communityFormData ? communityFormData.email : ""}
+                        // onChange={handleCommunityChange}
+                        />
+                        {/* {formErrors ? formErrors.email && <div id="joinourcommunityemail-error" style={{ color: "red" }}>{formErrors ? formErrors.email : ""}</div> : ""} */}
+                      </div>
+                      <div className="col-md-6 cont_wrap14666">
+                        <label>First Name:*</label>
+                        <input
+                          name="fname"
+                          id="joinourcommunityfname"
+                          type="text"
+                          placeholder='Enter First Name'
+                        // value={communityFormData ? communityFormData.fname : " "}
+                        // onChange={handleCommunityChange}
+                        />
+                        {/* {formErrors ? formErrors.fname && <div id="jocfname-error" style={{ color: "red" }}>{formErrors ? formErrors.fname : ""}</div> : ""} */}
+                      </div>
+                      <div className="col-md-6 cont_wrap14666">
+                        <label>Last Name:*</label>
+                        <input
+                          name="lname"
+                          id="joinourcommunitylname"
+                          type="text"
+                          placeholder='Enter Last Name'
+                        // value={communityFormData ? communityFormData.lname : ""}
+                        // onChange={handleCommunityChange}
+                        />
+                        {/* {formErrors.lname && <div id="joclname-error" style={{ color: "red" }}>{formErrors.lname}</div>} */}
+                      </div>
+                      <div className="col-md-12">
+                        <div className="sbtn">
+                          <input
+                            name="submit"
+                            value="Submit"
+                            title="Submit"
+                            className="appy15"
+                            type="button"
+                            id="joinourcommunitysubmitbtn"
+                          // onClick={handleCommunitySubmit}
+                          />
+                        </div>
+                        <input type="hidden" name="category" value="joinourcommunity" />
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                <div className="wr_sty2">
+                  <div className="img_wrap156">
+                    <Image src={mess1} className="mess15" alt={general.clname ? general.clname : ""} title={general.clname ? general.clname : ""} loading="lazy" />
+                    <span className="jum55">{general.full_length_dates ? general.full_length_dates : ""}</span>
+                    <Image src={mess2} className="mess16" alt={general.clname ? general.clname : ""} title={general.clname ? general.clname : ""} loading="lazy" />
+                    <span className="jum56">{general.venue_p1 ? general.venue_p1 : ""}</span>
+                    <span className="jum57"><Image src={ph} alt={general.clname ? general.clname : ""} title={general.clname ? general.clname : ""} loading="lazy" /> <Link href={`tel:${general?.phone}`} className='' title={general?.phone}>{general?.phone}</Link></span>
+                    <Image src={mess} className="img15444" alt={general.clname ? general.clname : ""} title={general.clname ? general.clname : ""} loading="lazy" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 };
