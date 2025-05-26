@@ -62,7 +62,7 @@ const Home = () => {
   const oneliner: OnelinerData = indexPageData?.oneliner || {};
   const sessionContent = oneliner?.sessions?.content || "";
 
- const sessions: SessionItem[] = indexPageData?.sessions || []; 
+  const sessions: SessionItem[] = indexPageData?.sessions || [];
 
   const splitIndex = Math.ceil(sessions.length / 2);
   const firstList = sessions.slice(0, splitIndex);
