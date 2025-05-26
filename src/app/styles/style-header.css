@@ -7332,7 +7332,7 @@ li {
 	width: 90px;
 	border: 0px;
 	margin: 10px 0px 20px 0px;
-	background-color: #00b9d7;
+	/* background-color: #00b9d7; */
 	height: 4px;
 }
 
@@ -7355,7 +7355,7 @@ li {
 .fot_add1 h4 {
 	width: 100%;
 	display: block;
-	color: #00b8d4;
+	/* color: #00b8d4; */
 	margin-bottom: 15px;
 	font-size: 18px;
 }
@@ -7409,7 +7409,7 @@ li {
 .menu_footer2 h4 {
 	width: 100%;
 	display: block;
-	color: #00b8d4;
+	/* color: #00b8d4; */
 	margin-bottom: 11px;
 	font-size: 17px;
 }
@@ -7426,7 +7426,7 @@ li {
 .footer_last_wrap {
 	width: 100%;
 	display: flex;
-	background-color: #00b9d7;
+	/* background-color: #00b9d7; */
 	padding: 30px 30px 20px 52px;
 }
 
