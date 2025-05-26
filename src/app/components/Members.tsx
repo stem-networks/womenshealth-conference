@@ -62,39 +62,39 @@ const Members = () => {
       country: "Romania",
       institution: "Colentina Clinical Hospital",
       altText: "Rodica Olteanu"
-    },
-    {
-      id: 7,
-      image: "/images/images/member7.jpg",
-      name: "Dr. Sarah Johnson",
-      country: "Canada",
-      institution: "University of Toronto",
-      altText: "Dr. Sarah Johnson"
-    },
-    {
-      id: 8,
-      image: "/images/images/member8.jpg",
-      name: "Prof. Michael Chen",
-      country: "Australia",
-      institution: "University of Sydney",
-      altText: "Prof. Michael Chen"
-    },
-    {
-      id: 9,
-      image: "/images/images/member9.jpg",
-      name: "Dr. Elena Rodriguez",
-      country: "Spain",
-      institution: "University of Barcelona",
-      altText: "Dr. Elena Rodriguez"
-    },
-    {
-      id: 10,
-      image: "/images/images/member10.jpg",
-      name: "Prof. James Wilson",
-      country: "Germany",
-      institution: "Technical University of Munich",
-      altText: "Prof. James Wilson"
     }
+    // {
+    //   id: 7,
+    //   image: "/images/images/member7.jpg",
+    //   name: "Dr. Sarah Johnson",
+    //   country: "Canada",
+    //   institution: "University of Toronto",
+    //   altText: "Dr. Sarah Johnson"
+    // },
+    // {
+    //   id: 8,
+    //   image: "/images/images/member8.jpg",
+    //   name: "Prof. Michael Chen",
+    //   country: "Australia",
+    //   institution: "University of Sydney",
+    //   altText: "Prof. Michael Chen"
+    // },
+    // {
+    //   id: 9,
+    //   image: "/images/images/member9.jpg",
+    //   name: "Dr. Elena Rodriguez",
+    //   country: "Spain",
+    //   institution: "University of Barcelona",
+    //   altText: "Dr. Elena Rodriguez"
+    // },
+    // {
+    //   id: 10,
+    //   image: "/images/images/member10.jpg",
+    //   name: "Prof. James Wilson",
+    //   country: "Germany",
+    //   institution: "Technical University of Munich",
+    //   altText: "Prof. James Wilson"
+    // }
   ];
 
   // Split members into rows of 3 for better layout control
