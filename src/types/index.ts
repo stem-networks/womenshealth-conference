@@ -97,3 +97,199 @@ export interface ApiResponse {
   display_features: NavItem[];
   social_links: SocialLinks;
 }
+
+// Add these interfaces to your existing types file
+export interface RegistrationPrice {
+  "Standard Registration Fee": string;
+  total: string;
+  min: string;
+  conference_dt: string;
+}
+
+export interface RegistrationDeadline {
+  id: string;
+  title: string;
+  deadline_dt: string;
+  page_url: string;
+}
+
+export interface AccommodationPrice {
+  id: string;
+  single: string;
+  doubl: string;
+  tri: string;
+  accompanying: string;
+}
+
+export interface RegistrationInfo {
+  increment_price: Record<string, RegistrationPrice>;
+  RegDeadline: RegistrationDeadline[];
+  accommodation_prices: AccommodationPrice[];
+  conference_date: string;
+  days_difference: number;
+  registration_open_date: {
+    id: string;
+    register_dt: string;
+    conference_date: string;
+  };
+}
+
+// Define the type for individual oneliner items
+// export interface OnelinerItem {
+//   category: string;
+//   content: string;
+//   headding: string;
+// }
+
+// // Define the type for offers content (if needed)
+// export interface OfferItem {
+//   // Define structure based on your {1: {…}, 2: {…}, etc.} data
+//   [key: string]: number;
+// }
+
+// // Define the complete oneliner type
+// export interface OnelinerData {
+//   Be_A_Volunteer: OnelinerItem;
+//   Explore_Our_Comprehensive_Networking_Services: OnelinerItem;
+//   Submit_Your_Abstract: OnelinerItem;
+//   download_brochure: OnelinerItem;
+//   footer_content: OnelinerItem;
+//   important_dates: OnelinerItem;
+//   offers_content: {
+//     [key: string]: OfferItem; // Or a more specific type if you know the structure
+//   };
+//   sessions?: {
+//     content?: string;
+//   };
+//   //  important_dates?: OnelinerItem;
+//   // Add other properties that might exist
+// }
+
+// interface SessionItem {
+//   link: string;
+//   session_short_name: string;
+//   text: string;
+// }
+
+// export interface bannerContent {
+//   [key: string]: {
+//     banner_conent_id: string;
+//     cid: string;
+//     content: string;
+//     headding: string;
+//     image: string;
+//     page: string;
+//     status: string;
+//     tag_line: string;
+//   };
+// }
+
+// export interface IndexPageData {
+//   title: string;
+//   content: string;
+//   meta_keywords: string;
+//   importantDates: {
+//     date: string;
+//   }[];
+//   bannerContent?: bannerContent;
+//   oneliner?: OnelinerData;
+//   sessions?: SessionItem[];
+// }
+
+// Oneliner Item
+export interface OnelinerItem {
+  category: string;
+  content: string;
+  headding: string; // Note: Typo in property name (should be 'heading'?)
+}
+
+// Offer Item
+export interface OfferItem {
+  category: string;
+  content: string;
+  headding: string;
+}
+
+// Oneliner Data
+export interface OnelinerData {
+  Be_A_Volunteer?: OnelinerItem;
+  Explore_Our_Comprehensive_Networking_Services?: OnelinerItem;
+  Submit_Your_Abstract?: OnelinerItem;
+  download_brochure?: OnelinerItem;
+  footer_content?: OnelinerItem;
+  important_dates?: OnelinerItem;
+  offers_content?: {
+    [key: string]: OfferItem;
+  };
+  sessions?: OnelinerItem;
+}
+
+// Session Item
+export interface SessionItem {
+  text: string;
+  link: string;
+  session_short_name: string;
+}
+
+// Banner Content
+export interface BannerContentItem {
+  banner_conent_id: string; // Note: Typo in property name
+  cid: string;
+  content: string;
+  headding: string; // Note: Typo
+  image: string;
+  page: string;
+  status: string;
+  tag_line: string;
+}
+
+export interface BannerContent {
+  [key: string]: BannerContentItem;
+}
+
+// Venue Image
+export interface VenueImage {
+  image: string;
+  alt_text: string;
+}
+
+export interface VenueImages {
+  [key: string]: VenueImage;
+}
+
+// Important Date
+export interface ImportantDate {
+  text: string;
+  date: string;
+}
+
+// Main Data Interface
+export interface IndexPageData {
+  oneliner?: OnelinerData;
+  bannerContent?: BannerContent;
+  sessions?: SessionItem[];
+  importantDates?: ImportantDate[];
+  venueImages?: VenueImages;
+  title?: string;
+  content?: string;
+  meta_keywords?: string;
+}
+
+export interface FAQItem {
+  faq_id: string;
+  faq_question: string;
+  faq_ans: string;
+  priority: string;
+  status: string;
+  created_by: string;
+  created_date: string;
+  cid: string;
+}
+
+export interface CommonContent {
+  phone: string;
+  importantDates: {
+    date: string;
+  }[];
+  faqs?: FAQItem[];
+}

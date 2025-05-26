@@ -6603,7 +6603,7 @@ li {
 }
 
 .session_wrap_style1 p {
-	max-width: 600px;
+	/* max-width: 600px; */
 	margin: 0px auto;
 	color: #737373;
 	margin-bottom: 35px;
