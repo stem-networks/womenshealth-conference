@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+// import { Inter } from "next/font/google";
 import { NavProvider } from "@/context/NavContext";
 import { fetchDataServer } from "@/lib/api";
 import Script from "next/script";
@@ -11,18 +11,17 @@ import { AppDataProvider } from "@/context/AppDataContext";
 // import Header from "./components/Header/Header";
 import Header from "./components/Header";
 // import Footer from "@/components/Footer";
-// import MediaCollaborators from "@/components/MediaCollaborators";
+import MediaCollaborators from "./components/MediaCollaborators";
 // import PartneredContent from "@/components/PartneredContent";
 
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 
 export async function generateMetadata(): Promise<Metadata> {
   const data = await fetchDataServer();
   const general = data?.data || ({} as GeneralData);
   const pageData = data?.pages || ({} as PagesData);
-  const eventName = `${general?.clname || "Annual Tech Conference"} ${
-    general?.year || ""
-  }`.trim();
+  const eventName = `${general?.clname || "Annual Tech Conference"} ${general?.year || ""
+    }`.trim();
 
   return {
     title: eventName,
@@ -81,9 +80,8 @@ export default async function RootLayout({
     instagram: { link: "", title: "" }
   };
 
-  const eventName = `${general?.clname || "Annual Tech Conference"} ${
-    general?.year || ""
-  }`.trim();
+  const eventName = `${general?.clname || "Annual Tech Conference"} ${general?.year || ""
+    }`.trim();
   const register = pageData?.register || [];
 
   // Format dates
@@ -147,9 +145,9 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={inter.className}>
-        <AppDataProvider 
-          general={general} 
+      <body>
+        <AppDataProvider
+          general={general}
           pages={pageData}
           navItems={navItems}
           socialLinks={socialLinks}
@@ -157,8 +155,8 @@ export default async function RootLayout({
           <NavProvider initialData={data}>
             <Header />
             {children}
-            {/* <MediaCollaborators />
-            <PartneredContent />
+            <MediaCollaborators />
+            {/*<PartneredContent />
             <Footer /> */}
           </NavProvider>
         </AppDataProvider>
