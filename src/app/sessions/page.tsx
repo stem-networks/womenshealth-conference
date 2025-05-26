@@ -6,14 +6,7 @@ import Link from "next/link";
 import Head from "next/head";
 // import { useRouter } from 'next/router';
 import { useAppData } from "../../context/AppDataContext";
-// import WelcomeMessage from "./components/WelcomeMessage";
-// import Members from "./components/Members";
-// import Speakers from "./components/Speakers";
-// import Slider from "react-slick";
-// import Image from "next/image";
 import { SessionItem , OnelinerData} from "@/types";
-
-
 
 const Sessions = () => {
   const {indexPageData, general, pages } = useAppData();
