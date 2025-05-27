@@ -164,7 +164,7 @@ const Home = () => {
               style={{ textAlign: "start" }}
             >
               <Link href="/" title="Home">
-                Home test
+                Home test 2
               </Link>{" "}
               <i className="fa fa-angle-right"></i> <span></span>
             </div>
