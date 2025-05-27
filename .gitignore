@@ -45,3 +45,4 @@ next-env.d.ts
 tmp/
 app.js
 public/logs
+src/app/api/git-webhook

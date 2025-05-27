@@ -224,10 +224,22 @@ export interface FAQItem {
   cid: string;
 }
 
+// export interface CommonContent {
+//   phone: string;
+//   importantDates: {
+//     date: string;
+//   }[];
+//   faqs?: FAQItem[];
+// }
+
 export interface CommonContent {
   phone: string;
   importantDates: {
     date: string;
   }[];
   faqs?: FAQItem[];
+  guidelines?: {
+    content: string;
+  };
 }
+
