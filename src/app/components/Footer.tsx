@@ -7,15 +7,17 @@ import { SocialLinks, OnelinerData } from '@/types';
 import { useAppData } from "../../context/AppDataContext";
 
 interface FooterProps {
-  socialLinks: SocialLinks;
+    socialLinks: SocialLinks;
 }
 
-const Footer: React.FC<FooterProps> = () => {
-    const { indexPageData, general } =
-        useAppData();
+const Footer: React.FC<FooterProps> = ({ socialLinks }) => {
+    const { indexPageData, general } = useAppData();
 
     const oneliner: OnelinerData = indexPageData?.oneliner || {};
     const footerContent = oneliner?.footer_content?.content || "";
+
+
+    // console.log("venue images", socialLinks); 
 
     return (
         <div>
@@ -38,24 +40,24 @@ const Footer: React.FC<FooterProps> = () => {
                         <h4>Follow Us</h4>
                         <p className="followus">
 
-                            {/* <Link href={social_links?.facebook?.link} title={social_links?.facebook?.title} target="_blank">
+                            <Link href={socialLinks?.facebook?.link} title={socialLinks?.facebook?.title} target="_blank">
                                 <i className='bx bxl-facebook'></i>
                             </Link>
 
 
-                            <Link href={social_links?.instagram?.link} title={social_links?.instagram?.title} target="_blank">
+                            <Link href={socialLinks?.instagram?.link} title={socialLinks?.instagram?.title} target="_blank">
                                 <i className='bx bxl-instagram'></i>
                             </Link>
 
 
-                            <Link href={social_links?.linkedin?.link} title={social_links?.linkedin?.title} target="_blank">
+                            <Link href={socialLinks?.linkedin?.link} title={socialLinks?.linkedin?.title} target="_blank">
                                 <i className='bx bxl-linkedin-square'></i>
-                            </Link> */}
+                            </Link>
 
 
                             {/* <Link href="https://x.com/NursingCon91476" title="Nursing Conference 2025 Twitter" target="_blank">
-                <i className='bx bxl-twitter'></i>
-              </Link> */}
+                            <i className='bx bxl-twitter'></i>
+                            </Link> */}
                         </p>
                     </div>
 

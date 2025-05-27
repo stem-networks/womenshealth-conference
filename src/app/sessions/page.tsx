@@ -29,7 +29,7 @@ const Sessions = () => {
         <title>{pages?.sessions_meta[0].title || ""}</title>
         <meta name="description" content={pages?.sessions_meta[0].content || ""} />
         <meta name="keywords" content={pages?.sessions_meta[0].meta_keywords || ""} />
-        {/* <link rel="canonical" href={canonicalUrl || ""} /> */}
+        {/* <link rel="canonical" href={canonicalUrl || ""} />  */}
       </Head>
       <div className="session_wrap1" id="sessions-block">
         <div className="clearfix">

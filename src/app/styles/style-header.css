@@ -1932,14 +1932,14 @@ li {
 .main-menu .navigation>li:hover>a,
 .main-menu .navigation>li.current>a,
 .main-menu .navigation>li.current-menu-item>a {
-	color: #fc6d11;
+	/* color: #fc6d11; */
 	opacity: 1;
 }
 
 .sticky-header .main-menu .navigation>li:hover>a,
 .sticky-header .main-menu .navigation>li.current>a,
 .sticky-header .main-menu .navigation>li.current-menu-item>a {
-	background: #fc6d11;
+	/* background: #fc6d11; */
 	color: #ffffff;
 	opacity: 1;
 }
@@ -6638,7 +6638,7 @@ li {
 }
 
 .book_wrap a:hover {
-	background-color: #00b9d7;
+	/* background-color: #00b9d7; */
 	color: #fff;
 }
 
@@ -7338,7 +7338,7 @@ li {
 
 .footer_add_st1 p {
 	font-size: 20px;
-	color: #000;
+	/* color: #000; */
 }
 
 .box_wrap_fot1 {
@@ -7678,7 +7678,7 @@ li {
 .nur_wrap11 {
 	width: 100%;
 	display: block;
-	color: #00b9d7;
+	/* color: #00b9d7; */
 	font-size: 41px;
 	font-weight: 500;
 	letter-spacing: 1px;
@@ -7698,7 +7698,7 @@ li {
 .nur_wrap33 {
 	width: 100%;
 	display: block;
-	color: #00b9d7;
+	/* color: #00b9d7;  */
 	border-top: 1px solid #4c4c4c;
 	font-size: 29px !important;
 	font-weight: 600;
@@ -7760,7 +7760,7 @@ li {
 	color: #000;
 	padding: 30px 25px 29px 25px;
 	border-radius: 7px;
-	background-color: #8cdfed;
+	/* background-color: #8cdfed; */
 	position: relative;
 }
 
@@ -7791,7 +7791,7 @@ li {
 	display: flex;
 	justify-content: space-between;
 	font-size: 20px;
-	color: #00b9d8;
+	/* color: #00b9d8; */
 	margin: 0px 0px 10px 0px;
 }
 
@@ -8018,16 +8018,16 @@ li {
 	left: 1px;
 	height: 23px;
 	width: 23px;
-	background-color: #00b9d7;
+	/* background-color: #00b9d7; */
 }
 
-.container15:hover input~.checkmark {
+/* .container15:hover input~.checkmark {
 	background-color: #00b9d7;
 }
 
 .container15 input:checked~.checkmark {
 	background-color: #00b9d7;
-}
+} */
 
 .checkmark:after {
 	content: "";
@@ -9519,3 +9519,31 @@ input[type="radio"]:checked::before {
 		transform: rotate(0);
 	}
 }
+
+/* Toastr new Styles  */
+/* SUCCESS toast */
+.Toastify__toast--success {
+	background-color: var(--primary-color);
+	color: var(--white-color);
+	border-left: 5px solid var(--primary-color);
+}
+
+/* ERROR toast */
+.Toastify__toast--error {
+	background-color: #cf0000;
+	color: var(--white-color);
+	border-left: 5px solid #cf0000;
+}
+
+/* INFO toast */
+/* .Toastify__toast--info {
+	background-color: #055160;
+	color: #fff;
+	border-left: 5px solid #0dcaf0;
+} */
+
+/* Toast body text size or font if needed */
+/* .Toastify__toast-body {
+	font-size: 15px;
+	font-family: 'Arial', sans-serif;
+} */
