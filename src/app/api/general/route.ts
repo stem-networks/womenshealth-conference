@@ -6,7 +6,6 @@ export async function GET() {
     if (!apiUrl) {
       throw new Error("API_URL_WITH_PARAMS not configured");
     }
-
   
 
     const res = await fetch(apiUrl, {

@@ -28,7 +28,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/app/api/log-error"
+    "src/app/api/**/*"
   ],
   "exclude": ["node_modules"]
 }
