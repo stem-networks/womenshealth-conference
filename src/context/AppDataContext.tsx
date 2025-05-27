@@ -114,7 +114,7 @@ export function AppDataProvider({
     setError(null);
 
     try {
-      const response = await fetch('/api/pricing', {
+      const response = await fetch('/api/reg-page-data', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

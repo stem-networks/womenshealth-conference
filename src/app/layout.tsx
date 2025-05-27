@@ -124,7 +124,7 @@ export default async function RootLayout({
     },
   };
 
-
+  // console.log("layout data",data, "ooooooooooo");
 
   return (
     <html lang="en">

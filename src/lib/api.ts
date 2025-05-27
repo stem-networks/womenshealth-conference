@@ -77,7 +77,7 @@ export const fetchData = async (): Promise<ApiResponse | null> => {
   if (allData) return allData;
 
   try {
-    const res = await fetch('/api/data');
+    const res = await fetch('/api/general');
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     
     const data: ApiResponse = await res.json();
