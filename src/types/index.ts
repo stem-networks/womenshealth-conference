@@ -35,7 +35,7 @@ export interface GeneralData {
   startDate: string;
   endDate: string;
   main_keyword: string;
-  confkeyword: string;
+  confkeyword: string;  
   offerPrice?: string;
   offerCurrency?: string;
 }
@@ -133,68 +133,6 @@ export interface RegistrationInfo {
     conference_date: string;
   };
 }
-
-// Define the type for individual oneliner items
-// export interface OnelinerItem {
-//   category: string;
-//   content: string;
-//   headding: string;
-// }
-
-// // Define the type for offers content (if needed)
-// export interface OfferItem {
-//   // Define structure based on your {1: {…}, 2: {…}, etc.} data
-//   [key: string]: number;
-// }
-
-// // Define the complete oneliner type
-// export interface OnelinerData {
-//   Be_A_Volunteer: OnelinerItem;
-//   Explore_Our_Comprehensive_Networking_Services: OnelinerItem;
-//   Submit_Your_Abstract: OnelinerItem;
-//   download_brochure: OnelinerItem;
-//   footer_content: OnelinerItem;
-//   important_dates: OnelinerItem;
-//   offers_content: {
-//     [key: string]: OfferItem; // Or a more specific type if you know the structure
-//   };
-//   sessions?: {
-//     content?: string;
-//   };
-//   //  important_dates?: OnelinerItem;
-//   // Add other properties that might exist
-// }
-
-// interface SessionItem {
-//   link: string;
-//   session_short_name: string;
-//   text: string;
-// }
-
-// export interface bannerContent {
-//   [key: string]: {
-//     banner_conent_id: string;
-//     cid: string;
-//     content: string;
-//     headding: string;
-//     image: string;
-//     page: string;
-//     status: string;
-//     tag_line: string;
-//   };
-// }
-
-// export interface IndexPageData {
-//   title: string;
-//   content: string;
-//   meta_keywords: string;
-//   importantDates: {
-//     date: string;
-//   }[];
-//   bannerContent?: bannerContent;
-//   oneliner?: OnelinerData;
-//   sessions?: SessionItem[];
-// }
 
 // Oneliner Item
 export interface OnelinerItem {

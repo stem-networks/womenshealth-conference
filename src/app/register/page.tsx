@@ -1937,7 +1937,7 @@ const Register = () => {
                               </div>
                             </div>
                           )}
-                        {accommodationPrices &&
+                        {/* {accommodationPrices &&
                           accommodationPrices &&
                           Number(accommodationPrices.single) > 0 && (
                             <div className="col-md-4">
@@ -1955,7 +1955,7 @@ const Register = () => {
                                 </label>
                               </div>
                             </div>
-                          )}
+                          )} */}
                       </div>
 
                       {selectedAccommodation && (
