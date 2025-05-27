@@ -10,9 +10,11 @@ import { GeneralData, PagesData, NavItem, SocialLinks } from "@/types";
 import { AppDataProvider } from "@/context/AppDataContext";
 // import Header from "./components/Header/Header";
 import Header from "./components/Header";
-// import Footer from "@/components/Footer";
+import Footer from "./components/Footer";
 import MediaCollaborators from "./components/MediaCollaborators";
-// import PartneredContent from "@/components/PartneredContent";
+import PartneredContent from "./components/PartneredContent";
+// import { useAppData } from "../context/AppDataContext";
+
 
 // const inter = Inter({ subsets: ["latin"] });
 
@@ -158,8 +160,8 @@ export default async function RootLayout({
             <Header />
             {children}
             <MediaCollaborators />
-            {/*<PartneredContent />
-            <Footer /> */}
+            <PartneredContent />
+            <Footer socialLinks={socialLinks} />
           </NavProvider>
         </AppDataProvider>
       </body>
