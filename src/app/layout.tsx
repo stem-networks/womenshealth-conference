@@ -14,6 +14,8 @@ import Footer from "./components/Footer";
 import MediaCollaborators from "./components/MediaCollaborators";
 import PartneredContent from "./components/PartneredContent";
 // import { useAppData } from "../context/AppDataContext";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 // const inter = Inter({ subsets: ["latin"] });
@@ -157,6 +159,8 @@ export default async function RootLayout({
           socialLinks={socialLinks}
         >
           <NavProvider initialData={data}>
+            {/* Toast container - only one instance needed */}
+            <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick />
             <Header />
             {children}
             <MediaCollaborators />
