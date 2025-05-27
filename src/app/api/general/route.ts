@@ -7,6 +7,7 @@ export async function GET() {
       throw new Error("API_URL_WITH_PARAMS not configured");
     }
   
+    
 
     const res = await fetch(apiUrl, {
       next: { revalidate: 3600 }, // Revalidate every hour
