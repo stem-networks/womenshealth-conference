@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# cPanel specific
+tmp/
+app.js
+public/logs
+src/app/api/git-webhook

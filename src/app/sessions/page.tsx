@@ -1,113 +1,70 @@
-"use client";
+// app/sessions/page.tsx
 
-// import React, { useState } from "react";
+import { Metadata } from "next";
+import { IndexPageData, ApiResponse } from "@/types";
+import SessionsComponent from "../components/SessionContent";
 
-import Link from "next/link";
-import Head from "next/head";
-// import { useRouter } from 'next/router';
-import { useAppData } from "../../context/AppDataContext";
-import { SessionItem , OnelinerData} from "@/types";
+async function fetchGeneralData(): Promise<ApiResponse> {
+  const baseUrl = process.env.BASE_URL;
+  const res = await fetch(`${baseUrl}/api/general`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch general data");
+  return res.json();
+}
 
-const Sessions = () => {
-  const {indexPageData, general, pages } = useAppData();
+async function fetchIndexPageData(): Promise<IndexPageData> {
+  const baseUrl = process.env.BASE_URL;
+  const res = await fetch(`${baseUrl}/api/index-page`, {
+    method: "POST",
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Failed to fetch index page data");
+  return res.json();
+}
 
-   const sessions: SessionItem[] = indexPageData?.sessions || []; 
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const generalData = await fetchGeneralData();
+    const meta = generalData?.pages?.sessions_meta?.[0] || {
+      title: "Sessions",
+      content: "Explore the sessions of the conference.",
+      meta_keywords: "",
+    };
 
-  const splitIndex = Math.ceil(sessions.length / 2);
-  const firstList = sessions.slice(0, splitIndex);
-  const secondList = sessions.slice(splitIndex);
+    return {
+      title: meta.title,
+      description: meta.content,
+      keywords: meta.meta_keywords,
+    };
+  } catch (error) {
+    console.error("Metadata generation error:", error);
+    return {
+      title: "Sessions",
+      description: "Explore the sessions of the conference.",
+      keywords: "",
+    };
+  }
+}
 
-   const oneliner: OnelinerData = indexPageData?.oneliner || {};
-    const sessionContent = oneliner?.sessions?.content || "";
+const SessionsPage = async () => {
+  const [general, indexPageData] = await Promise.all([
+    fetchGeneralData(),
+    fetchIndexPageData(),
+  ]);
 
-    console.log("test session head", pages?.sessions_meta[0].title);
+  const general_info = general?.data || {};
+  const sessions = indexPageData.sessions || [];
 
+  const sessionContent =
+    indexPageData?.oneliner?.sessions?.content ||
+    "Session content will be updated soon.";
 
   return (
-    <div>
-      <Head>
-        <title>{pages?.sessions_meta[0].title || ""}</title>
-        <meta name="description" content={pages?.sessions_meta[0].content || ""} />
-        <meta name="keywords" content={pages?.sessions_meta[0].meta_keywords || ""} />
-        {/* <link rel="canonical" href={canonicalUrl || ""} />  */}
-      </Head>
-      <div className="session_wrap1" id="sessions-block">
-        <div className="clearfix">
-          <div className="row clearfix session-img">
-            <div
-              className="col-md-12 session_wrap_style1 wow fadeInUp"
-              data-wow-delay="400ms"
-              data-wow-duration="1500ms"
-            >
-              <h2>Sessions</h2>
-              <p>
-                {sessionContent
-                  ? sessionContent
-                  : "Session content will be updated soon."}
-              </p>
-            </div>
-            <div
-              className="col-md-4 sq_mobhide session_wra155 wow fadeInUp"
-              data-wow-delay="400ms"
-              data-wow-duration="1600ms"
-            >
-              <div className="sq_mainbox">
-                <div className="sq_box1"></div>
-                <div className="sq_box2"></div>
-                <span className="nur_wrap1">{general?.clogotext ? general?.clogotext : ""}</span>
-                <span className="nur_wrap2">CONFERENCE</span>
-                <span className="nur_wrap3">
-                  {general?.full_length_dates ? general?.full_length_dates : ""}
-                </span>
-                <span className="nur_wrap4">{general?.venue_p2 ? general?.venue_p2 : ""}</span>
-              </div>
-            </div>
-            <div
-              className="col-md-8 mar_mk55 wow fadeInUp"
-              data-wow-delay="400ms"
-              data-wow-duration="1800ms"
-            >
-              <div className="session-right-block">
-                <div className="add_wrap_session">
-                  <ul>
-                    {firstList.map((session, index) => (
-                      <li key={index}>
-                        <span>
-                          {session ? session.text : "Upcoming session"}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="add_wrap_session">
-                  <ul>
-                    {secondList.map((session, index) => (
-                      <li key={index}>
-                        <span>
-                          {session ? session.text : "Upcoming session"}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              {/* Navigating to List-of-Topics Page */}
-              <div className="list-of-topics-navigation-block">
-                <p>
-                  Explore{" "}
-                  <Link href="list-of-topics" title="List Of Topics">
-                    all topics for {general?.confkeyword}.
-                  </Link>{" "}
-                  Submit your abstract to present at the conference.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <SessionsComponent
+      generalInfo={general_info}
+      sessions={sessions}
+      sessionContent={sessionContent}
+    />
   );
 };
 
-export default Sessions;
+export default SessionsPage;
