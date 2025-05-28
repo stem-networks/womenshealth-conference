@@ -1,9 +1,110 @@
-import React from 'react'
+// Components
+import WelcomeMessage from "./components/WelcomeMessage";
+import Members from "./components/Members";
+import Speakers from "./components/Speakers";
+// import BannerSection from "./components/BannerSection";
+// import SessionsComponent from "./components/SessionContent";
+import MainSlider from "./components/MainSlider";
+import ImportantDates from "./components/ImportantDates";
+import FaqsMain from "./components/FaqsMain";
+import AbstractNetwork from "./components/AbstractNetwork";
+// import Downloads from "./components/Downloads";
+import VolunteerCommunity from "./components/VolunteerCommunity";
+import Venue from "./components/Venue";
 
-const page = () => {
-  return (
-    <div>page</div>
-  )
+// Types
+import { Metadata } from "next";
+import { IndexPageData, ApiResponse, CommonContent, RegistrationInfo } from "@/types";
+
+// Fetch functions
+async function fetchGeneralData(): Promise<ApiResponse> {
+  const baseUrl = process.env.BASE_URL;
+  const res = await fetch(`${baseUrl}/api/general`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch general data");
+  return res.json();
 }
 
-export default page
+async function fetchIndexPageData(): Promise<IndexPageData> {
+  const baseUrl = process.env.BASE_URL;
+  const res = await fetch(`${baseUrl}/api/index-page`, {
+    method: "POST",
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Failed to fetch index page data");
+  return res.json();
+}
+
+async function fetchRegPageData(): Promise<RegistrationInfo> {
+  const baseUrl = process.env.BASE_URL;
+  const res = await fetch(`${baseUrl}/api/reg-page-data`, {
+    method: "POST",
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Failed to fetch registration page data");
+  return res.json();
+}
+
+async function fetchCommonData(): Promise<CommonContent> {
+  const baseUrl = process.env.BASE_URL;
+  const res = await fetch(`${baseUrl}/api/common-content`, {
+    method: "POST",
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Failed to fetch common content");
+  return res.json();
+}
+
+// Metadata generator
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const generalData = await fetchGeneralData();
+    const meta = generalData?.pages?.sessions_meta?.[0] || {
+      title: "Sessions",
+      content: "Explore the sessions of the conference.",
+      meta_keywords: "",
+    };
+
+    return {
+      title: meta.title,
+      description: meta.content,
+      keywords: meta.meta_keywords,
+    };
+  } catch (error) {
+    console.error("Metadata generation error:", error);
+    return {
+      title: "Sessions",
+      description: "Explore the sessions of the conference.",
+      keywords: "",
+    };
+  }
+}
+
+// Main page component
+const Home = async () => {
+  const [general, indexPageData, commonContent, registerData] = await Promise.all([
+    fetchGeneralData(),
+    fetchIndexPageData(),
+    fetchCommonData(),
+    fetchRegPageData()
+  ]);
+
+  return (
+    <div>
+      {/* <BannerSection /> */}
+      <WelcomeMessage />
+      <Members />
+      {/* Uncomment when sessions are ready */}
+      {/* <SessionsComponent /> */}
+      <Speakers />
+      <MainSlider generalInfo={general} registerInfo={registerData} />
+      <ImportantDates onelinerInfo={indexPageData} />
+      <FaqsMain commonInfo={commonContent} />
+      <Venue onelinerVenueInfo={indexPageData} />
+      <AbstractNetwork generalAbstractInfo={general} onelinerAbstractInfo={indexPageData} />
+      {/*<Downloads /> */}
+      <VolunteerCommunity generalVolunteerInfo={general} onelinerVolunteerInfo={indexPageData} />
+    </div>
+  );
+};
+
+export default Home;
