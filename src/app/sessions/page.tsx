@@ -36,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
       keywords: meta.meta_keywords,
     };
   } catch (error) {
-    console.error("Metadata generation error:", error);
+    console.error("Metadata generation error sessions:", error);
     return {
       title: "Sessions",
       description: "Explore the sessions of the conference.",
@@ -57,6 +57,8 @@ const SessionsPage = async () => {
   const sessionContent =
     indexPageData?.oneliner?.sessions?.content ||
     "Session content will be updated soon.";
+
+    
 
   return (
     <SessionsComponent

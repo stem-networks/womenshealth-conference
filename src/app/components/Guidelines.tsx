@@ -1,37 +1,3 @@
-// "use client"
-
-// import React from 'react'
-// import { useAppData } from '@/context/AppDataContext';
-// import Link from 'next/link';
-
-// const Guidelines = () => {
-//   const { commonContent } = useAppData();
-//   const guidelinesContent = commonContent?.guidelines?.content || '';
-
-
-//   return (
-//     <div>
-//       <div className="brand_wrap">
-//         <div className="auto-container">
-//           <div className="row">
-//             <div className="col-md-12">
-//               <Link href="/" title='Navigate to Homepage'>Home</Link> <i className="fa fa-angle-right"></i>
-//               <span>Guidelines</span>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-
-//       {guidelinesContent ? (
-//         <div dangerouslySetInnerHTML={{ __html: guidelinesContent }} />
-//       ) : (
-//         <p>No guidelines available at the moment.</p>
-//       )}
-//     </div>
-//   )
-// }
-
-// export default Guidelines;
 
 "use client"
 

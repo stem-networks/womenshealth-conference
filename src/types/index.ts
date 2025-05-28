@@ -232,14 +232,23 @@ export interface FAQItem {
 //   faqs?: FAQItem[];
 // }
 
+// export interface CommonContent {
+//   phone: string;
+//   importantDates: {
+//     date: string;
+//   }[];
+//   faq?: FAQItem[];
+//   guidelines?: {
+//     content: string;
+//   };
+// }
+
 export interface CommonContent {
-  phone: string;
-  importantDates: {
-    date: string;
-  }[];
-  faqs?: FAQItem[];
-  guidelines?: {
-    content: string;
+  data: {
+    phone: string;
+    importantDates: { date: string }[];
+    faq?: FAQItem[];
+    guidelines?: { content: string };
   };
 }
 
