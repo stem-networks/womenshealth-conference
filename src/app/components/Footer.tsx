@@ -1,10 +1,13 @@
 'use client';
 
-import React from 'react'
+import React, { useState, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link';
+import axios from 'axios';
 import { SocialLinks, OnelinerData } from '@/types';
 import { useAppData } from "../../context/AppDataContext";
+import { toast } from 'react-toastify';
+
 
 interface FooterProps {
     socialLinks: SocialLinks;
@@ -15,9 +18,115 @@ const Footer: React.FC<FooterProps> = ({ socialLinks }) => {
 
     const oneliner: OnelinerData = indexPageData?.oneliner || {};
     const footerContent = oneliner?.footer_content?.content || "";
+    // Form 
+    const [showModal2, setShowModal2] = useState(false);
+    const [formData, setFormData] = useState({
+        enquiryname: '',
+        enquiryemail: '',
+        enquiryquery: '',
+    });
+    const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState('');
+
+    const nameRef = useRef<HTMLInputElement>(null);
+    const emailRef = useRef<HTMLInputElement>(null);
+    const queryRef = useRef<HTMLTextAreaElement>(null);
 
 
-    // console.log("venue images", socialLinks); 
+    //    Footer form 
+    const handleSuccess = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        setShowModal2(false);
+        setError('');
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+
+        // Clear error on input change
+        setFormErrors((prev) => ({ ...prev, [name]: '' }));
+    };
+
+    // Validate the form fields
+    const validateForm = () => {
+        const errors: any = {};
+
+        if (!formData.enquiryname.trim()) {
+            errors.enquiryname = 'Name is required';
+        }
+
+        else if (!formData.enquiryemail.trim()) {
+            errors.enquiryemail = 'Email is required';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.enquiryemail)) {
+            errors.enquiryemail = 'Email is invalid';
+        }
+
+        else if (!formData.enquiryquery.trim()) {
+            errors.enquiryquery = 'Query is required';
+        }
+
+        setFormErrors(errors);
+
+        if (Object.keys(errors).length > 0) {
+            // Show only the first error in toastr and focus that field
+            if (errors.enquiryname) {
+                toast.error(errors.enquiryname);
+                nameRef.current?.focus();
+            } else if (errors.enquiryemail) {
+                toast.error(errors.enquiryemail);
+                emailRef.current?.focus();
+            } else if (errors.enquiryquery) {
+                toast.error(errors.enquiryquery);
+                queryRef.current?.focus();
+            }
+            return false;
+        }
+
+        return true;
+    };
+
+
+    // Submit handler
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (!validateForm()) return;
+
+        setSubmitting(true);
+
+        try {
+            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}`, {
+                module_name: 'enquiry_form',
+                keys: {
+                    data: [
+                        {
+                            name: formData.enquiryname,
+                            email: formData.enquiryemail,
+                            query: formData.enquiryquery,
+                            category: 'enquiry',
+                        },
+                    ],
+                },
+                cid: process.env.NEXT_PUBLIC_CID,
+            });
+
+            setShowModal2(true);
+            setFormData({
+                enquiryname: '',
+                enquiryemail: '',
+                enquiryquery: '',
+            });
+            setFormErrors({});
+        } catch (err) {
+            toast.error('Submission failed. Please try again.');
+            console.error(err);
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+
 
     return (
         <div>
@@ -76,7 +185,7 @@ const Footer: React.FC<FooterProps> = ({ socialLinks }) => {
                     <div className="menu_footer2">
                         <h4>General Enquiry</h4>
                         <form id="enquiryForm"
-                        //  onSubmit={handleSubmit}
+                            onSubmit={handleSubmit}
                         >
                             <div className="form">
                                 <div className="mb-2">
@@ -86,10 +195,11 @@ const Footer: React.FC<FooterProps> = ({ socialLinks }) => {
                                         id="enquiryname"
                                         placeholder="Name"
                                         className="form-control color-white"
-                                    // value={formData.enquiryname}
-                                    // onChange={handleChange}
+                                        value={formData.enquiryname}
+                                        onChange={handleChange}
+                                        ref={nameRef}
                                     />
-                                    {/* {formErrors.enquiryname && <div className="footer-error">{formErrors.enquiryname}</div>} */}
+                                    {formErrors.enquiryname && <div className="footer-error">{formErrors.enquiryname}</div>}
                                 </div>
                                 <input
                                     type="text"
@@ -97,10 +207,11 @@ const Footer: React.FC<FooterProps> = ({ socialLinks }) => {
                                     name="enquiryemail"
                                     id="enquiryemail"
                                     className="form-control mt-2 color-white"
-                                // value={formData.enquiryemail}
-                                // onChange={handleChange}
+                                    value={formData.enquiryemail}
+                                    onChange={handleChange}
+                                    ref={emailRef}
                                 />
-                                {/* {formErrors.enquiryemail && <div className="footer-error">{formErrors.enquiryemail}</div>} */}
+                                {formErrors.enquiryemail && <div className="footer-error">{formErrors.enquiryemail}</div>}
                                 <div className="form-floating">
                                     <textarea
                                         className="form-control color-white"
@@ -108,15 +219,16 @@ const Footer: React.FC<FooterProps> = ({ socialLinks }) => {
                                         placeholder="Query"
                                         id="enquiryquery"
                                         style={{ height: "50px" }}
-                                    // value={formData.enquiryquery}
-                                    // onChange={handleChange}
+                                        value={formData.enquiryquery}
+                                        onChange={handleChange}
+                                        ref={queryRef}
                                     ></textarea>
-                                    {/* {formErrors.enquiryquery && <div className="footer-error">{formErrors.enquiryquery}</div>} */}
+                                    {formErrors.enquiryquery && <div className="footer-error">{formErrors.enquiryquery}</div>}
                                     <input type="hidden" name="category" id="category" value="enquiry" />
                                 </div>
 
-                                <button className="btn btn-primary w-100 mt-3" type="submit" title="Submit" id="enquiry_submit_btn">Submit</button>
-                                {/* {error && <div className="footer-error">{error}</div>} */}
+                                <button className="btn btn-primary w-100 mt-3" type="submit" title="Submit" id="enquiry_submit_btn" disabled={submitting}> {submitting ? 'Submitting...' : 'Submit'}</button>
+                                {error && <div className="footer-error">{error}</div>}
                             </div>
                         </form>
                     </div>
@@ -133,12 +245,12 @@ const Footer: React.FC<FooterProps> = ({ socialLinks }) => {
                     Copyright © <Link href="https://stemnetwork.com" target="_blank" title='STEM Network'>STEM Network</Link>
                 </div>
                 {/* <div className="last_st3">
-          Powered by <Link href="https://evega.com" target="_blank">Evega</Link>
-        </div> */}
+                Powered by <Link href="https://evega.com" target="_blank">Evega</Link>
+                </div> */}
             </div>
 
-            {/* {showModal2 && (
-                <div className="modal" id="myModal" tabIndex="-1" role="dialog">
+            {showModal2 && (
+                <div className="modal" id="myModal" role="dialog">
                     <div className="modal-dialog modal-confirm fade-in" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
@@ -155,7 +267,7 @@ const Footer: React.FC<FooterProps> = ({ socialLinks }) => {
                         </div>
                     </div>
                 </div>
-            )} */}
+            )}
 
 
         </div>
