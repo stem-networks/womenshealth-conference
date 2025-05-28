@@ -1,4 +1,18 @@
+"use client";
+
 import React, { useState, useRef } from 'react'
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import Image from 'next/image';
+import { ApiResponse, IndexPageData } from '@/types';
+import Link from 'next/link';
+
+// Image 
+import backgroundImage2 from '../../../public/images/images/bg2.webp';
+import mess from '../../../public/images/images/mess.png';
+import mess1 from '../../../public/images/images/mess1.png';
+import mess2 from '../../../public/images/images/mess2.png';
+import ph from '../../../public/images/images/ph.png';
 
 type FormDataType = {
     firstName: string;
@@ -27,7 +41,37 @@ type CommunityFormErrors = {
     lname?: string;
 };
 
-const VolunteerCommunity = () => {
+interface VolunteerCommunityProps {
+    generalVolunteerInfo: ApiResponse;
+    onelinerVolunteerInfo: IndexPageData;
+}
+
+// Generate random BODMAS expression
+const generateRandomMathExpression = (): { expression: string; correctAnswer: string } => {
+    const operations = ['+', '-', '*'];
+    const randomOperation = operations[Math.floor(Math.random() * operations.length)];
+
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    const num3 = Math.floor(Math.random() * 10) + 1;
+
+    const useParentheses = Math.random() < 0.5;
+    let expression: string;
+
+    if (useParentheses) {
+        expression = `(${num1} ${randomOperation} ${num2}) ${randomOperation} ${num3}`;
+    } else {
+        expression = `${num1} ${randomOperation} ${num2} ${randomOperation} ${num3}`;
+    }
+
+    const correctAnswer = eval(expression).toFixed(2); // returns string
+    return { expression, correctAnswer };
+};
+
+const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({ generalVolunteerInfo, onelinerVolunteerInfo }) => {
+
+    const general = generalVolunteerInfo?.data || {}
+    const onelinerAbstract = onelinerVolunteerInfo?.oneliner?.Be_A_Volunteer?.content;
 
     // Modal for vounteer
     const [showModal, setShowModal] = useState(false);
@@ -37,14 +81,16 @@ const VolunteerCommunity = () => {
     const [userAnswer, setUserAnswer] = useState('');
     const [error, setError] = useState(''); // For general errors
     const [showModal3, setShowModal3] = useState(false); // For success modal
-    const [showModal6, setShowModal6] = useState(false); // For success modal
-    const [showModal9, setShowModal9] = useState(false);
+    // const [showModal6, setShowModal6] = useState(false); // For success modal
+    // const [showModal9, setShowModal9] = useState(false);
     const [formData, setFormData] = useState<FormDataType>({
         firstName: '',
         lastName: '',
         email: '',
         category: 'volunteer',
     });
+    console.log('Errror', error)
+    // const [showModal5, setShowModal5] = useState(false);
 
     const firstNameRef = useRef<HTMLInputElement>(null);
     const lastNameRef = useRef<HTMLInputElement>(null);
@@ -203,17 +249,13 @@ const VolunteerCommunity = () => {
         // Submit form
         try {
             const fullName = `${formData.firstName} ${formData.lastName}`;
-            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}`, {
-                module_name: 'enquiry_form',
-                keys: {
-                    data: [{
-                        name: fullName,
-                        email: formData.email,
-                        category: formData.category,
-                    }],
-                },
-                cid: process.env.NEXT_PUBLIC_CID,
+            await axios.post('/api/enquiry', {
+                name: fullName,
+                email: formData.email,
+                category: formData.category,
             });
+
+
 
             toast.success('Form submitted successfully!');
             setShowModal(false);
@@ -239,7 +281,7 @@ const VolunteerCommunity = () => {
         event.preventDefault();
         setShowModal2(false);
         setShowModal3(false);
-        setShowModal5(false);
+        // setShowModal5(false);
         setError('');
     };
 
@@ -279,7 +321,7 @@ const VolunteerCommunity = () => {
 
                             <div className="box_wrap_add1 wow fadeInUp" data-wow-delay="400ms" data-wow-duration="1000ms">
 
-                                <h3 dangerouslySetInnerHTML={{ __html: valunteerContent || '' }} />
+                                <h3 dangerouslySetInnerHTML={{ __html: onelinerAbstract || '' }} />
                             </div>
 
                             <div className="box_wrap154"></div>
@@ -445,6 +487,7 @@ const VolunteerCommunity = () => {
                                             </p>
                                             <input
                                                 type='text'
+                                                ref={captchaRef}
                                                 placeholder='Enter your answer'
                                                 value={userAnswer}
                                                 onChange={(e) => setUserAnswer(e.target.value)}
@@ -466,8 +509,6 @@ const VolunteerCommunity = () => {
                 </div>
             )}
 
-
-
             {showModal2 && (
                 <div className="modal" id="myModal" role="dialog">
                     <div className="modal-dialog modal-confirm fade-in" role="document" ref={modalRef}>
@@ -487,8 +528,6 @@ const VolunteerCommunity = () => {
                     </div>
                 </div>
             )}
-
-
 
             {showModal3 && (
                 <div className="modal" id="myModal" role="dialog">

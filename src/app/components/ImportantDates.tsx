@@ -1,6 +1,17 @@
 import React from 'react'
+import { IndexPageData } from "@/types";
 
-const ImportantDates = () => {
+interface ImportantDatesProps {
+    onelinerInfo: IndexPageData;
+}
+
+const ImportantDates = ({ onelinerInfo }: ImportantDatesProps) => {
+    const oneliner = onelinerInfo?.oneliner?.important_dates;
+    const importantDates = onelinerInfo?.importantDates || [];
+
+    // console.log('Oneliner Info', onelinerInfo)
+    // console.log('Oneliner', onelinerInfo)
+    // console.log('importantDates', importantDates)
     return (
         <div>
             <div className="import_wrap">
@@ -14,7 +25,7 @@ const ImportantDates = () => {
                             <h2>
                                 Important <span>Dates</span>
                             </h2>
-                            <p>{importantDatesContent ? importantDatesContent : ""}</p>
+                            <p>{oneliner?.content || ""}</p>
                         </div>
 
                         <div className="test-imp">
@@ -44,14 +55,11 @@ const ImportantDates = () => {
                                             <div
                                                 className="may_wrap15"
                                                 dangerouslySetInnerHTML={{
-                                                    __html:
-                                                        indexPageData?.importantDates?.[0]?.date || "",
+                                                    __html: importantDates[0]?.date || "",
                                                 }}
-                                            >
-                                                {/* 28<sub>TH</sub> <span>MAY 2024</span> */}
-                                            </div>
+                                            />
                                             <div className="earl_wrap">
-                                                {indexPageData?.importantDates?.[0]?.text || ""}
+                                                {importantDates[0]?.text || ""}
                                             </div>
                                         </div>
                                     </div>
@@ -80,12 +88,11 @@ const ImportantDates = () => {
                                             <div
                                                 className="may_wrap15 rih5 "
                                                 dangerouslySetInnerHTML={{
-                                                    __html:
-                                                        indexPageData?.importantDates?.[1]?.date || "",
+                                                    __html: importantDates[1]?.date || "",
                                                 }}
                                             ></div>
                                             <div className="earl_wrap">
-                                                {indexPageData?.importantDates?.[1]?.text || ""}
+                                                {importantDates[1]?.text || ""}
                                             </div>
                                         </div>
                                     </div>

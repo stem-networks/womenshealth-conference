@@ -1,6 +1,19 @@
+"use client"
 import React, { useState } from 'react'
+import { CommonContent, FAQItem } from "@/types";
 
-const FaqsMain = () => {
+interface FaqsMainProps {
+    commonInfo: CommonContent;
+}
+
+
+const FaqsMain = ({ commonInfo }: FaqsMainProps) => {
+
+    const faqs: FAQItem[] = commonInfo?.data?.faq || [];
+
+    const half = Math.ceil(faqs.length / 2);
+    const firstHalf = faqs.slice(0, half);
+    const secondHalf = faqs.slice(half);
 
 
     const [activeIndexLeft, setActiveIndexLeft] = useState<number | null>(null);

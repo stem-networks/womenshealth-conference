@@ -20,7 +20,8 @@ export async function POST() {
     });
 
     return NextResponse.json({
-      faqs: response.data.data?.faq || [],
+      // faqs: response.data.data?.faq || [],
+      data: response.data.data || [],      
       // Add other common content fields as needed
     });
   } catch (error) {

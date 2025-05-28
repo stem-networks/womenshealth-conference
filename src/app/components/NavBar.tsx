@@ -2,16 +2,11 @@
 
 import { useContext } from "react";
 import { NavContext } from "@/context/NavContext";
-import { useAppData } from "@/context/AppDataContext";
 import Link from "next/link";
 
 export const NavBar = () => {
   const { navItems, isLoading, error, refresh } = useContext(NavContext);
-   const { general, pages } = useAppData();
-
-   console.log("general data in navbar", general);
-   console.log("pages data in navbar", pages);
-
+   
   if (isLoading) return <div>Loading navigation...</div>;
   if (error) return <div>Error: {error}</div>;
   console.log("nav items", navItems);

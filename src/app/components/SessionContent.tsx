@@ -39,7 +39,7 @@ const SessionsComponent = ({
             data-wow-delay="400ms"
             data-wow-duration="1500ms"
           >
-            <h2>Sessions Title test</h2>
+            <h2>Sessions</h2>
             <p>{sessionContent}</p>
           </div>
 
