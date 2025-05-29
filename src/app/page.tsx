@@ -2,13 +2,13 @@
 import WelcomeMessage from "./components/WelcomeMessage";
 import Members from "./components/Members";
 import Speakers from "./components/Speakers";
-// import BannerSection from "./components/BannerSection";
-// import SessionsComponent from "./components/SessionContent";
+import BannerSection from "./components/BannerSection";
+import SessionsComponent from "./components/SessionContent";
 import MainSlider from "./components/MainSlider";
 import ImportantDates from "./components/ImportantDates";
 import FaqsMain from "./components/FaqsMain";
 import AbstractNetwork from "./components/AbstractNetwork";
-// import Downloads from "./components/Downloads";
+import Downloads from "./components/Downloads";
 import VolunteerCommunity from "./components/VolunteerCommunity";
 import Venue from "./components/Venue";
 
@@ -87,21 +87,33 @@ const Home = async () => {
     fetchCommonData(),
     fetchRegPageData()
   ]);
+  // console.log('Sessions',indexPageData)
+
+  const general_info = general?.data || {};
+  const sessions = indexPageData.sessions || [];
+
+  const sessionContent =
+    indexPageData?.oneliner?.sessions?.content ||
+    "Session content will be updated soon.";
 
   return (
     <div>
-      {/* <BannerSection /> */}
+      <BannerSection generalbannerInfo={general} onelinerBannerInfo={indexPageData} />
       <WelcomeMessage />
       <Members />
       {/* Uncomment when sessions are ready */}
-      {/* <SessionsComponent /> */}
+      <SessionsComponent
+        generalInfo={general_info}
+        sessions={sessions}
+        sessionContent={sessionContent}
+      />
       <Speakers />
       <MainSlider generalInfo={general} registerInfo={registerData} />
       <ImportantDates onelinerInfo={indexPageData} />
       <FaqsMain commonInfo={commonContent} />
       <Venue onelinerVenueInfo={indexPageData} />
       <AbstractNetwork generalAbstractInfo={general} onelinerAbstractInfo={indexPageData} />
-      {/*<Downloads /> */}
+      <Downloads generalDownloadsInfo={general} />
       <VolunteerCommunity generalVolunteerInfo={general} onelinerVolunteerInfo={indexPageData} />
     </div>
   );

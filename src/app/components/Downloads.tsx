@@ -1,571 +1,774 @@
-// import React, { useState } from 'react'
-
-// interface ContactFormData {
-//     name: string;
-//     email: string;
-//     phone: string;
-//     query: string;
-//     category: string;
-// }
-
-// interface ContactFormErrors {
-//     name?: string;
-//     email?: string;
-//     phone?: string;
-//     query?: string;
-//     userAnswer?: string;
-// }
-
-// interface BrochureFormData {
-//     first_name: string;
-//     email: string;
-//     phone: string;
-//     country: string;
-//     message: string;
-//     interested_in: string;
-// }
-
-// interface BrochureFormErrors {
-//     first_name?: string;
-//     email?: string;
-//     phone?: string;
-//     country?: string;
-//     message?: string;
-//     interested_in?: string;
-// }
-
-// // Generate random BODMAS expression
-// const generateRandomMathExpression = (): { expression: string; correctAnswer: string } => {
-//     const operations = ['+', '-', '*'];
-//     const randomOperation = operations[Math.floor(Math.random() * operations.length)];
-
-//     const num1 = Math.floor(Math.random() * 10) + 1;
-//     const num2 = Math.floor(Math.random() * 10) + 1;
-//     const num3 = Math.floor(Math.random() * 10) + 1;
-
-//     const useParentheses = Math.random() < 0.5;
-//     let expression: string;
-
-//     if (useParentheses) {
-//         expression = `(${num1} ${randomOperation} ${num2}) ${randomOperation} ${num3}`;
-//     } else {
-//         expression = `${num1} ${randomOperation} ${num2} ${randomOperation} ${num3}`;
-//     }
-
-//     const correctAnswer = eval(expression).toFixed(2); // returns string
-//     return { expression, correctAnswer };
-// };
-
-// const Downloads = () => {
-
-//     // Modal for sponsor and exhibitor 
-//     const [showModal8, setShowModal8] = useState<boolean>(false);
-//     const [modalHeading, setModalHeading] = useState<string>('');
-//     const [contactFormData, setContactFormData] = useState<ContactFormData>({
-//         name: '',
-//         email: '',
-//         phone: '',
-//         query: '',
-//         category: ''
-//     });
-//     const [contactFormErrors, setContactFormErrors] = useState<ContactFormErrors>({});
-
-//     const [successModalContent, setSuccessModalContent] = useState<{
-//         heading: string;
-//         query: React.ReactNode;
-//     }>({
-//         heading: '',
-//         query: ''
-//     });
-
-
-
-//     // Modal for Brochure 
-//     const [brochureFormData, setBrochureFormData] = useState<BrochureFormData>({
-//         first_name: '',
-//         email: '',
-//         phone: '',
-//         country: '',
-//         message: '',
-//         interested_in: ''
-//     });
-
-
-//     const [brochureFormErrors, setBrochureFormErrors] = useState<BrochureFormErrors>({});
-//     const [isSubmitting, setIsSubmitting] = useState(false);
-//     const [showModal4, setShowModal4] = useState(false);
-//     const [showModal5, setShowModal5] = useState(false);
-//     const modalRef = useRef<HTMLDivElement | null>(null);
-
-//     // Toggle Modal with dynamic heading and category
-//     const toggleModal2 = (category: string, heading: string): void => {
-//         if (!showModal8) {
-//             const { expression, correctAnswer } = generateRandomMathExpression();
-//             setMathExpression(expression);
-//             setCorrectAnswer(correctAnswer);
-//         }
-
-//         setContactFormData((prevState) => ({
-//             ...prevState,
-//             category, // Set dynamic category
-//         }));
-
-//         setModalHeading(heading); // Set dynamic heading
-//         setShowModal8(true); // Open modal
-//     };
-
-//     const handleCloseContact = (): void => {
-//         setShowModal8(false);
-//     };
-
-//     const handleSuccessModal = (): void => {
-//         setShowModal6(false);
-//     };
-
-//     const validateFormContact = (): ContactFormErrors => {
-//         const errors: ContactFormErrors = {};
-
-
-//         if (!contactFormData.name) {
-//             errors.name = 'Name is required';
-//         }
-
-//         else if (!contactFormData.email) {
-//             errors.email = 'Email address is required';
-//         } else if (!/\S+@\S+\.\S+/.test(contactFormData.email)) {
-//             errors.email = 'Email address is invalid';
-//         }
-
-
-//         else if (!contactFormData.phone) {
-//             errors.phone = 'Phone number is required';
-//         }
-
-//         else if (!contactFormData.query) {
-//             errors.query = 'Message is required';
-//         }
-
-//         else if (!userAnswer) {
-//             errors.userAnswer = 'Anti-spam answer is required';
-//         }
-
-//         return errors;
-//     };
-
-//     const handleSubmitContact = async (event: React.FormEvent<HTMLFormElement>) => {
-//         event.preventDefault();
-//         const errors = validateFormContact();
-
-//         if (Object.keys(errors).length === 0) {
-//             if (parseFloat(userAnswer) !== parseFloat(correctAnswer || '0')) {
-//                 setContactFormErrors({ userAnswer: 'Incorrect answer. Please try again.' });
-//                 toast.error('Incorrect answer. Please try again.');
-
-//                 const answerInput = document.getElementById('userAnswer');
-//                 if (answerInput) answerInput.focus();
-
-//                 return;
-//             }
-
-//             try {
-//                 // const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}`, {
-//                 await axios.post(`${process.env.NEXT_PUBLIC_API_URL}`, {
-//                     module_name: 'enquiry_form',
-//                     keys: {
-//                         data: [contactFormData]
-//                     },
-//                     cid: process.env.NEXT_PUBLIC_CID
-//                 });
-
-//                 setShowModal8(false);
-
-//                 // Set success modal based on category
-//                 setSuccessModalContent({
-//                     heading: contactFormData.category === 'sponsor' ? 'Sponsorships' : 'Exhibitors',
-//                     query: (
-//                         <p>
-//                             For {contactFormData.category} opportunities, please write to{' '}
-//                             <Link href={`mailto:${general.cemail}`} title={general.cemail}>
-//                                 {general.cemail}
-//                             </Link>
-//                         </p>
-//                     )
-//                 });
-//                 setShowModal6(true);
-
-
-//                 // Reset the form
-//                 setContactFormData({
-//                     name: '',
-//                     email: '',
-//                     phone: '',
-//                     query: '',
-//                     category: ''
-//                 });
-//                 setUserAnswer('');
-//                 setContactFormErrors({});
-//                 setError('');
-
-//             } catch (err) {
-//                 console.error('Submission error:', err); // <-- Use the error
-//                 setError('Error submitting form. Please try again later.');
-//                 toast.error('Error submitting form. Please try again later.');
-//             }
-
-//         } else {
-//             setContactFormErrors(errors);
-
-//             const firstErrorField = Object.keys(errors)[0];
-//             const firstErrorMessage = errors[firstErrorField as keyof ContactFormErrors];
-
-//             toast.error(firstErrorMessage || 'Please fill the form correctly.');
-
-//             // Focus the field with the first error
-//             const errorInput = document.getElementById(firstErrorField);
-//             if (errorInput) errorInput.focus();
-//         }
-//     };
-
-//     // Sample PPT download 
-//     const handleDownloadPPT = () => {
-//         const link: HTMLAnchorElement = document.createElement("a");
-//         link.href = "/Sample PPT.pptx"; // File must exist in the public folder
-//         link.setAttribute("download", "Sample PPT.pptx");
-//         document.body.appendChild(link);
-//         link.click();
-//         document.body.removeChild(link);
-//     };
-
-//     // Sample Abstract Download 
-//     const handleDownloadAbstract = () => {
-//         const link: HTMLAnchorElement = document.createElement("a");
-//         link.href = "/Sample Abstract.docx"; // File must exist in the public folder
-//         link.setAttribute("download", "Sample Abstract.docx");
-//         document.body.appendChild(link);
-//         link.click();
-//         document.body.removeChild(link);
-//     };
-
-
-//     // Modal for Download Brochure 
-//     // Function to open the modal
-//     const openBrochureModal = () => {
-//         setShowModal9(true);
-//     };
-
-//     // Function to close the modal
-//     const closeBrochureModal = () => {
-//         setShowModal9(false);
-//         // Store the close time in localStorage
-//         localStorage.setItem("brochureFormClosed", Date.now().toString());
-//     };
-//     const handleSubmitBrochure = async (e: React.FormEvent<HTMLFormElement>) => {
-//         e.preventDefault();
-
-//         // Validate and focus on first invalid field
-//         const focusAndNotify = (field: string, message: string) => {
-//             toast.error(message);
-//             const input = document.querySelector(`input[name="${field}"], textarea[name="${field}"], select[name="${field}"]`) as HTMLElement;
-//             input?.focus();
-//             setBrochureFormErrors({ [field]: message });
-//         };
-
-//         const { first_name, email, phone, country } = brochureFormData;
-
-//         if (!first_name?.trim()) {
-//             focusAndNotify('first_name', 'Name is required');
-//             return;
-//         }
-
-//         if (!email?.trim()) {
-//             focusAndNotify('email', 'Email address is required');
-//             return;
-//         } else if (!/\S+@\S+\.\S+/.test(email)) {
-//             focusAndNotify('email', 'Email address is invalid');
-//             return;
-//         }
-
-//         if (!phone?.trim()) {
-//             focusAndNotify('phone', 'Phone number is required');
-//             return;
-//         }
-
-//         if (!country?.trim()) {
-//             focusAndNotify('country', 'Country is required');
-//             return;
-//         }
-
-//         // Clear any previous errors
-//         setBrochureFormErrors({});
-//         setIsSubmitting(true);
-
-//         try {
-//             const submissionTime = Date.now().toString();
-//             localStorage.setItem("brochureFormSubmitted", submissionTime);
-
-//             const formData = new FormData();
-//             formData.append('website_form', btoa("brochure_download"));
-//             formData.append('cid', btoa(process.env.NEXT_PUBLIC_CID || ''));
-//             formData.append('first_name', btoa(brochureFormData.first_name));
-//             formData.append('last_name', btoa(""));
-//             formData.append('email', btoa(brochureFormData.email));
-//             formData.append('message', btoa(brochureFormData.message));
-//             formData.append('country', btoa(brochureFormData.country));
-//             formData.append('phone', btoa(brochureFormData.phone));
-
-//             const addonInfo = { interested_in: brochureFormData.interested_in };
-//             const additionalInfo = btoa(JSON.stringify(addonInfo));
-//             formData.append('additional_info', additionalInfo);
-
-//             const response = await axios.post('/api/brochure', formData, {
-//                 headers: {
-//                     'Content-Type': 'multipart/form-data',
-//                     'Accept': '*/*',
-//                 },
-//             });
-
-//             if (response.status === 200) {
-//                 handleDownload();
-//                 closeBrochureModal();
-
-//                 setBrochureFormData({
-//                     first_name: '',
-//                     email: '',
-//                     phone: '',
-//                     country: '',
-//                     message: '',
-//                     interested_in: ''
-//                 });
-
-//                 setUserAnswer('');
-//                 setFormErrors({});
-//             } else {
-//                 toast.error('Failed to submit form. Please try again.');
-//             }
-//         } catch (error) {
-//             console.error('Error submitting form:', error);
-//             toast.error('An error occurred. Please try again later.');
-//         } finally {
-//             setIsSubmitting(false);
-//         }
-//     };
-
-
-//     const handleDownload = async () => {
-//         const conferenceName = `${general.clogotext}`;
-//         const brochureFile = `${conferenceName}_Brochure.pdf`;
-//         const brochureURL = `/${brochureFile}`;
-
-//         try {
-//             // Fetch the file first to check if it's available and downloading successfully
-//             const response = await fetch(brochureURL);
-
-//             // Check if the file exists and is downloadable (status code 200)
-//             if (response.ok) {
-//                 // Create a link to download the file
-//                 const link = document.createElement('a');
-//                 link.href = brochureURL;
-//                 link.setAttribute('download', brochureFile);
-//                 document.body.appendChild(link);
-//                 link.click();
-//                 document.body.removeChild(link);
-
-//                 // Show modal after download is initiated successfully
-//                 setShowModal4(true);  // Show success modal
-//             } else {
-//                 // Handle the case where the file does not exist or another error occurs
-//                 console.error("File not found or failed to download");
-//                 setShowModal5(true);  // Show error modal
-//             }
-//         } catch (error) {
-//             console.error("Error downloading the file:", error);
-//             setShowModal5(true);  // Show error modal
-//         }
-//     };
-
-//     const refreshCaptcha = () => {
-//         const { expression, correctAnswer } = generateRandomMathExpression();
-//         setMathExpression(expression);
-//         setCorrectAnswer(correctAnswer);
-//         // Optionally clear input field
-//         // setUserAnswer('');
-//     };
-
-//     return (
-//         <div>
-//             <div className="down_wrap_style wow fadeInUp" data-wow-delay="300ms" data-wow-duration="1000ms">
-//                 <div className="auto-container">
-//                     <div className="row">
-//                         <div className="col-md-10 mar_wrap55">
-//                             <div className="ess_wrap5">
-//                                 <div className="row">
-//                                     <div className="col-md-12">
-//                                         <h3>Essential <span>Downloads</span></h3>
-//                                     </div>
-//                                     <div className="col-md-4">
-//                                         <div className="box_st1">
-//                                             <Image src={edit} className="pol55" alt="Sample PPT" title="Sample PPT" loading="lazy" />
-//                                             <h3>Sample PPT</h3>
-//                                             <button type="button" title="Sample PPT" onClick={handleDownloadPPT}>
-//                                                 Download{" "}
-//                                                 <Image
-//                                                     src={dow}
-//                                                     alt="Sample PPT"
-//                                                     title="Sample PPT"
-//                                                     loading="lazy"
-//                                                 />
-//                                             </button>
-//                                         </div>
-//                                         <div className="blue_wrap55"></div>
-//                                     </div>
-
-//                                     <div className="col-md-4">
-//                                         <div className="box_st1">
-//                                             <Image src={edit} className="pol55" alt="Brochure" title="Brochure" loading="lazy" />
-//                                             <h3>Brochure</h3>
-//                                             <button type='button' title={`${general.clogotext}_Brochure`}
-//                                                 onClick={openBrochureModal}
-//                                             >Download <Image src={dow}
-//                                                 alt={`${general.clogotext}_Brochure`} title={`${general.clogotext}_Brochure`} loading="lazy" /></button>
-//                                         </div>
-//                                         <div className="blue_wrap55"></div>
-//                                     </div>
-
-//                                     <div className="col-md-4">
-//                                         <div className="box_st1">
-//                                             <Image src={edit} className="pol55" alt="Sample Abstract" title="Sample Abstract" loading="lazy" />
-//                                             <h3>Sample Abstract</h3>
-
-//                                             <button type='button' title="Sample Abstract" onClick={handleDownloadAbstract}>Download{" "}<Image src={dow}
-//                                                 alt="Sample Abstract" title="Sample Abstract" loading="lazy" /></button>
-//                                         </div>
-//                                         <div className="blue_wrap55"></div>
-//                                     </div>
-
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </div>
-
-//             {showModal6 && (
-//                 <div className="modal" id="myModal" role="dialog">
-//                     <div className="modal-dialog modal-confirm fade-in" role="document" ref={modalRef}>
-//                         <div className="modal-content">
-//                             <div className="modal-header">
-//                                 <div className="icon-box">
-//                                     <i className="bx bx-envelope" style={{ marginBottom: "35px" }}></i>
-//                                 </div>
-//                                 <h4 className="modal-title w-100">{successModalContent.heading}</h4>
-//                                 {successModalContent.query}
-//                             </div>
-
-//                             <div className="modal-footer">
-//                                 <button type="button" className="btn btn-success btn-block" onClick={handleSuccessModal}>OK</button>
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>
-//             )}
-
-
-//             {showModal8 && (
-//                 <div className="modal2" id="myModal" role="dialog">
-//                     <div className="modal-dialog2 modal-confirm fade-in" role="document">
-//                         <div className="modal-content2">
-//                             <div className="modal-header">
-//                                 <div className="icon-box">
-//                                     <i className="bx bx-envelope" style={{ marginBottom: "35px" }}></i>
-//                                 </div>
-//                                 <h4 className="modal-title w-100">{modalHeading}</h4> {/* Dynamic Heading */}
-//                                 <button type="button" className="close" onClick={handleCloseContact} style={{ fontSize: "30px" }}>
-//                                     &times;
-//                                 </button>
-//                             </div>
-//                             <div className="modal-body">
-//                                 <form
-//                                     onSubmit={handleSubmitContact}
-//                                 >
-//                                     <div className="row">
-//                                         <div className="d-flex name-info">
-//                                             <div className="col-6 test">
-//                                                 <label>Fullname:*</label>
-//                                                 <input
-//                                                     id="name"
-//                                                     name="name"
-//                                                     type="text"
-//                                                     placeholder="Enter first name"
-//                                                     value={contactFormData.name}
-//                                                     onChange={(e) => setContactFormData({ ...contactFormData, name: e.target.value })}
-//                                                 />
-//                                                 {contactFormErrors.name && <p style={{ color: 'red', textAlign: 'left' }}>{contactFormErrors.name}</p>}
-//                                             </div>
-//                                             <div className="col-6 test2">
-//                                                 <label>Email Address:*</label>
-//                                                 <input
-//                                                     id="email"
-//                                                     name="email"
-//                                                     type="text"
-//                                                     placeholder="Enter email"
-//                                                     value={contactFormData.email}
-//                                                     onChange={(e) => setContactFormData({ ...contactFormData, email: e.target.value })}
-//                                                 />
-//                                                 {contactFormErrors.email && <p style={{ color: 'red', textAlign: 'left' }}>{contactFormErrors.email}</p>}
-//                                             </div>
-//                                         </div>
-//                                         <div className='d-flex name-info'>
-//                                             <div className='col-6 test'>
-//                                                 <label>Phone Number:*</label>
-//                                                 <input
-//                                                     id="phone"
-//                                                     name="phone"
-//                                                     type='text'
-//                                                     placeholder='Enter phone number'
-//                                                     value={contactFormData.phone}
-//                                                     onChange={(e) => setContactFormData({ ...contactFormData, phone: e.target.value })}
-//                                                 />
-//                                                 {contactFormErrors.phone && <p style={{ color: 'red', textAlign: 'left' }}>{contactFormErrors.phone}</p>}
-//                                             </div>
-//                                             <div className='col-6 test2'>
-//                                                 <label>Message:*</label>
-//                                                 <textarea
-//                                                     id="query"
-//                                                     name="query"
-//                                                     placeholder='Enter your message'
-//                                                     value={contactFormData.query}
-//                                                     onChange={(e) => setContactFormData({ ...contactFormData, query: e.target.value })}
-
-//                                                 ></textarea>
-//                                                 {contactFormErrors.query && <p style={{ color: 'red', textAlign: 'left' }}>{contactFormErrors.query}</p>}
-//                                             </div>
-//                                         </div>
-//                                         <div className='col-12'>
-//                                             <p>Verify you’re human: What is <b>{mathExpression}</b> ?</p>
-//                                             <input
-//                                                 id="userAnswer"
-//                                                 name="userAnswer"
-//                                                 type='text'
-//                                                 placeholder='Enter your answer'
-//                                                 value={userAnswer}
-//                                                 onChange={(e) => setUserAnswer(e.target.value)}
-//                                             />
-//                                             {contactFormErrors.userAnswer && <p style={{ color: 'red', textAlign: 'left' }}>{contactFormErrors.userAnswer}</p>}
-//                                             <button type="button" title='Refresh Captcha' onClick={refreshCaptcha} className="btn btn-secondary mt-2">Refresh Captcha</button>
-//                                         </div>
-//                                         <input type="hidden" name="category" value={contactFormData.category || "joinourcommunity"} />
-//                                     </div>
-//                                     <div className="modal-footer">
-//                                         <button type="submit" title="Submit" className="btn btn-success btn-block">Submit</button>
-//                                     </div>
-//                                 </form>
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>
-//             )}
-//         </div>
-//     )
-// }
-
-// export default Downloads
+"use client";
+import React, { useState, useRef } from 'react'
+import { toast } from 'react-toastify';
+// import axios from 'axios';
+// import Link from 'next/link';
+import Image from 'next/image';
+import { ApiResponse } from '@/types';
+
+
+// Images 
+import edit from '../../../public/images/images/edit.png';
+import dow from '../../../public/images/images/dow.png';
+
+
+interface BrochureFormData {
+    first_name: string;
+    email: string;
+    phone: string;
+    country: string;
+    message: string;
+    interested_in: string;
+}
+
+interface BrochureFormErrors {
+    first_name?: string;
+    email?: string;
+    phone?: string;
+    country?: string;
+    message?: string;
+    interested_in?: string;
+    [key: string]: string | undefined; // Add this line
+}
+
+interface DownloadsProps {
+    generalDownloadsInfo: ApiResponse;
+}
+
+const Downloads: React.FC<DownloadsProps> = ({ generalDownloadsInfo }) => {
+
+
+    const general = generalDownloadsInfo?.data || {}
+
+
+    // Modal for Brochure 
+    const [brochureFormData, setBrochureFormData] = useState<BrochureFormData>({
+        first_name: '',
+        email: '',
+        phone: '',
+        country: '',
+        message: '',
+        interested_in: 'Oral Presentation'
+    });
+    const [brochureFormErrors, setBrochureFormErrors] = useState<BrochureFormErrors>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    // const [userAnswer, setUserAnswer] = useState('');
+    const [showModal9, setShowModal9] = useState(false);
+    const [showModal4, setShowModal4] = useState(false);
+    const [showModal5, setShowModal5] = useState(false);
+    const modalRef = useRef<HTMLDivElement | null>(null);
+
+    const nameRef = useRef<HTMLInputElement>(null);
+    const emailRef = useRef<HTMLInputElement>(null);
+    const phoneRef = useRef<HTMLInputElement>(null);
+    const countryRef = useRef<HTMLSelectElement>(null);
+    const interestedInRef = useRef<HTMLSelectElement>(null);
+
+    // Sample PPT download 
+    const handleDownloadPPT = () => {
+        const link: HTMLAnchorElement = document.createElement("a");
+        link.href = "/Sample PPT.pptx"; // File must exist in the public folder
+        link.setAttribute("download", "Sample PPT.pptx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    // Sample Abstract Download 
+    const handleDownloadAbstract = () => {
+        const link: HTMLAnchorElement = document.createElement("a");
+        link.href = "/Sample Abstract.docx"; // File must exist in the public folder
+        link.setAttribute("download", "Sample Abstract.docx");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    // Modal for Download Brochure 
+    const openBrochureModal = () => {
+        setShowModal9(true);
+    };
+
+    // Function to close the modal
+    const closeBrochureModal = () => {
+        setShowModal9(false);
+        // Store the close time in localStorage
+        localStorage.setItem("brochureFormClosed", Date.now().toString());
+    };
+
+    const handleSuccess = (): void => {
+        setShowModal4(false);
+        setShowModal5(false);
+    };
+
+    const handleSubmitBrochure = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        const errors = validateBrochureForm(brochureFormData);
+
+        if (Object.keys(errors).length > 0) {
+            setBrochureFormErrors(errors);
+
+            const firstErrorField = Object.keys(errors)[0];
+            const firstErrorMessage = errors[firstErrorField as keyof BrochureFormErrors];
+            toast.error(firstErrorMessage);
+
+            switch (firstErrorField) {
+                case 'first_name':
+                    nameRef.current?.focus(); break;
+                case 'email':
+                    emailRef.current?.focus(); break;
+                case 'phone':
+                    phoneRef.current?.focus(); break;
+                case 'country':
+                    countryRef.current?.focus(); break;
+            }
+            return;
+        }
+
+        setBrochureFormErrors({});
+        setIsSubmitting(true);
+
+        try {
+            localStorage.setItem('brochureFormSubmitted', Date.now().toString());
+
+            // Encode payload values using btoa
+            const payload = {
+                first_name: btoa(brochureFormData.first_name.trim()),
+                email: btoa(brochureFormData.email.trim()),
+                phone: btoa(brochureFormData.phone.trim()),
+                country: btoa(brochureFormData.country.trim()),
+                message: btoa(brochureFormData.message.trim()),
+                interested_in: btoa(brochureFormData.interested_in.trim()),
+            };
+
+            const response = await fetch('/api/brochure', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            if (response.ok) {
+                handleDownload();
+                closeBrochureModal();
+
+                setBrochureFormData({
+                    first_name: '',
+                    email: '',
+                    phone: '',
+                    country: '',
+                    message: '',
+                    interested_in: '',
+                });
+
+                // setUserAnswer('');
+                setBrochureFormErrors({});
+            } else {
+                toast.error('Failed to submit form. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            toast.error('An error occurred. Please try again later.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const validateBrochureForm = (data: typeof brochureFormData): BrochureFormErrors => {
+        const errors: BrochureFormErrors = {};
+
+        if (!data.first_name?.trim()) {
+            errors.first_name = 'Name is required';
+        }
+
+        else if (!data.email?.trim()) {
+            errors.email = 'Email address is required';
+        } else if (!/\S+@\S+\.\S+/.test(data.email)) {
+            errors.email = 'Email address is invalid';
+        }
+
+        else if (!data.phone?.trim()) {
+            errors.phone = 'Phone number is required';
+        }
+
+        else if (!data.country?.trim()) {
+            errors.country = 'Country is required';
+        }
+
+        return errors;
+    };
+
+    // const handleSubmitBrochure = async (e: React.FormEvent<HTMLFormElement>) => {
+    //     e.preventDefault();
+
+    //     const errors = validateBrochureForm(brochureFormData);
+
+    //     if (Object.keys(errors).length > 0) {
+    //         setBrochureFormErrors(errors);
+
+    //         // Show toast for the first error only
+    //         const firstErrorField = Object.keys(errors)[0];
+    //         const firstErrorMessage = errors[firstErrorField as keyof BrochureFormErrors];
+
+    //         toast.error(firstErrorMessage);
+
+    //         // Auto-focus the corresponding input
+    //         switch (firstErrorField) {
+    //             case 'first_name':
+    //                 nameRef.current?.focus();
+    //                 break;
+    //             case 'email':
+    //                 emailRef.current?.focus();
+    //                 break;
+    //             case 'phone':
+    //                 phoneRef.current?.focus();
+    //                 break;
+    //             case 'country':
+    //                 countryRef.current?.focus();
+    //                 break;
+    //         }
+
+    //         return;
+    //     }
+
+    //     // No errors, continue submission
+    //     setBrochureFormErrors({});
+    //     setIsSubmitting(true);
+
+    //     try {
+    //         const res = await axios.post('/api/brochure', brochureFormData);
+
+    //         if (res.status === 200) {
+    //             handleDownload();
+    //             closeBrochureModal();
+
+    //             setBrochureFormData({
+    //                 first_name: '',
+    //                 email: '',
+    //                 phone: '',
+    //                 country: '',
+    //                 message: '',
+    //                 interested_in: '',
+    //             });
+
+    //             setUserAnswer('');
+    //             setBrochureFormErrors({});
+    //         } else {
+    //             toast.error('Failed to submit form. Please try again.');
+    //         }
+    //     } catch (error) {
+    //         console.error('Error submitting form:', error);
+    //         toast.error('An error occurred. Please try again later.');
+    //     } finally {
+    //         setIsSubmitting(false);
+    //     }
+    // };
+
+    const handleDownload = async () => {
+        const conferenceName = `${general.clogotext}`;
+        const brochureFile = `${conferenceName}_Brochure.pdf`;
+        const brochureURL = `/${brochureFile}`;
+
+        try {
+            // Fetch the file first to check if it's available and downloading successfully
+            const response = await fetch(brochureURL);
+
+            // Check if the file exists and is downloadable (status code 200)
+            if (response.ok) {
+                // Create a link to download the file
+                const link = document.createElement('a');
+                link.href = brochureURL;
+                link.setAttribute('download', brochureFile);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Show modal after download is initiated successfully
+                setShowModal4(true);  // Show success modal
+            } else {
+                // Handle the case where the file does not exist or another error occurs
+                console.error("File not found or failed to download");
+                setShowModal5(true);  // Show error modal
+            }
+        } catch (error) {
+            console.error("Error downloading the file:", error);
+            setShowModal5(true);  // Show error modal
+        }
+    };
+
+
+    // const refreshCaptcha = () => {
+    //     const { expression, correctAnswer } = generateRandomMathExpression();
+    //     setMathExpression(expression);
+    //     setCorrectAnswer(correctAnswer);
+    //     // Optionally clear input field
+    //     // setUserAnswer('');
+    // };
+
+    return (
+        <div>
+            <div className="down_wrap_style wow fadeInUp" data-wow-delay="300ms" data-wow-duration="1000ms">
+                <div className="auto-container">
+                    <div className="row">
+                        <div className="col-md-10 mar_wrap55">
+                            <div className="ess_wrap5">
+                                <div className="row">
+                                    <div className="col-md-12">
+                                        <h3>Essential <span>Downloads</span></h3>
+                                    </div>
+                                    <div className="col-md-4">
+                                        <div className="box_st1">
+                                            <Image src={edit} className="pol55" alt="Sample PPT" title="Sample PPT" loading="lazy" />
+                                            <h3>Sample PPT</h3>
+                                            <button type="button" title="Sample PPT" onClick={handleDownloadPPT}>
+                                                Download{" "}
+                                                <Image
+                                                    src={dow}
+                                                    alt="Sample PPT"
+                                                    title="Sample PPT"
+                                                    loading="lazy"
+                                                />
+                                            </button>
+                                        </div>
+                                        <div className="blue_wrap55"></div>
+                                    </div>
+
+                                    <div className="col-md-4">
+                                        <div className="box_st1">
+                                            <Image src={edit} className="pol55" alt="Brochure" title="Brochure" loading="lazy" />
+                                            <h3>Brochure</h3>
+                                            <button type='button' title={`${general.clogotext}_Brochure`}
+                                                onClick={openBrochureModal}
+                                            >Download <Image src={dow}
+                                                alt={`${general.clogotext}_Brochure`} title={`${general.clogotext}_Brochure`} loading="lazy" /></button>
+                                        </div>
+                                        <div className="blue_wrap55"></div>
+                                    </div>
+
+                                    <div className="col-md-4">
+                                        <div className="box_st1">
+                                            <Image src={edit} className="pol55" alt="Sample Abstract" title="Sample Abstract" loading="lazy" />
+                                            <h3>Sample Abstract</h3>
+
+                                            <button type='button' title="Sample Abstract" onClick={handleDownloadAbstract}>Download{" "}<Image src={dow}
+                                                alt="Sample Abstract" title="Sample Abstract" loading="lazy" /></button>
+                                        </div>
+                                        <div className="blue_wrap55"></div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {showModal9 && (
+                <div className="modal2 brochure-form-modal" id="myModal" role="dialog">
+                    <div className="modal-dialog2 modal-confirm fade-in" role="document">
+                        <div className="modal-content2">
+                            <div className="modal-header">
+                                <div className="icon-box">
+                                    <i className="bx bx-file" style={{ marginBottom: "35px" }}></i>
+                                </div>
+                                <h4 className="modal-title w-100">Download Brochure</h4>
+                                <button type="button" className="close" onClick={closeBrochureModal} style={{ fontSize: "30px" }}>
+                                    &times;
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <form
+                                    onSubmit={handleSubmitBrochure}
+                                >
+                                    <div className="row">
+                                        <div className="d-flex name-info">
+                                            <div className="col-6 test">
+                                                <label>Name:*</label>
+                                                <input
+                                                    type="text"
+                                                    name="first_name"
+                                                    ref={nameRef}
+                                                    placeholder="Enter name"
+                                                    value={brochureFormData.first_name}
+                                                    onChange={(e) => setBrochureFormData({ ...brochureFormData, first_name: e.target.value })}
+                                                    disabled={isSubmitting} // Disable field during submission
+                                                />
+                                                {brochureFormErrors.first_name && <p style={{ color: 'red', textAlign: 'left' }}>{brochureFormErrors.first_name}</p>}
+                                            </div>
+                                            <div className="col-6 test2">
+                                                <label>Email Address:*</label>
+                                                <input
+                                                    type="text"
+                                                    name="email"
+                                                    ref={emailRef}
+                                                    placeholder="Enter email"
+                                                    value={brochureFormData.email}
+                                                    onChange={(e) => setBrochureFormData({ ...brochureFormData, email: e.target.value })}
+                                                    disabled={isSubmitting} // Disable field during submission
+                                                />
+                                                {brochureFormErrors.email && <p style={{ color: 'red', textAlign: 'left' }}>{brochureFormErrors.email}</p>}
+                                            </div>
+                                        </div>
+                                        <div className='d-flex name-info'>
+                                            <div className='col-6 test'>
+                                                <label>Phone Number:*</label>
+                                                <input
+                                                    type='text'
+                                                    name="phone"
+                                                    ref={phoneRef}
+                                                    placeholder='Enter phone number'
+                                                    value={brochureFormData.phone}
+                                                    onChange={(e) => setBrochureFormData({ ...brochureFormData, phone: e.target.value })}
+                                                    disabled={isSubmitting} // Disable field during submission
+                                                />
+                                                {brochureFormErrors.phone && <p style={{ color: 'red', textAlign: 'left' }}>{brochureFormErrors.phone}</p>}
+                                            </div>
+                                            <div className='col-6 test2 country-drop'>
+                                                <label>Country:*</label>
+                                                <div className='country-drop-block'>
+                                                    <select
+                                                        className="set156"
+                                                        name="country"
+                                                        ref={countryRef}
+                                                        value={brochureFormData.country}
+                                                        onChange={(e) => setBrochureFormData({ ...brochureFormData, country: e.target.value })}
+                                                        disabled={isSubmitting} // Disable field during submission
+                                                    >
+                                                        <option value="">Select Country</option>
+                                                        <option value="Afghanistan">Afghanistan</option>
+                                                        <option value="Albania">Albania</option>
+                                                        <option value="Algeria">Algeria</option>
+                                                        <option value="American Samoa">American Samoa</option>
+                                                        <option value="Andorra">Andorra</option>
+                                                        <option value="Angola">Angola</option>
+                                                        <option value="Anguilla">Anguilla</option>
+                                                        <option value="Antarctica">Antarctica</option>
+                                                        <option value="Antigua and Barbuda">Antigua and Barbuda</option>
+                                                        <option value="Argentina">Argentina</option>
+                                                        <option value="Armenia">Armenia</option>
+                                                        <option value="Aruba">Aruba</option>
+                                                        <option value="Australia">Australia</option>
+                                                        <option value="Austria">Austria</option>
+                                                        <option value="Azerbaijan">Azerbaijan</option>
+                                                        <option value="Bahamas">Bahamas</option>
+                                                        <option value="Bahrain">Bahrain</option>
+                                                        <option value="Bangladesh">Bangladesh</option>
+                                                        <option value="Barbados">Barbados</option>
+                                                        <option value="Belarus">Belarus</option>
+                                                        <option value="Belgium">Belgium</option>
+                                                        <option value="Belize">Belize</option>
+                                                        <option value="Benin">Benin</option>
+                                                        <option value="Bermuda">Bermuda</option>
+                                                        <option value="Bhutan">Bhutan</option>
+                                                        <option value="Bolivia">Bolivia</option>
+                                                        <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+                                                        <option value="Botswana">Botswana</option>
+                                                        <option value="Bouvet Island">Bouvet Island</option>
+                                                        <option value="Brazil">Brazil</option>
+                                                        <option value="British Indian Ocean Territory">British Indian Ocean Territory</option>
+                                                        <option value="Brunei Darussalam">Brunei Darussalam</option>
+                                                        <option value="Bulgaria">Bulgaria</option>
+                                                        <option value="Burkina Faso">Burkina Faso</option>
+                                                        <option value="Burundi">Burundi</option>
+                                                        <option value="Cambodia">Cambodia</option>
+                                                        <option value="Cameroon">Cameroon</option>
+                                                        <option value="Canada">Canada</option>
+                                                        <option value="Cape Verde">Cape Verde</option>
+                                                        <option value="Cayman Islands">Cayman Islands</option>
+                                                        <option value="Central African Republic">Central African Republic</option>
+                                                        <option value="Chad">Chad</option>
+                                                        <option value="Chile">Chile</option>
+                                                        <option value="China">China</option>
+                                                        <option value="Christmas Island">Christmas Island</option>
+                                                        <option value="Cocos (Keeling) Islands">Cocos (Keeling) Islands</option>
+                                                        <option value="Colombia">Colombia</option>
+                                                        <option value="Comoros">Comoros</option>
+                                                        <option value="Congo">Congo</option>
+                                                        <option value="Congo, the Democratic Republic of the">Congo, the Democratic Republic of the</option>
+                                                        <option value="Cook Islands">Cook Islands</option>
+                                                        <option value="Costa Rica">Costa Rica</option>
+                                                        {/* <option value="Cote d'Ivoire">Cote d'Ivoire</option> */}
+                                                        <option value="Croatia">Croatia</option>
+                                                        <option value="Cuba">Cuba</option>
+                                                        <option value="Cyprus">Cyprus</option>
+                                                        <option value="Czech Republic">Czech Republic</option>
+                                                        <option value="Denmark">Denmark</option>
+                                                        <option value="Djibouti">Djibouti</option>
+                                                        <option value="Dominica">Dominica</option>
+                                                        <option value="Dominican Republic">Dominican Republic</option>
+                                                        <option value="East Timor">East Timor</option>
+                                                        <option value="Ecuador">Ecuador</option>
+                                                        <option value="Egypt">Egypt</option>
+                                                        <option value="El Salvador">El Salvador</option>
+                                                        <option value="Equatorial Guinea">Equatorial Guinea</option>
+                                                        <option value="Eritrea">Eritrea</option>
+                                                        <option value="Estonia">Estonia</option>
+                                                        <option value="Ethiopia">Ethiopia</option>
+                                                        <option value="Falkland Islands (Malvinas)">Falkland Islands (Malvinas)</option>
+                                                        <option value="Faroe Islands">Faroe Islands</option>
+                                                        <option value="Fiji">Fiji</option>
+                                                        <option value="Finland">Finland</option>
+                                                        <option value="France">France</option>
+                                                        <option value="French Guiana">French Guiana</option>
+                                                        <option value="French Polynesia">French Polynesia</option>
+                                                        <option value="French Southern Territories">French Southern Territories</option>
+                                                        <option value="Gabon">Gabon</option>
+                                                        <option value="Gambia">Gambia</option>
+                                                        <option value="Georgia">Georgia</option>
+                                                        <option value="Germany">Germany</option>
+                                                        <option value="Ghana">Ghana</option>
+                                                        <option value="Gibraltar">Gibraltar</option>
+                                                        <option value="Greece">Greece</option>
+                                                        <option value="Greenland">Greenland</option>
+                                                        <option value="Grenada">Grenada</option>
+                                                        <option value="Guadeloupe">Guadeloupe</option>
+                                                        <option value="Guam">Guam</option>
+                                                        <option value="Guatemala">Guatemala</option>
+                                                        <option value="Guinea">Guinea</option>
+                                                        <option value="Guinea-Bissau">Guinea-Bissau</option>
+                                                        <option value="Guyana">Guyana</option>
+                                                        <option value="Haiti">Haiti</option>
+                                                        <option value="Heard and McDonald Islands">Heard and McDonald Islands</option>
+                                                        <option value="Honduras">Honduras</option>
+                                                        <option value="Hong Kong">Hong Kong</option>
+                                                        <option value="Hungary">Hungary</option>
+                                                        <option value="Iceland">Iceland</option>
+                                                        <option value="India">India</option>
+                                                        <option value="Indonesia">Indonesia</option>
+                                                        <option value="Iran">Iran</option>
+                                                        <option value="Iraq">Iraq</option>
+                                                        <option value="Ireland">Ireland</option>
+                                                        <option value="Israel">Israel</option>
+                                                        <option value="Italy">Italy</option>
+                                                        <option value="Jamaica">Jamaica</option>
+                                                        <option value="Japan">Japan</option>
+                                                        <option value="Jordan">Jordan</option>
+                                                        <option value="Kazakhstan">Kazakhstan</option>
+                                                        <option value="Kenya">Kenya</option>
+                                                        <option value="Kiribati">Kiribati</option>
+                                                        {/* <option value="Korea, Democratic People's Republic of">Korea, Democratic People's Republic of</option> */}
+                                                        <option value="Korea, Republic of">Korea, Republic of</option>
+                                                        <option value="Kuwait">Kuwait</option>
+                                                        <option value="Kyrgyzstan">Kyrgyzstan</option>
+                                                        <option value="Lao">Lao</option>
+                                                        <option value="Latvia">Latvia</option>
+                                                        <option value="Lebanon">Lebanon</option>
+                                                        <option value="Lesotho">Lesotho</option>
+                                                        <option value="Liberia">Liberia</option>
+                                                        <option value="Libya">Libya</option>
+                                                        <option value="Liechtenstein">Liechtenstein</option>
+                                                        <option value="Lithuania">Lithuania</option>
+                                                        <option value="Luxembourg">Luxembourg</option>
+                                                        <option value="Macau">Macau</option>
+                                                        <option value="North Macedonia">North Macedonia</option>
+                                                        <option value="Madagascar">Madagascar</option>
+                                                        <option value="Malawi">Malawi</option>
+                                                        <option value="Malaysia">Malaysia</option>
+                                                        <option value="Maldives">Maldives</option>
+                                                        <option value="Mali">Mali</option>
+                                                        <option value="Malta">Malta</option>
+                                                        <option value="Marshall Islands">Marshall Islands</option>
+                                                        <option value="Martinique">Martinique</option>
+                                                        <option value="Mauritania">Mauritania</option>
+                                                        <option value="Mauritius">Mauritius</option>
+                                                        <option value="Mayotte">Mayotte</option>
+                                                        <option value="Mexico">Mexico</option>
+                                                        <option value="Micronesia">Micronesia</option>
+                                                        <option value="Moldova">Moldova</option>
+                                                        <option value="Monaco">Monaco</option>
+                                                        <option value="Mongolia">Mongolia</option>
+                                                        <option value="Montserrat">Montserrat</option>
+                                                        <option value="Morocco">Morocco</option>
+                                                        <option value="Mozambique">Mozambique</option>
+                                                        <option value="Myanmar">Myanmar</option>
+                                                        <option value="Namibia">Namibia</option>
+                                                        <option value="Nauru">Nauru</option>
+                                                        <option value="Nepal">Nepal</option>
+                                                        <option value="Netherlands">Netherlands</option>
+                                                        <option value="Netherlands Antilles">Netherlands Antilles</option>
+                                                        <option value="New Caledonia">New Caledonia</option>
+                                                        <option value="New Zealand">New Zealand</option>
+                                                        <option value="Nicaragua">Nicaragua</option>
+                                                        <option value="Niger">Niger</option>
+                                                        <option value="Nigeria">Nigeria</option>
+                                                        <option value="Niue">Niue</option>
+                                                        <option value="Norfolk Island">Norfolk Island</option>
+                                                        <option value="Northern Mariana Islands">Northern Mariana Islands</option>
+                                                        <option value="Norway">Norway</option>
+                                                        <option value="Oman">Oman</option>
+                                                        <option value="Pakistan">Pakistan</option>
+                                                        <option value="Palau">Palau</option>
+                                                        <option value="Panama">Panama</option>
+                                                        <option value="Papua New Guinea">Papua New Guinea</option>
+                                                        <option value="Paraguay">Paraguay</option>
+                                                        <option value="Peru">Peru</option>
+                                                        <option value="Philippines">Philippines</option>
+                                                        <option value="Pitcairn">Pitcairn</option>
+                                                        <option value="Poland">Poland</option>
+                                                        <option value="Portugal">Portugal</option>
+                                                        <option value="Puerto Rico">Puerto Rico</option>
+                                                        <option value="Qatar">Qatar</option>
+                                                        <option value="Reunion">Reunion</option>
+                                                        <option value="Romania">Romania</option>
+                                                        <option value="Russian Federation">Russian Federation</option>
+                                                        <option value="Rwanda">Rwanda</option>
+                                                        <option value="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
+                                                        <option value="Saint Lucia">Saint Lucia</option>
+                                                        <option value="Saint Pierre and Miquelon">Saint Pierre and Miquelon</option>
+                                                        <option value="Saint Vincent and the Grenadines">Saint Vincent and the Grenadines</option>
+                                                        <option value="Samoa">Samoa</option>
+                                                        <option value="San Marino">San Marino</option>
+                                                        <option value="Sao Tome and Principe">Sao Tome and Principe</option>
+                                                        <option value="Saudi Arabia">Saudi Arabia</option>
+                                                        <option value="Senegal">Senegal</option>
+                                                        <option value="Serbia and Montenegro">Serbia and Montenegro</option>
+                                                        <option value="Seychelles">Seychelles</option>
+                                                        <option value="Sierra Leone">Sierra Leone</option>
+                                                        <option value="Singapore">Singapore</option>
+                                                        <option value="Sint Maarten (Dutch part)">Sint Maarten (Dutch part)</option>
+                                                        <option value="Slovakia">Slovakia</option>
+                                                        <option value="Slovenia">Slovenia</option>
+                                                        <option value="Solomon Islands">Solomon Islands</option>
+                                                        <option value="Somalia">Somalia</option>
+                                                        <option value="South Africa">South Africa</option>
+                                                        <option value="South Georgia and the South Sandwich Islands">South Georgia and the South Sandwich Islands</option>
+                                                        <option value="South Sudan">South Sudan</option>
+                                                        <option value="Spain">Spain</option>
+                                                        <option value="Sri Lanka">Sri Lanka</option>
+                                                        <option value="St. Helena">St. Helena</option>
+                                                        <option value="St. Pierre and Miquelon">St. Pierre and Miquelon</option>
+                                                        <option value="Sudan">Sudan</option>
+                                                        <option value="Suriname">Suriname</option>
+                                                        <option value="Svalbard and Jan Mayen">Svalbard and Jan Mayen</option>
+                                                        <option value="Sweden">Sweden</option>
+                                                        <option value="Switzerland">Switzerland</option>
+                                                        <option value="Syrian Arab Republic">Syrian Arab Republic</option>
+                                                        <option value="Taiwan">Taiwan</option>
+                                                        <option value="Tajikistan">Tajikistan</option>
+                                                        <option value="Tanzania">Tanzania</option>
+                                                        <option value="Thailand">Thailand</option>
+                                                        <option value="Togo">Togo</option>
+                                                        <option value="Tokelau">Tokelau</option>
+                                                        <option value="Tonga">Tonga</option>
+                                                        <option value="Trinidad and Tobago">Trinidad and Tobago</option>
+                                                        <option value="Tunisia">Tunisia</option>
+                                                        <option value="Turkey">Turkey</option>
+                                                        <option value="Turkmenistan">Turkmenistan</option>
+                                                        <option value="Tuvalu">Tuvalu</option>
+                                                        <option value="Uganda">Uganda</option>
+                                                        <option value="Ukraine">Ukraine</option>
+                                                        <option value="United Arab Emirates">United Arab Emirates</option>
+                                                        <option value="United Kingdom">United Kingdom</option>
+                                                        <option value="United States of America">United States of America</option>
+                                                        <option value="Uruguay">Uruguay</option>
+                                                        <option value="Uzbekistan">Uzbekistan</option>
+                                                        <option value="Vanuatu">Vanuatu</option>
+                                                        <option value="Vatican City State">Vatican City State</option>
+                                                        <option value="Venezuela">Venezuela</option>
+                                                        <option value="Viet Nam">Viet Nam</option>
+                                                        <option value="Western Sahara">Western Sahara</option>
+                                                        <option value="Yemen">Yemen</option>
+                                                        <option value="Zaire">Zaire</option>
+                                                        <option value="Zambia">Zambia</option>
+                                                        <option value="Zimbabwe">Zimbabwe</option>
+                                                    </select>
+                                                </div>
+                                                {brochureFormErrors.country && <p style={{ color: 'red', textAlign: 'left' }}>{brochureFormErrors.country}</p>}
+                                            </div>
+                                        </div>
+                                        <div className='d-flex name-info'>
+                                            <div className='col-6 test country-drop'>
+                                                <label>Interested In:*</label>
+                                                <div className='country-drop-block'>
+                                                    <select
+                                                        className="set156"
+                                                        name="interested_in"
+                                                        ref={interestedInRef}
+                                                        value={brochureFormData.interested_in}
+                                                        onChange={(e) => setBrochureFormData({ ...brochureFormData, interested_in: e.target.value })}
+                                                        disabled={isSubmitting} // Disable field during submission
+                                                    >
+                                                        <option value="Oral Presentation">Oral Presentation</option>
+                                                        <option value="Poster Presentation">Poster Presentation</option>
+                                                        <option value="Delegate (Participation)">Delegate (Participation)</option>
+                                                        <option value="Volunteer">Volunteer</option>
+                                                        <option value="Other">Other</option>
+                                                    </select>
+                                                </div>
+                                                {brochureFormErrors.interested_in && <p style={{ color: 'red', textAlign: 'left' }}>{brochureFormErrors.interested_in}</p>}
+                                            </div>
+                                            <div className='col-6 test2'>
+                                                <label>Query (Optional):</label>
+
+                                                <textarea
+                                                    placeholder="Enter Your Query"
+                                                    value={brochureFormData.message}
+                                                    onChange={(e) => setBrochureFormData({ ...brochureFormData, message: e.target.value })}
+                                                    disabled={isSubmitting} // Disable field during submission
+                                                />
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div className="modal-footer">
+                                        <button
+                                            type="submit"
+                                            title={isSubmitting ? 'Please wait' : 'Proceed'}
+                                            className="btn btn-success btn-block"
+                                            disabled={isSubmitting} // Disable button during submission
+                                        >
+                                            {isSubmitting ? 'Please wait' : 'Proceed'}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showModal4 && (
+                <div className="modal" id="myModal" role="dialog">
+                    <div className="modal-dialog modal-confirm fade-in" role="document" ref={modalRef}>
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <div className="icon-box">
+                                    <i className="material-icons" style={{ marginBottom: "35px" }}>&#10003;</i>
+                                </div>
+                                <h4 className="modal-title w-100">Brochure downloading..!</h4>
+                                <p>Thank you for your interest. If you have any questions, feel free to reach out to us. </p>
+                            </div>
+
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-success btn-block" onClick={handleSuccess}>OK</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {showModal5 && (
+                <div className="modal" id="myModal2" role="dialog">
+                    <div className="modal-dialog modal-confirm fade-in" role="document" ref={modalRef}>
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <div className="icon-box">
+                                    <i className="bx bx-x" style={{ marginBottom: "35px" }}></i>
+                                </div>
+                                <h4 className="modal-title w-100">Failed to Download</h4>
+                                <p>An error occurred while downloading. Please try again later.</p>
+                            </div>
+
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-success btn-block" onClick={handleSuccess}>OK</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+        </div>
+    )
+}
+
+export default Downloads
