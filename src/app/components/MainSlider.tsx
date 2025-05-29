@@ -182,7 +182,6 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
             }
 
             try {
-                // const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}`, {
                 await axios.post('/api/contact', {
                     formData: contactFormData,
                 });

@@ -6,7 +6,7 @@ export async function POST(req: Request) {
 
         const { name, email, category } = body;
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}`, {
+        const response = await fetch(`${process.env.API_URL}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
                         category,
                     }],
                 },
-                cid: process.env.NEXT_PUBLIC_CID,
+                cid: process.env.CID,
             }),
         });
 
