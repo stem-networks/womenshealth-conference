@@ -4,12 +4,18 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
+    // Inject private CID server-side
+    const newBody = {
+      ...body,
+      cid: process.env.CID, // only available on server
+    };
+
     const response = await fetch("https://stem-cms.com/discount_check.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(newBody),
     });
 
     const data = await response.json();

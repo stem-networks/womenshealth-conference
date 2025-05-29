@@ -269,12 +269,13 @@ const RegisterDetails = () => {
     if (!checkEmail) return;
     if (actualAmountRef.current !== null) return;
 
+
+    console.log("email coupon",checkEmail);
     const fetchDiscountDetails = async () => {
       try {
         const payload = {
           email: checkEmail || "",
           coupon_code: "",
-          cid: process.env.NEXT_PUBLIC_CID,
         };
 
         const response = await fetch("/api/register_details", {
@@ -364,11 +365,9 @@ const RegisterDetails = () => {
 
     try {
       const payload: {
-        cid: string | undefined;
         coupon_code: string;
         email?: string;
       } = {
-        cid: process.env.NEXT_PUBLIC_CID,
         coupon_code: couponCodeToCheck,
       };
 
@@ -383,6 +382,8 @@ const RegisterDetails = () => {
       });
 
       const data = await response.json();
+
+      console.log("data apply coupon",data);
 
       if (data.success) {
         setDiscountDetails({
