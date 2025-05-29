@@ -75,25 +75,12 @@ const RegisterDetails = () => {
   console.log(isPending);
   console.log("adjust price", adjustedPrice);
 
-  //   useEffect(() => {
-  //     async function fetchClientId() {
-  //       try {
-  //         const res = await fetch("/api/paypal-client-id");
-  //         const data = await res.json();
-  //         setClientId(data.clientId);
-  //       } catch (error) {
-  //         console.error("Failed to fetch PayPal Client ID:", error);
-  //       }
-  //     }
   useEffect(() => {
     fetch("/api/paypal-client-id")
       .then((res) => res.json())
       .then((data) => setClientId(data.clientId))
       .catch((err) => console.error("Failed to fetch PayPal clientId", err));
   }, []);
-
-  //     fetchClientId();
-  //   }, []);
 
   useEffect(() => {
     if (searchParams?.has("discount")) {
@@ -269,8 +256,7 @@ const RegisterDetails = () => {
     if (!checkEmail) return;
     if (actualAmountRef.current !== null) return;
 
-
-    console.log("email coupon",checkEmail);
+    console.log("email coupon", checkEmail);
     const fetchDiscountDetails = async () => {
       try {
         const payload = {
@@ -383,7 +369,7 @@ const RegisterDetails = () => {
 
       const data = await response.json();
 
-      console.log("data apply coupon",data);
+      console.log("data apply coupon", data);
 
       if (data.success) {
         setDiscountDetails({
@@ -479,26 +465,6 @@ const RegisterDetails = () => {
     totalRegistrationPrice,
     totalAccommodationPrice,
   ]);
-
-  // const logError = async (message: string) => {
-  //   try {
-  //     if (!dataToShow) return;
-
-  //     await fetch("/api/log-error", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         error_message: message,
-  //         name: dataToShow?.name || "N/A",
-  //         email: dataToShow?.email || "N/A",
-  //       }),
-  //     });
-  //   } catch (err) {
-  //     console.error("Client error while calling logError:", err);
-  //   }
-  // };
 
   return (
     <div>
