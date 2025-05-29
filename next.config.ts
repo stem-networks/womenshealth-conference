@@ -8,10 +8,6 @@ const nextConfig: NextConfig = {
         destination: 'https://api.stem-cms.com',  // external API endpoint
       },
       {
-        source: '/api/register_details',
-        destination: 'https://stem-cms.com/discount_check.php',
-      },
-      {
         source: '/api/register',
         destination: 'https://api.stem-cms.com/',
       },

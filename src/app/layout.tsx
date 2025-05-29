@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
 // import { Inter } from "next/font/google";
 import { NavProvider } from "@/context/NavContext";
-import { fetchDataServer } from "@/lib/api";
 import Script from "next/script";
 // import "./globals.css";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { GeneralData, PagesData, NavItem, SocialLinks } from "@/types";
+import { GeneralData, PagesData, NavItem, SocialLinks, ApiResponse, IndexPageData, RegistrationInfo } from "@/types";
 import { AppDataProvider } from "@/context/AppDataContext";
 // import Header from "./components/Header/Header";
 import Header from "./components/Header";
-// import Footer from "./components/Footer";
+import Footer from "./components/Footer";
 import MediaCollaborators from "./components/MediaCollaborators";
 import PartneredContent from "./components/PartneredContent";
 // import { useAppData } from "../context/AppDataContext";
@@ -18,10 +17,37 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
+async function fetchGeneralData(): Promise<ApiResponse> {
+  const baseUrl = process.env.BASE_URL;
+  const res = await fetch(`${baseUrl}/api/general`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch general data");
+  return res.json();
+}
+
+async function fetchIndexPageData(): Promise<IndexPageData> {
+  const baseUrl = process.env.BASE_URL;
+  const res = await fetch(`${baseUrl}/api/index-page`, {
+    method: "POST",
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Failed to fetch index page data");
+  return res.json();
+}
+async function fetchRegisterPageData(): Promise<RegistrationInfo> {
+  const baseUrl = process.env.BASE_URL;
+  const res = await fetch(`${baseUrl}/api/reg-page-data`, {
+    method: "POST",
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Failed to fetch index page data");
+  return res.json();
+}
+
+
 // const inter = Inter({ subsets: ["latin"] });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const data = await fetchDataServer();
+  const data = await fetchGeneralData();
   const general = data?.data || ({} as GeneralData);
   const pageData = data?.pages || ({} as PagesData);
   const eventName = `${general?.clname || "Annual Tech Conference"} ${general?.year || ""
@@ -74,11 +100,20 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const data = await fetchDataServer();
-  const general: GeneralData = data?.data || ({} as GeneralData);
-  const pageData: PagesData = data?.pages || ({} as PagesData);
-  const navItems: NavItem[] = data?.display_features || [];
-  const socialLinks: SocialLinks = data?.social_links || {
+
+  const [generaldata, indexPageData, registerData] = await Promise.all([
+    fetchGeneralData(),
+    fetchIndexPageData(),
+    fetchRegisterPageData()
+  ]);
+
+
+  // const data = await fetchDataServer();
+  // const general: GeneralData = data?.data || ({} as GeneralData);
+  const general: GeneralData = generaldata?.data || ({} as GeneralData);
+  const pageData: PagesData = generaldata?.pages || ({} as PagesData);
+  const navItems: NavItem[] = generaldata?.display_features || [];
+  const socialLinks: SocialLinks = generaldata?.social_links || {
     facebook: { link: "", title: "" },
     linkedin: { link: "", title: "" },
     instagram: { link: "", title: "" }
@@ -126,7 +161,6 @@ export default async function RootLayout({
     },
   };
 
-  // console.log("layout data",data, "ooooooooooo");
 
   return (
     <html lang="en">
@@ -158,14 +192,14 @@ export default async function RootLayout({
           navItems={navItems}
           socialLinks={socialLinks}
         >
-          <NavProvider initialData={data}>
+          <NavProvider initialData={generaldata}>
             {/* Toast container - only one instance needed */}
             <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick />
-            <Header />
+            <Header generalData={generaldata} registerData={registerData} />
             {children}
             <MediaCollaborators />
             <PartneredContent />
-            {/* <Footer socialLinks={socialLinks} /> */}
+            <Footer indexPageData={indexPageData} generalData={generaldata} />
           </NavProvider>
         </AppDataProvider>
       </body>

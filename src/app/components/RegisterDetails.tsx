@@ -8,12 +8,12 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 // import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import {
-  CreateOrderData,
-  CreateOrderActions,
-  OnApproveData,
-  OnApproveActions,
-} from "@paypal/paypal-js";
+// import {
+//   CreateOrderData,
+//   CreateOrderActions,
+//   OnApproveData,
+//   OnApproveActions,
+// } from "@paypal/paypal-js";
 
 interface RegistrationData {
   name?: string;
@@ -69,29 +69,31 @@ const RegisterDetails = () => {
   //   const adjustedPriceRef = useRef<number>(adjustedPrice);
   const adjustedPriceRef = useRef<number>(0); // Initialize with 0
   const actualAmountRef = useRef<ActualAmount | null>(null);
-const [clientId, setClientId] = useState<string | null>(null);
+  const [clientId, setClientId] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
 
+  console.log(isPending);
   console.log("adjust price", adjustedPrice);
 
-//   useEffect(() => {
-//     async function fetchClientId() {
-//       try {
-//         const res = await fetch("/api/paypal-client-id");
-//         const data = await res.json();
-//         setClientId(data.clientId);
-//       } catch (error) {
-//         console.error("Failed to fetch PayPal Client ID:", error);
-//       }
-//     }
- useEffect(() => {
+  //   useEffect(() => {
+  //     async function fetchClientId() {
+  //       try {
+  //         const res = await fetch("/api/paypal-client-id");
+  //         const data = await res.json();
+  //         setClientId(data.clientId);
+  //       } catch (error) {
+  //         console.error("Failed to fetch PayPal Client ID:", error);
+  //       }
+  //     }
+  useEffect(() => {
     fetch("/api/paypal-client-id")
       .then((res) => res.json())
       .then((data) => setClientId(data.clientId))
       .catch((err) => console.error("Failed to fetch PayPal clientId", err));
   }, []);
 
-//     fetchClientId();
-//   }, []);
+  //     fetchClientId();
+  //   }, []);
 
   useEffect(() => {
     if (searchParams?.has("discount")) {
@@ -267,23 +269,24 @@ const [clientId, setClientId] = useState<string | null>(null);
     if (!checkEmail) return;
     if (actualAmountRef.current !== null) return;
 
+
+    console.log("email coupon",checkEmail);
     const fetchDiscountDetails = async () => {
       try {
         const payload = {
           email: checkEmail || "",
           coupon_code: "",
-          cid: process.env.NEXT_PUBLIC_CID,
         };
 
         const response = await fetch("/api/register_details", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
 
         const data = await response.json();
+
+        console.log("data details", data);
 
         if (data.success) {
           setDiscountDetails({
@@ -362,11 +365,9 @@ const [clientId, setClientId] = useState<string | null>(null);
 
     try {
       const payload: {
-        cid: string | undefined;
         coupon_code: string;
         email?: string;
       } = {
-        cid: process.env.NEXT_PUBLIC_CID,
         coupon_code: couponCodeToCheck,
       };
 
@@ -381,6 +382,8 @@ const [clientId, setClientId] = useState<string | null>(null);
       });
 
       const data = await response.json();
+
+      console.log("data apply coupon",data);
 
       if (data.success) {
         setDiscountDetails({
@@ -477,25 +480,25 @@ const [clientId, setClientId] = useState<string | null>(null);
     totalAccommodationPrice,
   ]);
 
-  const logError = async (message: string) => {
-    try {
-      if (!dataToShow) return;
+  // const logError = async (message: string) => {
+  //   try {
+  //     if (!dataToShow) return;
 
-      await fetch("/api/log-error", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          error_message: message,
-          name: dataToShow?.name || "N/A",
-          email: dataToShow?.email || "N/A",
-        }),
-      });
-    } catch (err) {
-      console.error("Client error while calling logError:", err);
-    }
-  };
+  //     await fetch("/api/log-error", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         error_message: message,
+  //         name: dataToShow?.name || "N/A",
+  //         email: dataToShow?.email || "N/A",
+  //       }),
+  //     });
+  //   } catch (err) {
+  //     console.error("Client error while calling logError:", err);
+  //   }
+  // };
 
   return (
     <div>
@@ -802,148 +805,131 @@ const [clientId, setClientId] = useState<string | null>(null);
               {adjustedPrice ? (
                 <PayPalScriptProvider
                   options={{
-                   clientId: clientId ?? "",
+                    clientId: clientId ?? "",
                     currency: "USD",
                     intent: "capture",
-                    debug: false,
+                    // debug: true, // Enable PayPal SDK debug mode
                   }}
                 >
                   <PayPalButtons
                     style={{ layout: "vertical" }}
-                    // Triggered when the button is clicked
+                    // 🔵 STEP 1: Button Click
                     onClick={(data, actions) => {
-                      console.log("[PayPal] onClick triggered");
-                      console.log("Button Click Payload:", { data, actions });
+                      console.log("🔵 [PayPal] onClick Triggered");
+                      console.log("🟡 Click Payload:", { data, actions });
                     }}
-                    // Create the PayPal order
-                    createOrder={async (
-                      data: CreateOrderData,
-                      actions: CreateOrderActions
-                    ) => {
+                    // 🟢 STEP 2: Create Order
+                    createOrder={async () => {
+                      console.log("🟢 [PayPal] createOrder Triggered");
+                      setIsPending(true);
+
                       try {
-                        console.log("[PayPal] createOrder called");
-                        console.log("createOrder - Payload:", { data });
-
-                        const amount = Number(
-                          adjustedPriceRef.current ||
-                            dataToShow?.total_price ||
-                            0
+                        const payload = {
+                          totalAmount: adjustedPriceRef.current,
+                          description: `Registration for ${dataToShow?.name}`,
+                        };
+                        console.log(
+                          "📦 Sending to /api/paypal/create-order:",
+                          payload
                         );
-                        const safeAmount = Math.max(0.01, amount).toFixed(2);
 
-                        const order = await actions.order.create({
-                          intent: "CAPTURE",
-                          purchase_units: [
-                            {
-                              amount: {
-                                currency_code: "USD",
-                                value: safeAmount,
-                              },
-                              description: `Registration Payment for ${encodeURIComponent(
-                                dataToShow?.name || "Unknown"
-                              )}`,
-                            },
-                          ],
-                          application_context: {
-                            return_url: `${origin}/payment-status?status=success&web_token=${dataToShow?.web_token}`,
-                            cancel_url: `${origin}/register_details?web_token=${
-                              dataToShow?.web_token ||
-                              searchParams?.get("web_token") ||
-                              ""
-                            }`,
+                        const res = await fetch("/api/paypal/create-order", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
                           },
+                          body: JSON.stringify(payload),
                         });
 
-                        console.log("Order Created - ID:", order);
-                        return order;
-                      } catch (err) {
-                        console.error("[PayPal] Error creating order:", err);
-                        await logError(
-                          `Error creating PayPal order: ${
-                            (err as Error).message
-                          }`
-                        );
-                        throw err;
+                        const data = await res.json();
+                        console.log("✅ create-order Response:", data);
+
+                        if (!res.ok)
+                          throw new Error(
+                            data?.message || "Failed to create order"
+                          );
+
+                        return data.orderID;
+                      } catch (error) {
+                        console.error("❌ Error in createOrder:", error);
+                        setIsPending(false);
                       }
                     }}
-                    // Triggered when the user approves the payment
-                    onApprove={async (
-                      data: OnApproveData,
-                      actions: OnApproveActions
-                    ) => {
+                    // 🟣 STEP 3: On Approval (User completes PayPal payment)
+                    onApprove={async (data) => {
+                      console.log("🟣 [PayPal] onApprove Triggered");
+                      console.log("🧾 Approval Data:", data);
+
                       try {
-                        console.log("[PayPal] onApprove triggered");
-                        console.log("Approval Payload:", { data });
-
-                        const captureResult = await actions.order?.capture();
-                        console.log("Payment Captured:", captureResult);
-
-                        const encryptedData = btoa(
-                          JSON.stringify({
-                            total_price: adjustedPriceRef.current,
-                            other_info: actualAmountRef.current,
-                            discount_amt: 0,
-                          })
+                        // Capture the order from PayPal
+                        const capturePayload = { orderID: data.orderID };
+                        console.log(
+                          "📤 Sending to /api/paypal/capture-order:",
+                          capturePayload
                         );
 
-                        const paymentData = {
-                          module_name: "payment",
-                          keys: {
-                            data: [
-                              {
-                                payment_ref_id: data.orderID,
-                                web_token: dataToShow?.web_token,
-                                payment_method: "PayPal",
-                                status: "success",
-                                total_price: adjustedPriceRef.current,
-                                other_info: actualAmountRef.current,
-                                discount_amt: 0,
-                              },
-                            ],
+                        const res = await fetch("/api/paypal/capture-order", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
                           },
-                          cid: process.env.NEXT_PUBLIC_CID,
-                        };
-
-                        console.log("Payment Data to API:", paymentData);
-
-                        await axios.post(
-                          `${process.env.NEXT_PUBLIC_API_URL}`,
-                          paymentData
-                        );
-
-                        const params = new URLSearchParams({
-                          status: "success",
-                          web_token: dataToShow?.web_token || "",
-                          orderID: data.orderID,
-                          other_info: encryptedData,
+                          body: JSON.stringify(capturePayload),
                         });
 
-                        router.push(`/payment_success?${params.toString()}`);
+                        const captureData = await res.json();
+                        console.log("✅ capture-order Response:", captureData);
+
+                        if (!res.ok) throw new Error("Failed to capture order");
+
+                        // Save payment on server
+                        const savePaymentPayload = {
+                          payment_ref_id: captureData.id,
+                          web_token: dataToShow?.web_token,
+                          total_price: adjustedPriceRef.current,
+                          other_info: actualAmountRef.current,
+                        };
+
+                        console.log(
+                          "📤 Sending to /api/paypal/save-payment:",
+                          savePaymentPayload
+                        );
+
+                        const saveRes = await fetch(
+                          "/api/paypal/save-payment",
+                          {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(savePaymentPayload),
+                          }
+                        );
+
+                        const saveResult = await saveRes.json();
+                        console.log("✅ save-payment Response:", saveResult);
+
+                        router.push(
+                          `/payment_success?orderID=${captureData.id}`
+                        );
                       } catch (error) {
-                        console.error(
-                          "[PayPal] Payment processing error:",
-                          error
-                        );
-                        await logError(
-                          `Payment processing error: ${
-                            (error as Error).message
-                          }`
-                        );
+                        console.error("❌ Error in onApprove:", error);
                         router.push(
                           `/register_details?status=failure&web_token=${dataToShow?.web_token}`
                         );
+                      } finally {
+                        setIsPending(false);
                       }
                     }}
-                    // Triggered when the user cancels the payment
+                    // 🟠 STEP 4: If User Cancels
                     onCancel={(data) => {
-                      console.warn("[PayPal] onCancel triggered");
-                      console.log("Cancel Payload:", data);
+                      console.warn("🟠 [PayPal] onCancel Triggered");
+                      console.log("❗ Cancel Payload:", data);
                       setShowCancelModal(true);
                     }}
-                    // Triggered if there's an error in the PayPal process
+                    // 🔴 STEP 5: If PayPal Errors
                     onError={(err) => {
-                      console.error("[PayPal] onError triggered");
-                      console.error("Error Payload:", err);
+                      console.error("🔴 [PayPal] onError Triggered");
+                      console.error("💥 Error Payload:", err);
                       router.push(
                         `/register_details?status=failure&web_token=${dataToShow?.web_token}`
                       );
