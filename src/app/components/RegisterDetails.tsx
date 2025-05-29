@@ -75,25 +75,12 @@ const RegisterDetails = () => {
   console.log(isPending);
   console.log("adjust price", adjustedPrice);
 
-  //   useEffect(() => {
-  //     async function fetchClientId() {
-  //       try {
-  //         const res = await fetch("/api/paypal-client-id");
-  //         const data = await res.json();
-  //         setClientId(data.clientId);
-  //       } catch (error) {
-  //         console.error("Failed to fetch PayPal Client ID:", error);
-  //       }
-  //     }
   useEffect(() => {
     fetch("/api/paypal-client-id")
       .then((res) => res.json())
       .then((data) => setClientId(data.clientId))
       .catch((err) => console.error("Failed to fetch PayPal clientId", err));
   }, []);
-
-  //     fetchClientId();
-  //   }, []);
 
   useEffect(() => {
     if (searchParams?.has("discount")) {
@@ -269,8 +256,7 @@ const RegisterDetails = () => {
     if (!checkEmail) return;
     if (actualAmountRef.current !== null) return;
 
-
-    console.log("email coupon",checkEmail);
+    console.log("email coupon", checkEmail);
     const fetchDiscountDetails = async () => {
       try {
         const payload = {
@@ -383,7 +369,7 @@ const RegisterDetails = () => {
 
       const data = await response.json();
 
-      console.log("data apply coupon",data);
+      console.log("data apply coupon", data);
 
       if (data.success) {
         setDiscountDetails({
@@ -479,26 +465,6 @@ const RegisterDetails = () => {
     totalRegistrationPrice,
     totalAccommodationPrice,
   ]);
-
-  // const logError = async (message: string) => {
-  //   try {
-  //     if (!dataToShow) return;
-
-  //     await fetch("/api/log-error", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         error_message: message,
-  //         name: dataToShow?.name || "N/A",
-  //         email: dataToShow?.email || "N/A",
-  //       }),
-  //     });
-  //   } catch (err) {
-  //     console.error("Client error while calling logError:", err);
-  //   }
-  // };
 
   return (
     <div>
@@ -887,6 +853,9 @@ const RegisterDetails = () => {
                           web_token: dataToShow?.web_token,
                           total_price: adjustedPriceRef.current,
                           other_info: actualAmountRef.current,
+                          payment_method: "PayPal",
+                          status: "success",
+                          discount_amt: 0,
                         };
 
                         console.log(
@@ -908,9 +877,21 @@ const RegisterDetails = () => {
                         const saveResult = await saveRes.json();
                         console.log("✅ save-payment Response:", saveResult);
 
-                        router.push(
-                          `/payment_success?orderID=${captureData.id}`
+                        const encryptedData = btoa(
+                          JSON.stringify(savePaymentPayload)
                         );
+
+                        const query = new URLSearchParams({
+                          status: "success",
+                          web_token: dataToShow?.web_token || "",
+                          orderID: data.orderID || "",
+                          other_info: encryptedData || "",
+                        }).toString();
+
+                        // Redirect
+                        router.push(`/payment_success?${query}`);
+
+                        
                       } catch (error) {
                         console.error("❌ Error in onApprove:", error);
                         router.push(
