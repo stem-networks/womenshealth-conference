@@ -27,7 +27,7 @@ const Faqs: React.FC<Props> = ({  faqsContent }) => {
           <div className="row">
             <div className="col-md-12">
               <Link href="/" title="Navigate to Homepage">Home</Link> <i className="fa fa-angle-right"></i>
-              <span>FAQs</span>
+              <span>FAQs test</span>
             </div>
           </div>
         </div>
