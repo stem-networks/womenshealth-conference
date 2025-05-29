@@ -9,9 +9,6 @@ const ImportantDates = ({ onelinerInfo }: ImportantDatesProps) => {
     const oneliner = onelinerInfo?.oneliner?.important_dates;
     const importantDates = onelinerInfo?.importantDates || [];
 
-    // console.log('Oneliner Info', onelinerInfo)
-    // console.log('Oneliner', onelinerInfo)
-    // console.log('importantDates', importantDates)
     return (
         <div>
             <div className="import_wrap">
