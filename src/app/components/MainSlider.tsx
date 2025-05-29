@@ -63,13 +63,6 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
         inPerson: regPrices["Presenter (In-Person)"]?.total || null,
     };
 
-
-    // console.log('general12', generalInfo)
-    // console.log('register122', registerInfo)
-    // console.log('prices', regPrices)
-    // console.log("Listener Totals:", listenerTotal);
-    // console.log("Presenter Totals:", presenterTotal);
-
     const [showModal8, setShowModal8] = useState<boolean>(false);
     const [mathExpression, setMathExpression] = useState('');
     const [correctAnswer, setCorrectAnswer] = useState<string | null>(null);
@@ -91,10 +84,10 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
         query: ''
     });
     const [userAnswer, setUserAnswer] = useState('');
-    const [error, setError] = useState(''); // For general errors
+    // const [error, setError] = useState(''); // For general errors
 
     const modalRef = useRef<HTMLDivElement | null>(null);
-    console.log('Errors', error)
+    // console.log('Errors', error) 
 
     const sliderSettings = {
         dots: true,
@@ -221,11 +214,11 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
                 });
                 setUserAnswer('');
                 setContactFormErrors({});
-                setError('');
+                // setError('');
 
             } catch (err) {
                 console.error('Submission error:', err); // <-- Use the error
-                setError('Error submitting form. Please try again later.');
+                // setError('Error submitting form. Please try again later.');
                 toast.error('Error submitting form. Please try again later.');
             }
 
@@ -264,7 +257,6 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
                                 data-wow-duration="1000ms"
                             >
                                 <h2>Book Today &amp; Save huge!</h2>
-                                {/* <h3>Listener @ ${listenerDiscountedFee} | Presenter @ ${presenterDiscountedFee}</h3> */}
                                 {/* {listenerTotal.inPerson > 0 && presenterTotal.inPerson > 0 && ( */}
                                 <h3>Listener @ ${listenerTotal.inPerson} | Presenter @ ${presenterTotal.inPerson}</h3>
                                 {/* )} */}

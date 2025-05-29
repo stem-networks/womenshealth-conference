@@ -139,17 +139,12 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({ generalVoluntee
         if (Object.keys(errors).length === 0) {
             try {
                 const fullName = `${communityFormData.fname} ${communityFormData.lname}`;
-                await axios.post(`${process.env.NEXT_PUBLIC_API_URL}`, {
-                    module_name: 'enquiry_form',
-                    keys: {
-                        data: [{
-                            name: fullName,
-                            email: communityFormData.email,
-                            category: communityFormData.category,
-                        }],
-                    },
-                    cid: process.env.NEXT_PUBLIC_CID,
+                await axios.post('/api/community-submit', {
+                    name: fullName,
+                    email: communityFormData.email,
+                    category: communityFormData.category,
                 });
+
 
                 setShowModal2(true);
                 setCommunityFormData({
@@ -254,8 +249,6 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({ generalVoluntee
                 email: formData.email,
                 category: formData.category,
             });
-
-
 
             toast.success('Form submitted successfully!');
             setShowModal(false);

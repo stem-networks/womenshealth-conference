@@ -13,8 +13,9 @@ export async function POST(req: Request) {
     formData.append("error_message", error_message);
     formData.append("name", name);
     formData.append("email", email);
+    const baseUrl = process.env.BASE_URL;
 
-    const response = await fetch("https://your-backend.com/api/register", {
+    const response = await fetch(`${baseUrl}/api/register`, {
       method: "POST",
       body: formData,
     });
