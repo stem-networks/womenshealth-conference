@@ -279,13 +279,13 @@ const RegisterDetails = () => {
 
         const response = await fetch("/api/register_details", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
 
         const data = await response.json();
+
+        console.log("data details", data);
 
         if (data.success) {
           setDiscountDetails({
