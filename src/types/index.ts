@@ -35,7 +35,7 @@ export interface GeneralData {
   startDate: string;
   endDate: string;
   main_keyword: string;
-  confkeyword: string;  
+  confkeyword: string;
   offerPrice?: string;
   offerCurrency?: string;
 }
@@ -113,12 +113,28 @@ export interface RegistrationDeadline {
   page_url: string;
 }
 
+// export interface AccommodationPrice {
+//   [key: string]: {
+//     total: string;
+//     min: string;
+//     conference_dt: string;
+//     "Standard Registration Fee"?: string;
+//     id: string;
+//     single: string;
+//     doubl: string;
+//     tri: string;
+//     accompanying: string;
+//     price: string;
+//     type: string;
+//   };
+// }
+
 export interface AccommodationPrice {
-  id: string;
   single: string;
   doubl: string;
   tri: string;
   accompanying: string;
+  [key: string]: string;
 }
 
 export interface RegistrationInfo {
@@ -127,6 +143,10 @@ export interface RegistrationInfo {
   accommodation_prices: AccommodationPrice[];
   conference_date: string;
   days_difference: number;
+  checkdates: {
+    "1": string[];
+    "2": string[];
+  };
   registration_open_date: {
     id: string;
     register_dt: string;
@@ -251,4 +271,3 @@ export interface CommonContent {
     guidelines?: { content: string };
   };
 }
-

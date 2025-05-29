@@ -853,6 +853,9 @@ const RegisterDetails = () => {
                           web_token: dataToShow?.web_token,
                           total_price: adjustedPriceRef.current,
                           other_info: actualAmountRef.current,
+                          payment_method: "PayPal",
+                          status: "success",
+                          discount_amt: 0,
                         };
 
                         console.log(
@@ -874,9 +877,21 @@ const RegisterDetails = () => {
                         const saveResult = await saveRes.json();
                         console.log("✅ save-payment Response:", saveResult);
 
-                        router.push(
-                          `/payment_success?orderID=${captureData.id}`
+                        const encryptedData = btoa(
+                          JSON.stringify(savePaymentPayload)
                         );
+
+                        const query = new URLSearchParams({
+                          status: "success",
+                          web_token: dataToShow?.web_token || "",
+                          orderID: data.orderID || "",
+                          other_info: encryptedData || "",
+                        }).toString();
+
+                        // Redirect
+                        router.push(`/payment_success?${query}`);
+
+                        
                       } catch (error) {
                         console.error("❌ Error in onApprove:", error);
                         router.push(
