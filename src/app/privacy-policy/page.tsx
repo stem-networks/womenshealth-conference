@@ -49,8 +49,8 @@ const PrivacyPolicy = () => {
                   {/* <div className='heading speaker-heading'>Speaker Guidelines</div> */}
                   <ul>
                     <li>
-                      05. This Privacy Policy document contains types of
-                      information that is collected and recorded by{" "}
+                      This Privacy Policy document contains types of information
+                      that is collected and recorded by{" "}
                       {general.site_url
                         ? general.site_url.replace(/^https?:\/\//, "")
                         : ""}{" "}
