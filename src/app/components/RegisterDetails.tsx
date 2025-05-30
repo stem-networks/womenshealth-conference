@@ -71,6 +71,7 @@ const RegisterDetails = () => {
   const actualAmountRef = useRef<ActualAmount | null>(null);
   const [clientId, setClientId] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  // const [isClientReady, setIsClientReady] =  useState<string | null>(null);
 
   console.log(isPending);
   console.log("adjust price", adjustedPrice);
@@ -155,36 +156,62 @@ const RegisterDetails = () => {
     );
   };
 
+  // useEffect(() => {
+  //   const fetchDetails = async () => {
+  //     const web_token = searchParams?.get("web_token");
+  //     if (!web_token) return;
+
+  //     try {
+  //       const response = await axios.post("/api/registration-details", {
+  //         web_token,
+  //       });
+
+  //       setTimeout(() => {
+  //         if (response.status === 200 && response.data) {
+  //           if (response.data.data?.transaction_id !== null) {
+  //             router.push(`/payment_success?web_token=${web_token}`);
+  //           }
+  //           setDetails(response.data.data);
+  //         } else {
+  //           setDetails(null);
+  //         }
+  //       }, 1000);
+  //     } catch (error) {
+  //       console.error("Client error:", error);
+  //       setDetails(null);
+  //     }
+  //   };
+
+  //   fetchDetails();
+  // }, [searchParams, router]);
+
   useEffect(() => {
     const fetchDetails = async () => {
       const web_token = searchParams?.get("web_token");
+      if (!web_token) return;
 
       try {
-        const postData = {
-          module_name: "registration_details",
-          keys: {
-            data: [{ web_token }],
-          },
-          cid: process.env.NEXT_PUBLIC_CID,
-        };
+        const response = await axios.post("/api/registration-details", {
+          web_token,
+        });
 
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}`,
-          postData
-        );
-        setTimeout(() => {
-          if (response.status === 200 && response.data) {
-            if (response.data.data.transaction_id !== null) {
-              router.push(`/payment_success?web_token=${web_token}`);
-            }
-            setDetails(response.data.data);
-          } else {
-            setDetails(null);
+        if (response.status === 200 && response.data) {
+          const data = response.data.data;
+          setDetails(data);
+
+          // Prevent double redirect if already on payment_success page
+          if (
+            data?.transaction_id !== null &&
+            !window.location.pathname.includes("payment_success")
+          ) {
+            router.replace(`/payment_success?web_token=${web_token}`);
           }
-        }, 1000);
+        } else {
+          setDetails(null);
+        }
       } catch (error) {
+        console.error("Client error:", error);
         setDetails(null);
-        console.warn(error);
       }
     };
 
@@ -768,23 +795,21 @@ const RegisterDetails = () => {
           <div className="col-md-3">
             <div className="pg-head">Payment Gateway</div>
             <div className="payment-section">
-              {adjustedPrice ? (
+              {clientId && adjustedPrice ? (
                 <PayPalScriptProvider
                   options={{
-                    clientId: clientId ?? "",
+                    clientId: clientId,
                     currency: "USD",
                     intent: "capture",
-                    // debug: true, // Enable PayPal SDK debug mode
+                    // debug: true,
                   }}
                 >
                   <PayPalButtons
                     style={{ layout: "vertical" }}
-                    // 🔵 STEP 1: Button Click
                     onClick={(data, actions) => {
                       console.log("🔵 [PayPal] onClick Triggered");
                       console.log("🟡 Click Payload:", { data, actions });
                     }}
-                    // 🟢 STEP 2: Create Order
                     createOrder={async () => {
                       console.log("🟢 [PayPal] createOrder Triggered");
                       setIsPending(true);
@@ -821,13 +846,11 @@ const RegisterDetails = () => {
                         setIsPending(false);
                       }
                     }}
-                    // 🟣 STEP 3: On Approval (User completes PayPal payment)
                     onApprove={async (data) => {
                       console.log("🟣 [PayPal] onApprove Triggered");
                       console.log("🧾 Approval Data:", data);
 
                       try {
-                        // Capture the order from PayPal
                         const capturePayload = { orderID: data.orderID };
                         console.log(
                           "📤 Sending to /api/paypal/capture-order:",
@@ -847,7 +870,6 @@ const RegisterDetails = () => {
 
                         if (!res.ok) throw new Error("Failed to capture order");
 
-                        // Save payment on server
                         const savePaymentPayload = {
                           payment_ref_id: captureData.id,
                           web_token: dataToShow?.web_token,
@@ -880,7 +902,6 @@ const RegisterDetails = () => {
                         const encryptedData = btoa(
                           JSON.stringify(savePaymentPayload)
                         );
-
                         const query = new URLSearchParams({
                           status: "success",
                           web_token: dataToShow?.web_token || "",
@@ -888,10 +909,7 @@ const RegisterDetails = () => {
                           other_info: encryptedData || "",
                         }).toString();
 
-                        // Redirect
                         router.push(`/payment_success?${query}`);
-
-                        
                       } catch (error) {
                         console.error("❌ Error in onApprove:", error);
                         router.push(
@@ -901,13 +919,11 @@ const RegisterDetails = () => {
                         setIsPending(false);
                       }
                     }}
-                    // 🟠 STEP 4: If User Cancels
                     onCancel={(data) => {
                       console.warn("🟠 [PayPal] onCancel Triggered");
                       console.log("❗ Cancel Payload:", data);
                       setShowCancelModal(true);
                     }}
-                    // 🔴 STEP 5: If PayPal Errors
                     onError={(err) => {
                       console.error("🔴 [PayPal] onError Triggered");
                       console.error("💥 Error Payload:", err);
