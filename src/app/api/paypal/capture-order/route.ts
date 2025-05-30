@@ -1,11 +1,11 @@
 // src/app/api/paypal/capture-order/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { AxiosError } from 'axios';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 export async function POST(req: NextRequest) {
   try {
     const { orderID } = await req.json();
+    console.log('📥 Received orderID:', orderID);
 
     // Step 1: Get OAuth2 access token
     const authResponse = await axios.post(
@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
     );
 
     const accessToken = authResponse.data.access_token;
+    console.log('🔐 PayPal Access Token:', accessToken);
 
     // Step 2: Capture order
     const captureResponse = await axios.post(
@@ -36,11 +37,15 @@ export async function POST(req: NextRequest) {
       }
     );
 
+    console.log('✅ PayPal capture response:', captureResponse.data);
     return NextResponse.json(captureResponse.data);
-  }  catch (error) {
-  const err = error as AxiosError;
+  } catch (error) {
+    const err = error as AxiosError;
+    console.error('❌ Error in capture-order:', err.response?.data || err.message);
 
-  console.error('Error in capture-order:', err.response?.data || err.message);
-  return NextResponse.json({ error: 'Failed to capture order' }, { status: 500 });
-}
+    return NextResponse.json(
+      { error: 'Failed to capture order', details: err.response?.data || err.message },
+      { status: 500 }
+    );
+  }
 }
