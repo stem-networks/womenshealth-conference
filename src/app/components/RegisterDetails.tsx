@@ -175,7 +175,7 @@ const RegisterDetails = () => {
         setTimeout(() => {
           if (response.status === 200 && response.data) {
             if (response.data.data.transaction_id !== null) {
-              router.push(`/payment-success?web_token=${web_token}`);
+              router.push(`/payment_success?web_token=${web_token}`);
             }
             setDetails(response.data.data);
           } else {
