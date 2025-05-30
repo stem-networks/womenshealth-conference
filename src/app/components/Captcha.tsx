@@ -7,6 +7,7 @@ import {
   forwardRef,
   useImperativeHandle,
   useRef,
+  useCallback,
 } from "react";
 
 interface CaptchaProps {
@@ -33,36 +34,33 @@ const Captcha = forwardRef<CaptchaRef, CaptchaProps>(
 
     const inputRef = useRef<HTMLInputElement | null>(null);
 
-    const fetchCaptcha = async () => {
+    const fetchCaptcha = useCallback(async () => {
       try {
         setCaptchaText("");
         setErrorMessage("");
         setIsVerified(false);
         onValidate(false);
 
-        // Fetch new CAPTCHA from backend API
         const res = await fetch("/api/captcha");
         if (!res.ok) throw new Error("Failed to fetch CAPTCHA");
 
         const data = await res.json();
         const { captchaId, captchaData } = data;
 
-        // captchaData is an SVG string - convert to base64 for img src
         const dataUrl = `data:image/svg+xml;base64,${btoa(captchaData)}`;
-
         setCaptchaSrc(dataUrl);
         setCaptchaId(captchaId);
         sessionStorage.setItem("captchaId", captchaId);
       } catch (error) {
         console.error("Error fetching CAPTCHA:", error);
       }
-    };
+    }, [onValidate]);
 
-    const validateCaptcha = (text: string) => {
+    // In your Captcha component
+    const validateCaptcha = async (text: string) => {
       if (validateTimeout.current) clearTimeout(validateTimeout.current);
 
       if (!text || text.length < 4) {
-        // assuming captcha length is 4 (adjust as needed)
         setIsVerified(false);
         setErrorMessage("");
         onValidate(false);
@@ -77,6 +75,10 @@ const Captcha = forwardRef<CaptchaRef, CaptchaProps>(
             body: JSON.stringify({ text, captchaId }),
           });
 
+          if (!res.ok) {
+            throw new Error("Validation failed");
+          }
+
           const result = await res.json();
 
           if (result.valid) {
@@ -85,13 +87,13 @@ const Captcha = forwardRef<CaptchaRef, CaptchaProps>(
             onValidate(true);
           } else {
             setIsVerified(false);
-            setErrorMessage("Invalid CAPTCHA");
+            setErrorMessage(result.error || "Invalid CAPTCHA");
             onValidate(false);
           }
         } catch (error) {
           console.error("CAPTCHA validation failed:", error);
           setIsVerified(false);
-          setErrorMessage("Validation error");
+          setErrorMessage("Validation error. Please refresh and try again.");
           onValidate(false);
         }
       }, 500);
@@ -99,7 +101,7 @@ const Captcha = forwardRef<CaptchaRef, CaptchaProps>(
 
     useEffect(() => {
       fetchCaptcha();
-    }, []);
+    }, [fetchCaptcha]);
 
     useImperativeHandle(ref, () => ({
       focusCaptcha: () => {

@@ -298,16 +298,16 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     } else {
      
     }
-    //  if (!isCaptchaValid) {
-    //     formErrors.captcha = "Invalid or expired CAPTCHA.";
-    //     setErrors(formErrors);
-    //     toastr.error(formErrors.captcha, "Validation Error", { timeOut: 3000 });
+     if (!isCaptchaValid) {
+        formErrors.captcha = "Invalid or expired CAPTCHA.";
+        setErrors(formErrors);
+        toastr.error(formErrors.captcha, "Validation Error", { timeOut: 3000 });
 
-    //     if (captchaRef.current?.focusCaptcha) {
-    //       captchaRef.current.focusCaptcha();
-    //     }
-    //     return;
-    //   }
+        if (captchaRef.current?.focusCaptcha) {
+          captchaRef.current.focusCaptcha();
+        }
+        return;
+      }
 
     function isHtmlElement(
       el: unknown
