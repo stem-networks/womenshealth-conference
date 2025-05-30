@@ -12,9 +12,11 @@ export async function POST(req: NextRequest) {
       relayForm.append(key, value);
     }
 
-    // Call your backend API without NEXT_PUBLIC
-    const apiUrl =
-      process.env.INTERNAL_API_URL || "https://your-api.com/submit";
+    const apiUrl = process.env.API_URL;
+
+    if (!apiUrl) {
+      throw new Error("API_URL is not defined in environment variables.");
+    }
 
     const response = await axios.post(apiUrl, relayForm, {
       headers: {

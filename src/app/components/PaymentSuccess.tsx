@@ -82,18 +82,33 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
       }
 
       // If orderID is missing or processing failed, check actual status
-      try {
-        const paymentCheckData = {
-          module_name: "payment_check",
-          keys: { data: [{ web_token }] },
-          cid: process.env.NEXT_PUBLIC_CID,
-        };
+      // try {
+      //   const paymentCheckData = {
+      //     module_name: "payment_check",
+      //     keys: { data: [{ web_token }] },
+      //     cid: process.env.NEXT_PUBLIC_CID,
+      //   };
 
-        const response = await axios.post(
-          process.env.NEXT_PUBLIC_API_URL || "",
-          paymentCheckData
-        );
-        const resData = response.data;
+      //   const response = await axios.post(process.env.NEXT_PUBLIC_API_URL || "",
+      //     paymentCheckData
+      //   );
+      //   const resData = response.data;
+
+      //   if (resData.status === 200 && resData.data) {
+      //     setPaymentStatus("success");
+      //   } else {
+      //     setPaymentStatus("not_done");
+      //   }
+      // } catch (error) {
+      //   console.error("Payment check failed:", error);
+      //   setPaymentStatus("error");
+      // } finally {
+      //   setLoading(false);
+      // }
+
+      try {
+        const res = await axios.post("/api/payment-check", { web_token });
+        const resData = res.data;
 
         if (resData.status === 200 && resData.data) {
           setPaymentStatus("success");
@@ -101,10 +116,8 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
           setPaymentStatus("not_done");
         }
       } catch (error) {
-        console.error("Payment check failed:", error);
+        console.error("Client: Payment check failed", error);
         setPaymentStatus("error");
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -123,9 +136,7 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
     <div style={styles.container}>
       <div
         style={
-          paymentStatus === "not_done"
-            ? styles.failureBox
-            : styles.successBox
+          paymentStatus === "not_done" ? styles.failureBox : styles.successBox
         }
       >
         {loading ? (
@@ -158,8 +169,8 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
                 </li>
                 <li>
                   If you made multiple attempts and were charged more than once,
-                  reach out to us at{" "}
-                  <a href={`mailto:${email}`}>{email}</a> for assistance.
+                  reach out to us at <a href={`mailto:${email}`}>{email}</a> for
+                  assistance.
                 </li>
               </ul>
             </div>

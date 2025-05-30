@@ -94,6 +94,7 @@ interface CaptchaValue {
 
 import map2 from "../../../public/images/images/map.png";
 import { ApiResponse } from "@/types";
+import Captcha from "./Captcha";
 
 interface generalInfoProps {
   generalInfo: ApiResponse;
@@ -148,9 +149,11 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
   const [errors, setErrors] = useState<Errors>({});
   //   const [modalContent, setModalContent] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [isCaptchaValid, setIsCaptchaValid] = useState<boolean>(false);
+  // const [isCaptchaValid, setIsCaptchaValid] = useState<boolean>(false);
   const [captchaValue, setCaptchaValue] = useState<CaptchaValue | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  console.log(captchaValue);
 
   const modalRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -170,6 +173,11 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
   const messageRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const captchaRef = React.useRef<CaptchaRefType>(null);
+  const [isCaptchaValid, setIsCaptchaValid] = useState<boolean>(false);
+
+  const [formErrors, setFormErrors] = useState<{
+    [key: string]: string | undefined;
+  }>({});
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -288,46 +296,18 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
       formErrors.upload_abstract_file = "Abstract file is required";
       firstErrorField = fileRef;
     } else {
-      const storedCaptchaId = sessionStorage.getItem("captchaId") || "";
-      const userInputCaptcha = captchaValue?.text?.trim() || "";
-
-      if (!userInputCaptcha) {
-        formErrors.captcha = "CAPTCHA is required.";
-        firstErrorField = captchaRef;
-      } else if (storedCaptchaId !== captchaValue?.captchaId) {
-        formErrors.captcha = "Invalid or expired CAPTCHA.";
-        firstErrorField = captchaRef;
-      } else {
-        try {
-          const res = await fetch("/api/validate-captcha", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              captchaId: storedCaptchaId,
-              text: userInputCaptcha,
-            }),
-          });
-
-          const data = await res.json();
-
-          if (!data.success) {
-            formErrors.captcha = "Invalid CAPTCHA.";
-            firstErrorField = captchaRef;
-          } else {
-            setIsCaptchaValid(true);
-          }
-        } catch (error) {
-          console.error("CAPTCHA validation failed:", error);
-          formErrors.captcha = "Something went wrong. Please try again.";
-          await logError(
-            `CAPTCHA validation failed: ${
-              error instanceof Error ? error.message : "Unknown error"
-            }`
-          );
-          firstErrorField = captchaRef;
-        }
-      }
+     
     }
+    //  if (!isCaptchaValid) {
+    //     formErrors.captcha = "Invalid or expired CAPTCHA.";
+    //     setErrors(formErrors);
+    //     toastr.error(formErrors.captcha, "Validation Error", { timeOut: 3000 });
+
+    //     if (captchaRef.current?.focusCaptcha) {
+    //       captchaRef.current.focusCaptcha();
+    //     }
+    //     return;
+    //   }
 
     function isHtmlElement(
       el: unknown
@@ -557,6 +537,19 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
         captchaRef.current?.focusCaptcha();
       }
     }
+  };
+
+  const handleCaptchaInputChange = () => {
+    // Clear only the CAPTCHA-related error message
+    // setFormErrors((prevErrors) => {
+    //   const { captcha, ...rest } = prevErrors;
+    //   return rest;
+    // });
+    setFormErrors((prevErrors) => {
+      const newErrors = { ...prevErrors };
+      delete newErrors.captcha;
+      return newErrors;
+    });
   };
 
   const closeModal = () => {
@@ -1015,7 +1008,22 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
                     </div>
                   </div>
                 </div>
-                <div className="row clearfix"></div>
+                <div className="row clearfix">
+                  <div className="col-md-12" style={{ marginTop: "20px" }}>
+                    {/* <Captcha onValidChange={setIsCaptchaValid} /> */}
+
+                    <Captcha
+                      ref={captchaRef}
+                      onValidate={setIsCaptchaValid}
+                      onInputChange={handleCaptchaInputChange}
+                      setCaptchaValue={setCaptchaValue}
+                      isSubmitting={isSubmitting}
+                    />
+                    {formErrors.captcha && (
+                      <p className="text-danger small">{formErrors.captcha}</p>
+                    )}
+                  </div>
+                </div>
                 <hr />
                 <div className="row">
                   <div className="col-lg-6">
@@ -1028,6 +1036,13 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
                     >
                       {isSubmitting ? "Please Wait..." : "Submit Abstract"}
                     </button>
+                    {/* <button
+                      type="submit"
+                      className="btn btn-primary"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Submitting..." : "Submit Abstract"}
+                    </button> */}
                   </div>
                 </div>
               </div>
