@@ -42,23 +42,22 @@ interface FormData {
   web_token: string;
   form_type: string;
   submit_status: string;
-  cid: string;
   no_participants: number;
   no_accompanying: number;
   other_info: Record<string, string | number>;
 }
 
-interface UpdatedData {
-  [key: string]:
-    | string
-    | number
-    | File
-    | Blob
-    | boolean
-    | undefined
-    | null
-    | unknown;
-}
+// interface UpdatedData {
+//   [key: string]:
+//     | string
+//     | number
+//     | File
+//     | Blob
+//     | boolean
+//     | undefined
+//     | null
+//     | unknown;
+// }
 
 type OtherInfoField =
   | "Selected Accommodation"
@@ -172,8 +171,7 @@ const Registration: React.FC<RegisterProps> = ({
     web_token: "",
     form_type: "register",
     submit_status: "0", // Default submit_status to 0
-    cid: process.env.NEXT_PUBLIC_CID || "",
-    no_participants: numParticipants,
+        no_participants: numParticipants,
     no_accompanying: numAccompanyingPersons,
     other_info: {
       "Selected Accommodation": selectedAccommodation,
@@ -231,26 +229,97 @@ const Registration: React.FC<RegisterProps> = ({
     }
   }, [pricesData, activeTab]);
 
- const logError = useCallback(async (message: string) => {
-  try {
-    const formData = new FormData();
-    formData.append("form_based", "Registration Form");
-    formData.append("cid", process.env.NEXT_PUBLIC_CID ?? "");
-    formData.append("error_message", message);
-    formData.append("name", name);
-    formData.append("email", email);
+  //  const logError = useCallback(async (message: string) => {
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append("form_based", "Registration Form");
+  //     formData.append("cid", process.env.NEXT_PUBLIC_CID ?? "");
+  //     formData.append("error_message", message);
+  //     formData.append("name", name);
+  //     formData.append("email", email);
 
-    await fetch("/api/register", {
-      method: "POST",
-      body: formData,
-    });
-  } catch (err) {
-    console.error("Error Logging API Failure", err);
-  }
-}, [name, email]);
+  //     await fetch("/api/register", {
+  //       method: "POST",
+  //       body: formData,
+  //     });
+  //   } catch (err) {
+  //     console.error("Error Logging API Failure", err);
+  //   }
+  // }, [name, email]);
+
+  const logError = useCallback(
+    async (message: string) => {
+      try {
+        const formData = new FormData();
+        formData.append("form_based", "Registration Form");
+        formData.append("error_message", message);
+        formData.append("name", name);
+        formData.append("email", email);
+
+        await fetch("/api/register", {
+          method: "POST",
+          body: formData,
+        });
+      } catch (err) {
+        console.error("Error logging error:", err);
+      }
+    },
+    [name, email]
+  );
+
+  // const sendFullFormData = useCallback(
+  //   async (updatedData: UpdatedData) => {
+  //     try {
+  //       const formData = new FormData();
+
+  //       Object.entries(updatedData).forEach(([key, value]) => {
+  //         if (key === "other_info") {
+  //           formData.append(key, JSON.stringify(value));
+  //         } else if (
+  //           !["altEmail", "whatsappNumber", "institution"].includes(key)
+  //         ) {
+  //           if (
+  //             typeof value === "string" ||
+  //             typeof value === "number" ||
+  //             typeof value === "boolean"
+  //           ) {
+  //             formData.append(key, String(value));
+  //           } else if (value instanceof Blob) {
+  //             formData.append(key, value);
+  //           } else if (value !== undefined && value !== null) {
+  //             formData.append(key, JSON.stringify(value));
+  //           }
+  //         }
+  //       });
+
+  //       const response = await axios.post("/api/register", formData, {
+  //         headers: { "Content-Type": "multipart/form-data" },
+  //       });
+
+  //       if (response.data?.data?.web_token) {
+  //         setFormData((prevState) => ({
+  //           ...prevState,
+  //           web_token: response.data.data.web_token,
+  //         }));
+  //       }
+  //     } catch (error) {
+  //       console.error("Error saving form data:", error);
+  //       if (error instanceof Error) {
+  //         await logError(
+  //           `An unexpected error occurred while saving your registration: ${error.message}`
+  //         );
+  //       } else {
+  //         await logError(
+  //           `An unexpected error occurred while saving your registration.`
+  //         );
+  //       }
+  //     }
+  //   },
+  //   [logError, setFormData]
+  // );
 
   const sendFullFormData = useCallback(
-    async (updatedData: UpdatedData) => {
+    async (updatedData: Record<string, unknown>) => {
       try {
         const formData = new FormData();
 
@@ -258,47 +327,40 @@ const Registration: React.FC<RegisterProps> = ({
           if (key === "other_info") {
             formData.append(key, JSON.stringify(value));
           } else if (
-            !["altEmail", "whatsappNumber", "institution"].includes(key)
+            typeof value === "string" ||
+            typeof value === "number" ||
+            typeof value === "boolean"
           ) {
-            if (
-              typeof value === "string" ||
-              typeof value === "number" ||
-              typeof value === "boolean"
-            ) {
-              formData.append(key, String(value));
-            } else if (value instanceof Blob) {
-              formData.append(key, value);
-            } else if (value !== undefined && value !== null) {
-              formData.append(key, JSON.stringify(value));
-            }
+            formData.append(key, String(value));
+          } else if (value instanceof Blob) {
+            formData.append(key, value);
+          } else if (value !== undefined && value !== null) {
+            formData.append(key, JSON.stringify(value));
           }
         });
 
         const response = await axios.post("/api/register", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         });
 
-        if (response.data?.data?.web_token) {
-          setFormData((prevState) => ({
-            ...prevState,
-            web_token: response.data.data.web_token,
+        const token = response.data?.data?.web_token;
+        if (token) {
+          setFormData((prev) => ({
+            ...prev,
+            web_token: token,
           }));
         }
-      } catch (error) {
-        console.error("Error saving form data:", error);
-        if (error instanceof Error) {
-          await logError(
-            `An unexpected error occurred while saving your registration: ${error.message}`
-          );
-        } else {
-          await logError(
-            `An unexpected error occurred while saving your registration.`
-          );
-        }
+      } catch (err) {
+        console.error("Error saving form data:", err);
+        await logError(
+          "An unexpected error occurred while saving your registration."
+        );
       }
     },
     [logError, setFormData]
-  ); // ✅ include logError here
+  );
 
   // Update `selectedCategory` based on `selectedParticipant`
   useEffect(() => {
@@ -1054,7 +1116,6 @@ const Registration: React.FC<RegisterProps> = ({
           },
         ],
       },
-      cid: process.env.NEXT_PUBLIC_CID,
     };
 
     console.log("payload", postData);
@@ -1064,42 +1125,23 @@ const Registration: React.FC<RegisterProps> = ({
 
     // Submit the data
     try {
-      const response = await axios.post("/api/register", postData);
+      const response = await axios.post("/api/register", postData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-      if (response.status === 200) {
-        const token = response.data.data; // Adjust this to the actual response structure
-
-        if (token) {
-          setWebToken(token);
-          router.push(`/register_details?web_token=${token}`);
-        } else {
-          console.error("Web token not found in response data");
-          await logError(
-            "Registration failed: Web token is missing in the API response."
-          );
-        }
+      const token = response.data?.data;
+      if (token) {
+        setWebToken(token);
+        router.push(`/register_details?web_token=${token}`);
       } else {
-        console.error(
-          "Received an unexpected response from the server:",
-          response
-        );
-        await logError(
-          "Registration failed: Unexpected response from the server."
-        );
+        console.error("Web token not found in response");
+        await logError("Web token is missing in the API response.");
       }
     } catch (error) {
-      console.error("Error submitting registration data:", error);
-      await logError(
-        `Registration failed: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
-
-      // toastr.error(
-      //   "Registration could not be completed due to an error. Please try again.",
-      //   "Error",
-      //   { timeOut: 3000 }
-      // );
+      console.error("Error submitting registration:", error);
+      await logError("Registration failed: something went wrong.");
     }
 
     // Re-enable the submit button and form fields after submission
@@ -1306,7 +1348,7 @@ const Registration: React.FC<RegisterProps> = ({
   };
 
   // Error Messages sending to API when submitting form
- 
+
   return (
     <div>
       <div className="regist_wrap_white">
