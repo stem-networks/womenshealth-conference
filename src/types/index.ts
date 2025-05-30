@@ -129,6 +129,14 @@ export interface RegistrationDeadline {
 //   };
 // }
 
+import "iron-session";
+
+declare module "iron-session" {
+  interface IronSessionData {
+    captchas?: Record<string, string>;
+  }
+}
+
 export interface AccommodationPrice {
   single: string;
   doubl: string;

@@ -15,6 +15,7 @@
     "@reduxjs/toolkit": "^2.8.2",
     "@types/react-slick": "^0.23.13",
     "axios": "^1.9.0",
+    "iron-session": "^8.0.4",
     "jquery": "^3.7.1",
     "next": "15.3.2",
     "pdfjs-dist": "^3.11.174",
@@ -24,7 +25,9 @@
     "react-slick": "^0.30.3",
     "react-toastify": "^11.0.5",
     "slick-carousel": "^1.8.1",
-    "toastr": "^2.1.4"
+    "svg-captcha": "^1.4.0",
+    "toastr": "^2.1.4",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -33,6 +36,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/toastr": "^2.1.43",
+    "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.27.0",
     "eslint-config-next": "15.3.2",
