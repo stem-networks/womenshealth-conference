@@ -5,10 +5,10 @@ import axios from "axios";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { enquiryname, enquiryemail, enquiryquery, category } = body;
+    const { enquiryname, enquiryemail, category } = body;
 
     // Basic validation
-    if (!enquiryname || !enquiryemail || !enquiryquery || !category) {
+    if (!enquiryname || !enquiryemail || !category) {
       return NextResponse.json(
         { success: false, message: "All fields are required." },
         { status: 400 }
@@ -22,7 +22,6 @@ export async function POST(req: NextRequest) {
           {
             name: enquiryname,
             email: enquiryemail,
-            query: enquiryquery,
             category,
           },
         ],
