@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const captchaStore = new Map<string, string>();
-
-// Example: you would have this populated by /api/captcha
-
 export async function POST(req: NextRequest) {
   try {
     const { text, captchaId } = await req.json();
@@ -12,22 +8,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ valid: false, error: "Missing captchaId or text" }, { status: 400 });
     }
 
-    // Lookup expected captcha text from the store
-    const expectedText = captchaStore.get(captchaId);
+    // ✅ Get cookies from the request
+    const captchaCookie = req.cookies.get('captcha')?.value;
 
-    if (!expectedText) {
-      // expired or invalid captchaId
+    if (!captchaCookie) {
       return NextResponse.json({ valid: false, error: "Captcha not found or expired" });
     }
 
-    const isValid = text.toLowerCase() === expectedText.toLowerCase();
+    const { id: storedId, text: storedText } = JSON.parse(captchaCookie);
 
-    // Optionally: remove captcha after one validation to prevent reuse
-    captchaStore.delete(captchaId);
+    if (captchaId !== storedId) {
+      return NextResponse.json({ valid: false, error: "Invalid captcha ID" });
+    }
 
-    return NextResponse.json({ valid: isValid });
+    const isValid = text.toLowerCase() === storedText.toLowerCase();
+
+    // ✅ Clear the cookie by setting maxAge: 0 in the response
+    const response = NextResponse.json({ valid: isValid });
+    response.cookies.set('captcha', '', {
+      maxAge: 0,
+      path: '/',
+    });
+
+    return response;
   } catch (error) {
-    console.log(error)
+    console.error(error);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 }
