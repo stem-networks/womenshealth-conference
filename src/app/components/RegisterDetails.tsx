@@ -52,14 +52,14 @@ const RegisterDetails = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [details, setDetails] = useState<RegistrationData | null>(null);
-  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState<boolean>(false);
   const [discountDetails, setDiscountDetails] =
     useState<DiscountDetails | null>(null);
   const [actualAmount, setActualAmount] = useState<ActualAmount | null>(null);
   const [localError, setLocalError] = useState("");
   const [checkEmail, setCheckEmail] = useState("");
 
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
   const [couponCodeToCheck, setCouponCodeToCheck] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const [showCoupon, setShowCoupon] = useState(false);
@@ -91,70 +91,70 @@ const RegisterDetails = () => {
     }
   }, [searchParams]);
 
-  const CancelModal: React.FC = () => {
-    return (
-      <div className="modal-backdrop">
-        <div className="modal">
-          <p>You clicked cancel. Do you want to try again?</p>
-          <div className="modal-footer">
-            <button onClick={() => setShowCancelModal(false)} className="btn">
-              OK
-            </button>
-          </div>
-        </div>
-        <style jsx>{`
-          .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-          }
-          .modal {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            width: 400px;
-            height: 200px;
-            max-width: 90%;
-            display: flex;
-            flex-direction: column;
-          }
-          .modal p {
-            margin-bottom: 5px;
-            line-height: 28px;
-            font-size: 18px;
-            text-align: center;
-          }
-          .modal-backdrop .modal-footer {
-            width: 100%;
-          }
-          .btn {
-            padding: 10px 20px;
-            font-size: 16px;
-            background: var(--primary-color);
-            color: #fff;
-            border-radius: 4px;
-            text-decoration: none;
-            transition: all 0.4s;
-            line-height: normal;
-            border: none;
-            transition: background-color 0.2s ease;
-            width: 100%;
-          }
-          .btn:hover {
-            background: var(--primary-color);
-          }
-        `}</style>
-      </div>
-    );
-  };
+  // const CancelModal: React.FC = () => {
+  //   return (
+  //     <div className="modal-backdrop">
+  //       <div className="modal">
+  //         <p>You clicked cancel. Do you want to try again?</p>
+  //         <div className="modal-footer">
+  //           <button onClick={() => setShowCancelModal(false)} className="btn">
+  //             OK
+  //           </button>
+  //         </div>
+  //       </div>
+  //       <style jsx>{`
+  //         .modal-backdrop {
+  //           position: fixed;
+  //           top: 0;
+  //           left: 0;
+  //           width: 100vw;
+  //           height: 100vh;
+  //           background: rgba(0, 0, 0, 0.5);
+  //           display: flex;
+  //           align-items: center;
+  //           justify-content: center;
+  //           z-index: 1000;
+  //         }
+  //         .modal {
+  //           background: white;
+  //           padding: 30px;
+  //           border-radius: 10px;
+  //           box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  //           width: 400px;
+  //           height: 200px;
+  //           max-width: 90%;
+  //           display: flex;
+  //           flex-direction: column;
+  //         }
+  //         .modal p {
+  //           margin-bottom: 5px;
+  //           line-height: 28px;
+  //           font-size: 18px;
+  //           text-align: center;
+  //         }
+  //         .modal-backdrop .modal-footer {
+  //           width: 100%;
+  //         }
+  //         .btn {
+  //           padding: 10px 20px;
+  //           font-size: 16px;
+  //           background: var(--primary-color);
+  //           color: #fff;
+  //           border-radius: 4px;
+  //           text-decoration: none;
+  //           transition: all 0.4s;
+  //           line-height: normal;
+  //           border: none;
+  //           transition: background-color 0.2s ease;
+  //           width: 100%;
+  //         }
+  //         .btn:hover {
+  //           background: var(--primary-color);
+  //         }
+  //       `}</style>
+  //     </div>
+  //   );
+  // };
 
   // useEffect(() => {
   //   const fetchDetails = async () => {
@@ -492,6 +492,37 @@ const RegisterDetails = () => {
     totalRegistrationPrice,
     totalAccommodationPrice,
   ]);
+
+  async function sendErrorToCMS({
+    name,
+    email,
+    errorMessage,
+    formBased = "PayPal Payment",
+  }: {
+    name: string;
+    email: string;
+    errorMessage: string;
+    formBased?: string;
+  }) {
+    try {
+      const payload = new FormData();
+      payload.append("name", name);
+      payload.append("email", email);
+      payload.append("error_message", errorMessage);
+      payload.append("form_based", formBased);
+
+      const res = await fetch("/api/send-to-telegram", {
+        method: "POST",
+        body: payload,
+      });
+
+      if (!res.ok) {
+        console.error("Failed to send error to CMS");
+      }
+    } catch (err) {
+      console.error("Error sending to CMS:", err);
+    }
+  }
 
   return (
     <div>
@@ -843,6 +874,13 @@ const RegisterDetails = () => {
                         return data.orderID;
                       } catch (error) {
                         console.error("❌ Error in createOrder:", error);
+                        await sendErrorToCMS({
+                          name: dataToShow?.name || "Unknown User",
+                          email: dataToShow?.email || "Unknown Email",
+                          errorMessage:
+                            (error as Error).message ||
+                            "Unknown error in createOrder",
+                        });
                         setIsPending(false);
                       }
                     }}
@@ -912,6 +950,13 @@ const RegisterDetails = () => {
                         router.push(`/payment_success?${query}`);
                       } catch (error) {
                         console.error("❌ Error in onApprove:", error);
+                        await sendErrorToCMS({
+                          name: dataToShow?.name || "Unknown User",
+                          email: dataToShow?.email || "Unknown Email",
+                          errorMessage:
+                            (error as Error).message ||
+                            "Unknown error in onApprove",
+                        });
                         router.push(
                           `/register_details?status=failure&web_token=${dataToShow?.web_token}`
                         );
@@ -919,14 +964,32 @@ const RegisterDetails = () => {
                         setIsPending(false);
                       }
                     }}
-                    onCancel={(data) => {
+                    onCancel={async (data) => {
                       console.warn("🟠 [PayPal] onCancel Triggered");
                       console.log("❗ Cancel Payload:", data);
+
+                      // Construct a readable cancel message
+                      const cancelMessage = `User canceled the PayPal payment. Order ID: ${
+                        data?.orderID || "N/A"
+                      }`;
+
+                      await sendErrorToCMS({
+                        name: dataToShow?.name || "Unknown User",
+                        email: dataToShow?.email || "Unknown Email",
+                        errorMessage: cancelMessage,
+                      });
+
                       setShowCancelModal(true);
                     }}
-                    onError={(err) => {
+                    onError={async (err) => {
                       console.error("🔴 [PayPal] onError Triggered");
                       console.error("💥 Error Payload:", err);
+                      await sendErrorToCMS({
+                        name: dataToShow?.name || "Unknown User",
+                        email: dataToShow?.email || "Unknown Email",
+                        errorMessage:
+                          JSON.stringify(err) || "Unknown PayPal onError",
+                      });
                       router.push(
                         `/register_details?status=failure&web_token=${dataToShow?.web_token}`
                       );
@@ -941,7 +1004,7 @@ const RegisterDetails = () => {
         </div>
       </div>
 
-      {showCancelModal && <CancelModal />}
+      {/* {showCancelModal && <CancelModal />} */}
 
       {showModal && (
         <div
@@ -1005,6 +1068,28 @@ const RegisterDetails = () => {
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCancelModal && (
+        <div className="modal" id="myModal" tabIndex={-1} role="dialog">
+          <div className="modal-dialog modal-confirm fade-in" role="document">
+            <div className="modal-content">
+              <p className="" style={{ fontSize: "18px" }}>
+                You clicked cancel. Do you want to try again?
+              </p>
+
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-success btn-block"
+                  onClick={() => setShowCancelModal(false)}
+                >
+                  OK
+                </button>
               </div>
             </div>
           </div>
