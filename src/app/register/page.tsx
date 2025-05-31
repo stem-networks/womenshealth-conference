@@ -52,7 +52,6 @@ const RegisterPage = async () => {
     fetchRegisterData(),
   ]);
 
-  console.log("register api data ", registerData);
   return <Registration generalData={general} registerData={registerData} />;
 };
 

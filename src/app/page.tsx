@@ -1,7 +1,7 @@
 // Components
-import WelcomeMessage from "./components/WelcomeMessage";
-import Members from "./components/Members";
-import Speakers from "./components/Speakers";
+// import WelcomeMessage from "./components/WelcomeMessage";
+// import Members from "./components/Members";
+// import Speakers from "./components/Speakers";
 import BannerSection from "./components/BannerSection";
 import SessionsComponent from "./components/SessionContent";
 import MainSlider from "./components/MainSlider";
@@ -99,15 +99,15 @@ const Home = async () => {
   return (
     <div>
       <BannerSection generalbannerInfo={general} onelinerBannerInfo={indexPageData} />
-      <WelcomeMessage />
-      <Members />
+      {/* <WelcomeMessage />
+      <Members /> */}
       {/* Uncomment when sessions are ready */}
       <SessionsComponent
         generalInfo={general_info}
         sessions={sessions}
         sessionContent={sessionContent}
       />
-      <Speakers />
+      {/* <Speakers /> */}
       <MainSlider generalInfo={general} registerInfo={registerData} />
       <ImportantDates onelinerInfo={indexPageData} />
       <FaqsMain commonInfo={commonContent} />

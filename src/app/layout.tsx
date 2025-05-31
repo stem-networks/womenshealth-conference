@@ -10,7 +10,7 @@ import { AppDataProvider } from "@/context/AppDataContext";
 // import Header from "./components/Header/Header";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import MediaCollaborators from "./components/MediaCollaborators";
+// import MediaCollaborators from "./components/MediaCollaborators";
 import PartneredContent from "./components/PartneredContent";
 // import { useAppData } from "../context/AppDataContext";
 import { ToastContainer } from 'react-toastify';
@@ -57,7 +57,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: eventName,
     description: pageData?.register?.[0]?.content || "",
     icons: {
-      icon: `${general?.site_url || ""}/favicon.png`,
+      icon: `${general?.site_url || ""}/images/images/favicon.png`,
     },
     openGraph: {
       images: `${general?.site_url || ""}/images/images/opengraph_image.jpg`,
@@ -197,7 +197,7 @@ export default async function RootLayout({
             <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick />
             <Header generalData={generaldata} registerData={registerData} />
             {children}
-            <MediaCollaborators />
+            {/* <MediaCollaborators /> */}
             <PartneredContent />
             <Footer indexPageData={indexPageData} generalData={generaldata} />
           </NavProvider>
