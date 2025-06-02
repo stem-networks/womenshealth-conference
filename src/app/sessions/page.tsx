@@ -3,6 +3,7 @@
 import { Metadata } from "next";
 import { IndexPageData, ApiResponse } from "@/types";
 import SessionsComponent from "../components/SessionContent";
+import Link from "next/link";
 
 async function fetchGeneralData(): Promise<ApiResponse> {
   const baseUrl = process.env.BASE_URL;
@@ -30,10 +31,19 @@ export async function generateMetadata(): Promise<Metadata> {
       meta_keywords: "",
     };
 
+    // Canonical 
+    const baseUrl = process.env.BASE_URL || '';
+    const canonicalPath = '/sessions'; // hardcode since we know this is sessions page
+    const canonicalURL = `${baseUrl}${canonicalPath}`;
+
     return {
       title: meta.title,
       description: meta.content,
       keywords: meta.meta_keywords,
+      metadataBase: new URL(baseUrl),
+      alternates: {
+        canonical: canonicalURL,
+      },
     };
   } catch (error) {
     console.error("Metadata generation error sessions:", error);
@@ -58,14 +68,32 @@ const SessionsPage = async () => {
     indexPageData?.oneliner?.sessions?.content ||
     "Session content will be updated soon.";
 
-    
+
 
   return (
-    <SessionsComponent
-      generalInfo={general_info}
-      sessions={sessions}
-      sessionContent={sessionContent}
-    />
+
+    <div>
+      <div className="brand_wrap">
+        <div className="auto-container">
+          <div className="row">
+            <div className="col-md-12">
+              <Link href="/" title="Navigate to Homepage">
+                Home
+              </Link>{" "}
+              <i className="fa fa-angle-right"></i>
+              <span>Sessions</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <SessionsComponent
+        generalInfo={general_info}
+        sessions={sessions}
+        sessionContent={sessionContent}
+      />
+    </div>
+
   );
 };
 

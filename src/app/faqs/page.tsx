@@ -30,10 +30,19 @@ export async function generateMetadata(): Promise<Metadata> {
       meta_keywords: "",
     };
 
+    // Canonical 
+    const baseUrl = process.env.BASE_URL || '';
+    const canonicalPath = '/faqs'; // hardcode since we know this is sessions page
+    const canonicalURL = `${baseUrl}${canonicalPath}`;
+
     return {
       title: meta.title,
       description: meta.content,
       keywords: meta.meta_keywords,
+      metadataBase: new URL(baseUrl),
+      alternates: {
+        canonical: canonicalURL,
+      },
     };
   } catch (error) {
     console.error("Metadata generation error faq:", error);
@@ -50,7 +59,7 @@ const FaqsPage = async () => {
   const [commonContent] = await Promise.all([fetchCommonData()]);
 
 
- 
+
   const faqsContent = commonContent?.data?.faq || [];
   // console.log("faq 1111", faqsContent);
 

@@ -2,7 +2,7 @@
 
 "use client";
 
-import Link from "next/link";
+// import Link from "next/link";
 
 interface Session {
   text?: string;
@@ -86,7 +86,7 @@ const SessionsComponent = ({
               </div>
             </div>
 
-            <div className="list-of-topics-navigation-block">
+            {/* <div className="list-of-topics-navigation-block">
               <p>
                 Explore{" "}
                 <Link href="/list-of-topics" title="List Of Topics">
@@ -94,7 +94,7 @@ const SessionsComponent = ({
                 </Link>{" "}
                 Submit your abstract to present at the conference.
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

@@ -1,3 +1,5 @@
+/* Common.css 
+---------- */
 /* 
 Intructions:
 1) Any kind of changes to be made in only the theme.css. i.e., color code changes,fontsizes, logo width, mobile logo width.
@@ -6320,9 +6322,9 @@ li {
 }
 
 
-.mobil_lo5 {
+/* .mobil_lo5 {
 	display: none;
-}
+} */
 
 .june_wrap55 {
 	/* width: 310px;
@@ -8259,9 +8261,9 @@ li {
 		padding: 77px 35px;
 	}
 
-	.mobil_lo5 {
+	/* .mobil_lo5 {
 		display: inherit;
-	}
+	} */
 
 	.nur_wrap1 {
 		font-size: 28px;

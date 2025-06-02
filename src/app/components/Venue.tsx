@@ -19,7 +19,7 @@ interface VenueProps {
 
 const Venue: React.FC<VenueProps> = ({ onelinerVenueInfo }) => {
 
-    console.log('Venue', onelinerVenueInfo.venueImages)
+    // console.log('Venue', onelinerVenueInfo.venueImages)
     const venueImages: VenueImages = onelinerVenueInfo?.venueImages || {};
 
     return (

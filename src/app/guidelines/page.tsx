@@ -25,22 +25,31 @@ async function fetchCommonData(): Promise<CommonContent> {
 export async function generateMetadata(): Promise<Metadata> {
   try {
     const generalData = await fetchGeneralData();
-    const meta = generalData?.pages?.FAQ?.[0] || {
-      title: "FAQ",
-      content: "Explore the FAQ of the conference.",
+    const meta = generalData?.pages?.guidlines?.[0] || {
+      title: "Guidelines",
+      content: "Explore the Guidelines of the conference.",
       meta_keywords: "",
     };
+
+    // Canonical 
+    const baseUrl = process.env.BASE_URL || '';
+    const canonicalPath = '/guidelines'; // hardcode since we know this is sessions page
+    const canonicalURL = `${baseUrl}${canonicalPath}`;
 
     return {
       title: meta.title,
       description: meta.content,
       keywords: meta.meta_keywords,
+      metadataBase: new URL(baseUrl),
+      alternates: {
+        canonical: canonicalURL,
+      },
     };
   } catch (error) {
     console.error("Metadata generation error guidelines:", error);
     return {
-      title: "FAQs",
-      description: "Explore the FAQs of the conference.",
+      title: "Guidelines",
+      description: "Explore the Guidelines of the conference.",
       keywords: "",
     };
   }
