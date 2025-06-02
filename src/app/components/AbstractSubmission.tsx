@@ -5,6 +5,7 @@ import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import toastr from "toastr";
+import countries from '../../data/countries';
 // import Captcha from "./Captcha"; // Make sure you have this component
 
 interface FormData {
@@ -30,8 +31,8 @@ interface CaptchaRefType {
 
 type PossibleRef =
   | React.RefObject<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
-    >
+    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
+  >
   | React.RefObject<CaptchaRefType | null>;
 
 interface FormAutoData {
@@ -74,8 +75,8 @@ interface CaptchaRefType {
 // FieldRef type union includes both types of refs
 type FieldRef =
   | React.RefObject<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
-    >
+    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
+  >
   | React.RefObject<CaptchaRefType | null>
   | null;
 
@@ -531,8 +532,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
         { timeOut: 3000 }
       );
       await logError(
-        `Abstract Form Submission Error: ${
-          error instanceof Error ? error.message : "Unknown error"
+        `Abstract Form Submission Error: ${error instanceof Error ? error.message : "Unknown error"
         }`
       );
     } finally {
@@ -1043,8 +1043,11 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
                       value={formData.country}
                     >
                       <option value="">Select Country</option>
-                      <option value="Afghanistan">Afghanistan</option>
-                      {/* Add more countries as needed */}
+                      {countries.map((country: string) => (
+                        <option key={country} value={country}>
+                          {country}
+                        </option>
+                      ))}
                     </select>
                     {errors.country && (
                       <div className="error">{errors.country}</div>

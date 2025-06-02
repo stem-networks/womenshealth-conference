@@ -58,22 +58,30 @@ async function fetchCommonData(): Promise<CommonContent> {
 export async function generateMetadata(): Promise<Metadata> {
   try {
     const generalData = await fetchGeneralData();
-    const meta = generalData?.pages?.sessions_meta?.[0] || {
-      title: "Sessions",
-      content: "Explore the sessions of the conference.",
+    const meta = generalData?.pages?.index?.[0] || {
+      title: "Conference",
+      content: "Discover engaging sessions and expert talks at our global conference event.",
       meta_keywords: "",
     };
+
+    // Canonical 
+    const baseUrl = process.env.BASE_URL || '';
+    const canonicalURL = `${baseUrl}/`;
 
     return {
       title: meta.title,
       description: meta.content,
       keywords: meta.meta_keywords,
+      metadataBase: new URL(baseUrl),
+      alternates: {
+        canonical: canonicalURL,
+      },
     };
   } catch (error) {
     console.error("Metadata generation error:", error);
     return {
-      title: "Sessions",
-      description: "Explore the sessions of the conference.",
+      title: "Conference",
+      description: "Discover engaging sessions and expert talks at our global conference event.",
       keywords: "",
     };
   }

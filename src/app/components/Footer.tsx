@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { OnelinerData, ApiResponse, IndexPageData } from "@/types";
@@ -19,6 +19,21 @@ type FormErrors = {
   email?: string;
   message?: string;
 };
+
+interface TawkAPIType {
+  onLoad?: () => void;
+  [key: string]: unknown;
+}
+
+// Declare global window properties
+declare global {
+  interface Window {
+    Tawk_API?: TawkAPIType;
+    Tawk_LoadStart?: Date;
+  }
+}
+
+
 
 const Footer: React.FC<FooterProps> = ({ generalData, indexPageData }) => {
   const general = generalData?.data || {};
@@ -133,6 +148,45 @@ const Footer: React.FC<FooterProps> = ({ generalData, indexPageData }) => {
       setSubmitting(false);
     }
   };
+
+  // Tawk Script 
+  // useEffect(() => {
+  //   // Ensure script runs only in the browser
+  //   if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_TAWK_TO_SRC) {
+  //     window.Tawk_API = window.Tawk_API || {};
+  //     window.Tawk_LoadStart = new Date();
+
+  //     const script = document.createElement('script');
+  //     script.src = process.env.NEXT_PUBLIC_TAWK_TO_SRC;
+  //     script.async = true;
+  //     script.charset = 'UTF-8';
+  //     script.setAttribute('crossorigin', '*');
+
+  //     const firstScript = document.getElementsByTagName('script')[0];
+  //     if (firstScript?.parentNode) {
+  //       firstScript.parentNode.insertBefore(script, firstScript);
+  //     }
+  //   }
+  // }, []);
+
+  useEffect(() => {
+    // Only run in the browser and if Tawk script URL is available
+    if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_TAWK_TO_SRC) {
+      window.Tawk_API = window.Tawk_API || {};
+      window.Tawk_LoadStart = new Date();
+
+      const script = document.createElement('script');
+      script.src = process.env.NEXT_PUBLIC_TAWK_TO_SRC;
+      script.async = true;
+      script.charset = 'UTF-8';
+      script.setAttribute('crossorigin', '*');
+
+      const firstScript = document.getElementsByTagName('script')[0];
+      if (firstScript?.parentNode) {
+        firstScript.parentNode.insertBefore(script, firstScript);
+      }
+    }
+  }, []);
 
   return (
     <div>
