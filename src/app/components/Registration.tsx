@@ -48,30 +48,6 @@ interface FormData {
   other_info: Record<string, string | number>;
 }
 
-// interface UpdatedData {
-//   [key: string]:
-//     | string
-//     | number
-//     | File
-//     | Blob
-//     | boolean
-//     | undefined
-//     | null
-//     | unknown;
-// }
-
-// type OtherInfoField =
-//   | "Selected Accommodation"
-//   | "check In Date"
-//   | "check Out Date"
-//   | "Num of Nights"
-//   | "selected Accommodation Price"
-//   | "Price Per Accompanying Person"
-//   | "Registration Price"
-//   | "Total Price";
-
-// type FieldName = string;
-// type FieldValue = string | number | boolean;
 
 interface RegisterProps {
   generalData: ApiResponse;
@@ -145,6 +121,10 @@ const Registration: React.FC<RegisterProps> = ({
   const checkInRef = useRef<HTMLSelectElement>(null);
   const checkOutRef = useRef<HTMLSelectElement>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  // const [fieldLoading, setFieldLoading] = useState<{ [key: string]: boolean }>(
+  //   {}
+  // );
+
   const [formValues, setFormValues] = useState<Record<string, unknown>>({});
 
   // Function to generate a unique token
@@ -267,121 +247,10 @@ const Registration: React.FC<RegisterProps> = ({
     [name, email]
   );
 
-  // const sendFullFormData = useCallback(
-  //   async (updatedData: Record<string, unknown>) => {
-  //     try {
-  //       const formData = new FormData();
-
-  //       Object.entries(updatedData).forEach(([key, value]) => {
-  //         if (key === "other_info") {
-  //           formData.append(key, JSON.stringify(value));
-  //         } else if (
-  //           typeof value === "string" ||
-  //           typeof value === "number" ||
-  //           typeof value === "boolean"
-  //         ) {
-  //           formData.append(key, String(value));
-  //         } else if (value instanceof Blob) {
-  //           formData.append(key, value);
-  //         } else if (value !== undefined && value !== null) {
-  //           formData.append(key, JSON.stringify(value));
-  //         }
-  //       });
-
-  //       const response = await axios.post("/api/send-to-telegram", formData, {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",
-  //         },
-  //       });
-
-  //       const token = response.data?.data?.web_token;
-  //       if (token) {
-  //         setFormData((prev) => ({
-  //           ...prev,
-  //           web_token: token,
-  //         }));
-  //       }
-  //     } catch (err) {
-  //       console.error("Error saving form data:", err);
-  //       await logError(
-  //         "An unexpected error occurred while saving your registration."
-  //       );
-  //     }
-  //   },
-  //   [logError, setFormData]
-  // );
-
-  // const sendFullFormData = useCallback(
-  //   async (updatedData: Record<string, unknown>) => {
-  //     try {
-  //       const formData = new FormData();
-
-  //       Object.entries(updatedData).forEach(([key, value]) => {
-  //         if (key === "other_info") {
-  //           formData.append(key, JSON.stringify(value));
-  //         } else if (
-  //           typeof value === "string" ||
-  //           typeof value === "number" ||
-  //           typeof value === "boolean"
-  //         ) {
-  //           formData.append(key, String(value));
-  //         } else if (value instanceof Blob) {
-  //           formData.append(key, value);
-  //         } else if (value !== undefined && value !== null) {
-  //           formData.append(key, JSON.stringify(value));
-  //         }
-  //       });
-
-  //       await axios.post("/api/send-to-cms", formData, {
-  //         headers: { "Content-Type": "multipart/form-data" },
-  //       });
-  //     } catch (err) {
-  //       console.error("Error saving form data:", err);
-  //       await logError(
-  //         "An unexpected error occurred while saving your registration."
-  //       );
-  //     }
-  //   },
-  //   [logError]
-  // );
-
-  // const sendFullFormData = useCallback(
-  //   async (updatedData: Record<string, unknown>) => {
-  //     try {
-  //       const formDataObj = new FormData();
-
-  //       Object.entries(updatedData).forEach(([key, value]) => {
-  //         if (key === "other_info") {
-  //           formDataObj.append(key, JSON.stringify(value));
-  //         } else if (
-  //           typeof value === "string" ||
-  //           typeof value === "number" ||
-  //           typeof value === "boolean"
-  //         ) {
-  //           formDataObj.append(key, String(value));
-  //         } else if (value instanceof Blob) {
-  //           formDataObj.append(key, value);
-  //         } else if (value !== undefined && value !== null) {
-  //           formDataObj.append(key, JSON.stringify(value));
-  //         }
-  //       });
-
-  //       await axios.post("/api/send-to-cms", formDataObj, {
-  //         headers: { "Content-Type": "multipart/form-data" },
-  //       });
-
-  //       console.log("Form data sent successfully");
-  //     } catch (err) {
-  //       console.error("Error saving form data:", err);
-  //     }
-  //   },
-  //   []
-  // );
-
   const sendFullFormData = useCallback(
     async (data: Record<string, unknown>) => {
       try {
-        setLoading(true);
+        // setLoading(true);
 
         const formDataObj = new FormData();
         Object.entries(data).forEach(([key, value]) => {
@@ -411,6 +280,44 @@ const Registration: React.FC<RegisterProps> = ({
     },
     []
   );
+
+  // const sendFullFormData = useCallback(
+  //   async (data: Record<string, unknown>, field?: string) => {
+  //     try {
+  //       if (field) {
+  //         setFieldLoading((prev) => ({ ...prev, [field]: true }));
+  //       }
+
+  //       const formDataObj = new FormData();
+  //       Object.entries(data).forEach(([key, value]) => {
+  //         if (
+  //           typeof value === "string" ||
+  //           typeof value === "number" ||
+  //           typeof value === "boolean"
+  //         ) {
+  //           formDataObj.append(key, String(value));
+  //         } else if (value instanceof Blob) {
+  //           formDataObj.append(key, value);
+  //         } else if (value !== undefined && value !== null) {
+  //           formDataObj.append(key, JSON.stringify(value));
+  //         }
+  //       });
+
+  //       await axios.post("/api/send-to-cms", formDataObj, {
+  //         headers: { "Content-Type": "multipart/form-data" },
+  //       });
+
+  //       console.log("Form data sent successfully");
+  //     } catch (err) {
+  //       console.error("Error saving form data:", err);
+  //     } finally {
+  //       if (field) {
+  //         setFieldLoading((prev) => ({ ...prev, [field]: false }));
+  //       }
+  //     }
+  //   },
+  //   []
+  // );
 
   // Update `selectedCategory` based on `selectedParticipant`
   useEffect(() => {
@@ -1557,6 +1464,8 @@ const Registration: React.FC<RegisterProps> = ({
     }, 0);
   };
 
+   
+
   return (
     <div>
       <div className="brand_wrap">
@@ -1787,7 +1696,7 @@ const Registration: React.FC<RegisterProps> = ({
                           value="inperson"
                           checked={selectedOption === "inperson"}
                           onChange={() => toggleCheckbox("inperson")}
-                          disabled={loading}
+                           disabled={loading}
                           // Hide the default checkbox
                           style={{ display: "none" }}
                         />
@@ -1807,13 +1716,15 @@ const Registration: React.FC<RegisterProps> = ({
                           value="virtual"
                           checked={selectedOption === "virtual"}
                           onChange={() => toggleCheckbox("virtual")}
-                          disabled={loading}
+                           disabled={loading}
                           style={{ display: "none" }}
                         />
                         <span className="checkmark"></span>
                       </label>
                     </button>
                   </div>
+
+                
 
                   <div className="tab-content">
                     {activeTab === "tab1" && (
