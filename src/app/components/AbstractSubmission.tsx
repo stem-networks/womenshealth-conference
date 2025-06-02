@@ -176,6 +176,82 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     [key: string]: string | undefined;
   }>({});
 
+  // const handleChange = (
+  //   e: React.ChangeEvent<
+  //     HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+  //   >
+  // ) => {
+  //   const { name, value } = e.target;
+  //   const target = e.target as HTMLInputElement;
+  //   const files = target.files;
+
+  //   setFormAutoData((prevState) => {
+  //     const updatedData = { ...prevState, [name]: value };
+
+  //     setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+
+  //     const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
+
+  //     // if (updatedData.email) {
+  //     //   if (
+  //     //     (name === "title" || name === "country" || name === "intrested") &&
+  //     //     isValidEmail(updatedData.email)
+  //     //   ) {
+  //     //     sendFullFormData(updatedData);
+  //     //   }
+  //     // }
+  //     if (isValidEmail(updatedData.email)) {
+  //       sendFullFormData(updatedData);
+  //     }
+  //     return updatedData;
+  //   });
+
+  //   if (name === "upload_abstract_file" && files) {
+  //     const file = files[0];
+
+  //     if (file) {
+  //       const allowedTypes = [
+  //         "application/pdf",
+  //         "application/msword",
+  //         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  //         "text/rtf",
+  //       ];
+
+  //       if (!allowedTypes.includes(file.type)) {
+  //         setErrors((prevErrors) => ({
+  //           ...prevErrors,
+  //           upload_abstract_file:
+  //             "Please select a PDF, DOC, DOCX, or RTF file.",
+  //         }));
+  //         return;
+  //       }
+
+  //       setErrors((prevErrors) => ({
+  //         ...prevErrors,
+  //         upload_abstract_file: "",
+  //       }));
+
+  //       setFormData((prevData) => ({
+  //         ...prevData,
+  //         [name]: file,
+  //       }));
+  //       setSelectedFileName(file.name);
+  //     } else {
+  //       setErrors((prevErrors) => ({
+  //         ...prevErrors,
+  //         upload_abstract_file: "File is required.",
+  //       }));
+  //     }
+  //   } else {
+  //     setFormData((prevData) => ({
+  //       ...prevData,
+  //       [name]: value,
+  //     }));
+
+  //     setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+  //   }
+  // };
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -185,67 +261,41 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     const target = e.target as HTMLInputElement;
     const files = target.files;
 
-    setFormAutoData((prevState) => {
-      const updatedData = { ...prevState, [name]: value };
-
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-
-      const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
-
-      if (updatedData.email) {
-        if (
-          (name === "title" || name === "country" || name === "intrested") &&
-          isValidEmail(updatedData.email)
-        ) {
-          sendFullFormData(updatedData);
-        }
-      }
-      return updatedData;
-    });
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
 
     if (name === "upload_abstract_file" && files) {
       const file = files[0];
+      const allowedTypes = [
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "text/rtf",
+      ];
 
-      if (file) {
-        const allowedTypes = [
-          "application/pdf",
-          "application/msword",
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          "text/rtf",
-        ];
-
-        if (!allowedTypes.includes(file.type)) {
-          setErrors((prevErrors) => ({
-            ...prevErrors,
-            upload_abstract_file:
-              "Please select a PDF, DOC, DOCX, or RTF file.",
-          }));
-          return;
-        }
-
+      if (!allowedTypes.includes(file.type)) {
         setErrors((prevErrors) => ({
           ...prevErrors,
-          upload_abstract_file: "",
+          upload_abstract_file: "Please select a PDF, DOC, DOCX, or RTF file.",
         }));
-
-        setFormData((prevData) => ({
-          ...prevData,
-          [name]: file,
-        }));
-        setSelectedFileName(file.name);
-      } else {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          upload_abstract_file: "File is required.",
-        }));
+        return;
       }
+
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: file,
+      }));
+
+      setSelectedFileName(file.name);
     } else {
       setFormData((prevData) => ({
         ...prevData,
         [name]: value,
       }));
 
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+      setFormAutoData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
     }
   };
 
@@ -755,40 +805,48 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     }
   };
 
-  const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
+  // const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
 
-  const handleFieldUpdate = (fieldName: keyof FormAutoData, value: string) => {
-    setFormAutoData((prevState) => {
-      const updatedData = {
-        ...prevState,
-        [fieldName]: value,
-        submit_status: prevState.submit_status || "0",
-      };
+  // const handleFieldUpdate = (fieldName: keyof FormAutoData, value: string) => {
+  //   setFormAutoData((prevState) => {
+  //     const updatedData = {
+  //       ...prevState,
+  //       [fieldName]: value,
+  //       submit_status: prevState.submit_status || "0",
+  //     };
 
-      // Email validation and conditional API trigger
-      if (fieldName === "email") {
-        if (!value.trim()) {
-          setErrors((prev) => ({ ...prev, email: "Email is required." }));
-          console.error("Email is required. API not triggered.");
-          return updatedData;
-        }
+  //     // Email validation and conditional API trigger
+  //     if (fieldName === "email") {
+  //       if (!value.trim()) {
+  //         setErrors((prev) => ({ ...prev, email: "Email is required." }));
+  //         console.error("Email is required. API not triggered.");
+  //         return updatedData;
+  //       }
 
-        if (!isValidEmail(value)) {
-          setErrors((prev) => ({ ...prev, email: "Invalid email format." }));
-          console.error("Invalid email format. API not triggered.");
-          return updatedData;
-        }
+  //       if (!isValidEmail(value)) {
+  //         setErrors((prev) => ({ ...prev, email: "Invalid email format." }));
+  //         console.error("Invalid email format. API not triggered.");
+  //         return updatedData;
+  //       }
 
-        // Clear previous error
-        setErrors((prev) => ({ ...prev, email: "" }));
+  //       // Clear previous error
+  //       setErrors((prev) => ({ ...prev, email: "" }));
 
-        // Send data only when email is present and valid
-        sendFullFormData(updatedData);
-      }
+  //       // Send data only when email is present and valid
+  //       sendFullFormData(updatedData);
+  //     }
 
-      return updatedData;
-    });
-  };
+  //     return updatedData;
+  //   });
+  // };
+
+  // const handleFieldUpdate = (fieldName: keyof FormAutoData, value: string) => {
+  //   setFormAutoData((prevState) => ({
+  //     ...prevState,
+  //     [fieldName]: value,
+  //     submit_status: prevState.submit_status || "0",
+  //   }));
+  // };
 
   // const sendFullFormData = async (
   //   updatedData: FormAutoData,
@@ -828,7 +886,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
       const formData = new FormData();
 
       Object.entries(updatedData).forEach(([key, value]) => {
-        formData.append(key, value);
+        formData.append(key, value || "");
       });
 
       if (submitStatus) {
@@ -846,6 +904,52 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
       return null;
     }
   };
+
+  const isValidEmail = (email: string): boolean => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+
+
+const handleBlur = (
+  e: React.FocusEvent<
+    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+  >
+) => {
+  const { name, value } = e.target;
+
+  const updatedData = {
+    ...formAutoData,
+    [name]: value,
+    submit_status: formAutoData.submit_status || "0",
+  };
+
+  setFormAutoData(updatedData);
+
+  // Validate email only if it exists
+  const emailValue = name === "email" ? value : updatedData.email;
+
+  if (!emailValue) {
+    if (name === "email") {
+      setErrors((prev) => ({ ...prev, email: "Email is required." }));
+    }
+    return; // Don't send API if email is missing
+  }
+
+  if (!isValidEmail(emailValue)) {
+    if (name === "email") {
+      setErrors((prev) => ({ ...prev, email: "Invalid email format." }));
+    }
+    return; // Don't send API if email is invalid
+  }
+
+  // Clear email error and send form data
+  if (name === "email") {
+    setErrors((prev) => ({ ...prev, email: "" }));
+  }
+
+  sendFullFormData(updatedData);
+};
+
 
   return (
     <div>
@@ -895,6 +999,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
                       disabled={isSubmitting}
                       autoComplete="off"
                       value={formData.title}
+                      onBlur={handleBlur}
                     >
                       <option value="">Select</option>
                       <option value="Dr.">Dr.</option>
@@ -919,7 +1024,8 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
                       disabled={isSubmitting}
                       autoComplete="new-password"
                       value={formData.name}
-                      onBlur={(e) => handleFieldUpdate("name", e.target.value)}
+                      // onBlur={(e) => handleFieldUpdate("name", e.target.value)}
+                      onBlur={handleBlur}
                     />
                     {errors.name && <div className="error">{errors.name}</div>}
                   </div>
@@ -938,7 +1044,8 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
                       disabled={isSubmitting}
                       autoComplete="off"
                       value={formData.email}
-                      onBlur={(e) => handleFieldUpdate("email", e.target.value)}
+                      // onBlur={(e) => handleFieldUpdate("email", e.target.value)}
+                      onBlur={handleBlur}
                     />
                     {errors.email && (
                       <div className="error">{errors.email}</div>
@@ -957,9 +1064,10 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
                       disabled={isSubmitting}
                       autoComplete="off"
                       value={formData.alt_email}
-                      onBlur={(e) =>
-                        handleFieldUpdate("alt_email", e.target.value)
-                      }
+                      // onBlur={(e) =>
+                      //   handleFieldUpdate("alt_email", e.target.value)
+                      // }
+                      onBlur={handleBlur}
                     />
                     {errors.alt_email && (
                       <div className="error">{errors.alt_email}</div>
@@ -980,7 +1088,8 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
                       disabled={isSubmitting}
                       autoComplete="new-password"
                       value={formData.phone}
-                      onBlur={(e) => handleFieldUpdate("phone", e.target.value)}
+                      // onBlur={(e) => handleFieldUpdate("phone", e.target.value)}
+                      onBlur={handleBlur}
                     />
                     {errors.phone && (
                       <div className="error">{errors.phone}</div>
@@ -1001,9 +1110,10 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
                       disabled={isSubmitting}
                       autoComplete="off"
                       value={formData.whatsapp_number}
-                      onBlur={(e) =>
-                        handleFieldUpdate("whatsapp_number", e.target.value)
-                      }
+                      // onBlur={(e) =>
+                      //   handleFieldUpdate("whatsapp_number", e.target.value)
+                      // }
+                      onBlur={handleBlur}
                     />
                     {errors.whatsapp_number && (
                       <div className="error">{errors.whatsapp_number}</div>
@@ -1024,7 +1134,8 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
                       disabled={isSubmitting}
                       autoComplete="off"
                       value={formData.city}
-                      onBlur={(e) => handleFieldUpdate("city", e.target.value)}
+                      // onBlur={(e) => handleFieldUpdate("city", e.target.value)}
+                      onBlur={handleBlur}
                     />
                     {errors.city && <div className="error">{errors.city}</div>}
                   </div>
@@ -1038,6 +1149,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
                       onKeyDown={(e) =>
                         handleKeyDown(e, "country", organizationRef)
                       }
+                      onBlur={handleBlur}
                       disabled={isSubmitting}
                       autoComplete="off"
                       value={formData.country}
@@ -1067,9 +1179,10 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
                       disabled={isSubmitting}
                       autoComplete="off"
                       value={formData.organization}
-                      onBlur={(e) =>
-                        handleFieldUpdate("organization", e.target.value)
-                      }
+                      // onBlur={(e) =>
+                      //   handleFieldUpdate("organization", e.target.value)
+                      // }
+                      onBlur={handleBlur}
                     />
                     {errors.organization && (
                       <div className="error">{errors.organization}</div>
@@ -1085,6 +1198,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
                       onKeyDown={(e) =>
                         handleKeyDown(e, "intrested", abstractTitleRef)
                       }
+                      onBlur={handleBlur}
                       disabled={isSubmitting}
                       autoComplete="off"
                       value={formData.intrested}
@@ -1119,9 +1233,10 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
                       disabled={isSubmitting}
                       autoComplete="off"
                       value={formData.abstract_title}
-                      onBlur={(e) =>
-                        handleFieldUpdate("abstract_title", e.target.value)
-                      }
+                      // onBlur={(e) =>
+                      //   handleFieldUpdate("abstract_title", e.target.value)
+                      // }
+                      onBlur={handleBlur}
                     />
                     {errors.abstract_title && (
                       <div className="error">{errors.abstract_title}</div>
@@ -1141,9 +1256,10 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
                       disabled={isSubmitting}
                       autoComplete="off"
                       value={formData.message}
-                      onBlur={(e) =>
-                        handleFieldUpdate("message", e.target.value)
-                      }
+                      // onBlur={(e) =>
+                      //   handleFieldUpdate("message", e.target.value)
+                      // }
+                      onBlur={handleBlur}
                     ></textarea>
                     {errors.message && (
                       <div className="error">{errors.message}</div>
