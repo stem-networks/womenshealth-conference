@@ -47,30 +47,6 @@ interface FormData {
   other_info: Record<string, string | number>;
 }
 
-// interface UpdatedData {
-//   [key: string]:
-//     | string
-//     | number
-//     | File
-//     | Blob
-//     | boolean
-//     | undefined
-//     | null
-//     | unknown;
-// }
-
-// type OtherInfoField =
-//   | "Selected Accommodation"
-//   | "check In Date"
-//   | "check Out Date"
-//   | "Num of Nights"
-//   | "selected Accommodation Price"
-//   | "Price Per Accompanying Person"
-//   | "Registration Price"
-//   | "Total Price";
-
-// type FieldName = string;
-// type FieldValue = string | number | boolean;
 
 interface RegisterProps {
   generalData: ApiResponse;
@@ -144,9 +120,9 @@ const Registration: React.FC<RegisterProps> = ({
   const checkInRef = useRef<HTMLSelectElement>(null);
   const checkOutRef = useRef<HTMLSelectElement>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [fieldLoading, setFieldLoading] = useState<{ [key: string]: boolean }>(
-    {}
-  );
+  // const [fieldLoading, setFieldLoading] = useState<{ [key: string]: boolean }>(
+  //   {}
+  // );
 
   const [formValues, setFormValues] = useState<Record<string, unknown>>({});
 
@@ -270,46 +246,10 @@ const Registration: React.FC<RegisterProps> = ({
     [name, email]
   );
 
-  // const sendFullFormData = useCallback(
-  //   async (data: Record<string, unknown>) => {
-  //     try {
-  //       setLoading(true);
-
-  //       const formDataObj = new FormData();
-  //       Object.entries(data).forEach(([key, value]) => {
-  //         if (
-  //           typeof value === "string" ||
-  //           typeof value === "number" ||
-  //           typeof value === "boolean"
-  //         ) {
-  //           formDataObj.append(key, String(value));
-  //         } else if (value instanceof Blob) {
-  //           formDataObj.append(key, value);
-  //         } else if (value !== undefined && value !== null) {
-  //           formDataObj.append(key, JSON.stringify(value));
-  //         }
-  //       });
-
-  //       await axios.post("/api/send-to-cms", formDataObj, {
-  //         headers: { "Content-Type": "multipart/form-data" },
-  //       });
-
-  //       console.log("Form data sent successfully");
-  //     } catch (err) {
-  //       console.error("Error saving form data:", err);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   },
-  //   []
-  // );
-
   const sendFullFormData = useCallback(
-    async (data: Record<string, unknown>, field?: string) => {
+    async (data: Record<string, unknown>) => {
       try {
-        if (field) {
-          setFieldLoading((prev) => ({ ...prev, [field]: true }));
-        }
+        // setLoading(true);
 
         const formDataObj = new FormData();
         Object.entries(data).forEach(([key, value]) => {
@@ -334,13 +274,49 @@ const Registration: React.FC<RegisterProps> = ({
       } catch (err) {
         console.error("Error saving form data:", err);
       } finally {
-        if (field) {
-          setFieldLoading((prev) => ({ ...prev, [field]: false }));
-        }
+        setLoading(false);
       }
     },
     []
   );
+
+  // const sendFullFormData = useCallback(
+  //   async (data: Record<string, unknown>, field?: string) => {
+  //     try {
+  //       if (field) {
+  //         setFieldLoading((prev) => ({ ...prev, [field]: true }));
+  //       }
+
+  //       const formDataObj = new FormData();
+  //       Object.entries(data).forEach(([key, value]) => {
+  //         if (
+  //           typeof value === "string" ||
+  //           typeof value === "number" ||
+  //           typeof value === "boolean"
+  //         ) {
+  //           formDataObj.append(key, String(value));
+  //         } else if (value instanceof Blob) {
+  //           formDataObj.append(key, value);
+  //         } else if (value !== undefined && value !== null) {
+  //           formDataObj.append(key, JSON.stringify(value));
+  //         }
+  //       });
+
+  //       await axios.post("/api/send-to-cms", formDataObj, {
+  //         headers: { "Content-Type": "multipart/form-data" },
+  //       });
+
+  //       console.log("Form data sent successfully");
+  //     } catch (err) {
+  //       console.error("Error saving form data:", err);
+  //     } finally {
+  //       if (field) {
+  //         setFieldLoading((prev) => ({ ...prev, [field]: false }));
+  //       }
+  //     }
+  //   },
+  //   []
+  // );
 
   // Update `selectedCategory` based on `selectedParticipant`
   useEffect(() => {
@@ -1469,24 +1445,6 @@ const Registration: React.FC<RegisterProps> = ({
     }));
   };
 
-  // const handleBlur = (fieldName: string, value: string) => {
-  //   handleFieldUpdate(fieldName, value);
-
-  //   if ((fieldName === "email" || fieldName === "altEmail") && value) {
-  //     const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
-  //     if (!isValidEmail(value)) {
-  //       console.error(
-  //         `Invalid email format for ${fieldName}. API not triggered.`
-  //       );
-  //       return;
-  //     }
-  //   }
-
-  //   setTimeout(() => {
-  //     sendFullFormData(formValues);
-  //   }, 0);
-  // };
-
   const handleBlur = (fieldName: string, value: string) => {
     handleFieldUpdate(fieldName, value);
 
@@ -1501,9 +1459,11 @@ const Registration: React.FC<RegisterProps> = ({
     }
 
     setTimeout(() => {
-      sendFullFormData(formValues, fieldName);
+      sendFullFormData(formValues);
     }, 0);
   };
+
+   
 
   return (
     <div>
@@ -1527,7 +1487,7 @@ const Registration: React.FC<RegisterProps> = ({
                       onChange={handleChange}
                       ref={titleRef}
                       onKeyDown={(e) => handleKeyDown(e, "title", nameRef)}
-                      disabled={fieldLoading.title}
+                      disabled={loading}
                       autoComplete="off"
                     >
                       <option value="">Select</option>
@@ -1551,7 +1511,7 @@ const Registration: React.FC<RegisterProps> = ({
                       type="text"
                       ref={nameRef}
                       onKeyDown={(e) => handleKeyDown(e, "name", emailRef)}
-                      disabled={fieldLoading.name}
+                      disabled={loading}
                       onBlur={(e) => handleBlur("name", e.target.value)}
                       autoComplete="new-password"
                     />
@@ -1571,7 +1531,7 @@ const Registration: React.FC<RegisterProps> = ({
                       type="email"
                       ref={emailRef}
                       onKeyDown={(e) => handleKeyDown(e, "email", altEmailRef)}
-                      disabled={fieldLoading.email}
+                      disabled={loading}
                       onBlur={(e) => handleBlur("email", e.target.value)}
                       autoComplete="off"
                     />
@@ -1591,7 +1551,7 @@ const Registration: React.FC<RegisterProps> = ({
                       ref={altEmailRef}
                       onKeyDown={(e) => handleKeyDown(e, "altEmail", phoneRef)}
                       type="email"
-                      disabled={fieldLoading.altEmail}
+                      disabled={loading}
                       onBlur={(e) => handleBlur("alt_email", e.target.value)}
                       autoComplete="off"
                     />
@@ -1615,7 +1575,7 @@ const Registration: React.FC<RegisterProps> = ({
                       onKeyDown={(e) =>
                         handleKeyDown(e, "phone", whatsappNumberRef)
                       }
-                      disabled={fieldLoading.phone}
+                      disabled={loading}
                       onBlur={(e) => handleBlur("phone", e.target.value)}
                       autoComplete="new-password"
                     />
@@ -1632,7 +1592,7 @@ const Registration: React.FC<RegisterProps> = ({
                       placeholder="WhatsApp Number"
                       onChange={handleChange}
                       type="text"
-                      disabled={fieldLoading.whatsappNumber}
+                      disabled={loading}
                       ref={whatsappNumberRef}
                       onKeyDown={(e) =>
                         handleKeyDown(e, "whatsapp", institutionRef)
@@ -1658,7 +1618,7 @@ const Registration: React.FC<RegisterProps> = ({
                       onKeyDown={(e) =>
                         handleKeyDown(e, "institution", countryRef)
                       }
-                      disabled={fieldLoading.institution}
+                      disabled={loading}
                       onBlur={(e) => handleBlur("organization", e.target.value)}
                       autoComplete="off"
                     />
@@ -1675,7 +1635,7 @@ const Registration: React.FC<RegisterProps> = ({
                       onChange={handleChange}
                       ref={countryRef}
                       onKeyDown={(e) => handleKeyDown(e, "country", checkInRef)}
-                      disabled={fieldLoading.country}
+                      disabled={loading}
                       autoComplete="off"
                     >
                       <option value="">Select Country</option>
@@ -1699,7 +1659,7 @@ const Registration: React.FC<RegisterProps> = ({
                 >
                   {/* Tab Design for discount values */}
 
-                  {/* <div className="tabs">
+                  <div className="tabs">
                     <button
                       type="button"
                       className={`tab-button ${
@@ -1714,7 +1674,7 @@ const Registration: React.FC<RegisterProps> = ({
                           value="inperson"
                           checked={selectedOption === "inperson"}
                           onChange={() => toggleCheckbox("inperson")}
-                           disabled={fieldLoading.inperson}
+                           disabled={loading}
                           // Hide the default checkbox
                           style={{ display: "none" }}
                         />
@@ -1735,69 +1695,15 @@ const Registration: React.FC<RegisterProps> = ({
                           value="virtual"
                           checked={selectedOption === "virtual"}
                           onChange={() => toggleCheckbox("virtual")}
-                           disabled={fieldLoading.virtual}
-                          style={{ display: "none" }}
-                        />
-                        <span className="checkmark"></span>
-                      </label>
-                    </button>
-                  </div> */}
-
-                  <div className="tabs">
-                    <button
-                      type="button"
-                      className={`tab-button ${
-                        activeTab === "tab1" ? "active" : ""
-                      } ${fieldLoading.inperson ? "disabled" : ""}`}
-                      onClick={() =>
-                        !fieldLoading.inperson && switchTab("tab1")
-                      }
-                      disabled={fieldLoading.inperson}
-                    >
-                      <label
-                        className={`container15 ${
-                          fieldLoading.inperson ? "disabled-label" : ""
-                        }`}
-                      >
-                        In-Person
-                        <input
-                          type="checkbox"
-                          value="inperson"
-                          checked={selectedOption === "inperson"}
-                          onChange={() => toggleCheckbox("inperson")}
-                          disabled={fieldLoading.inperson}
-                          style={{ display: "none" }}
-                        />
-                        <span className="checkmark"></span>
-                      </label>
-                    </button>
-
-                    <button
-                      type="button"
-                      className={`tab-button ${
-                        activeTab === "tab2" ? "active" : ""
-                      } ${fieldLoading.virtual ? "disabled" : ""}`}
-                      onClick={() => !fieldLoading.virtual && switchTab("tab2")}
-                      disabled={fieldLoading.virtual}
-                    >
-                      <label
-                        className={`container15 ${
-                          fieldLoading.virtual ? "disabled-label" : ""
-                        }`}
-                      >
-                        Virtual
-                        <input
-                          type="checkbox"
-                          value="virtual"
-                          checked={selectedOption === "virtual"}
-                          onChange={() => toggleCheckbox("virtual")}
-                          disabled={fieldLoading.virtual}
+                           disabled={loading}
                           style={{ display: "none" }}
                         />
                         <span className="checkmark"></span>
                       </label>
                     </button>
                   </div>
+
+                
 
                   <div className="tab-content">
                     {activeTab === "tab1" && (
