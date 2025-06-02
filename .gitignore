@@ -44,6 +44,7 @@ next-env.d.ts
 .vscode/
 auto-merge.sh
 
+
 # cPanel specific
 tmp/
 app.js
