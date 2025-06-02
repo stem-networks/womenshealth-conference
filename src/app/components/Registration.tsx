@@ -42,36 +42,35 @@ interface FormData {
   web_token: string;
   form_type: string;
   submit_status: string;
-  cid: string;
   no_participants: number;
   no_accompanying: number;
   other_info: Record<string, string | number>;
 }
 
-interface UpdatedData {
-  [key: string]:
-    | string
-    | number
-    | File
-    | Blob
-    | boolean
-    | undefined
-    | null
-    | unknown;
-}
+// interface UpdatedData {
+//   [key: string]:
+//     | string
+//     | number
+//     | File
+//     | Blob
+//     | boolean
+//     | undefined
+//     | null
+//     | unknown;
+// }
 
-type OtherInfoField =
-  | "Selected Accommodation"
-  | "check In Date"
-  | "check Out Date"
-  | "Num of Nights"
-  | "selected Accommodation Price"
-  | "Price Per Accompanying Person"
-  | "Registration Price"
-  | "Total Price";
+// type OtherInfoField =
+//   | "Selected Accommodation"
+//   | "check In Date"
+//   | "check Out Date"
+//   | "Num of Nights"
+//   | "selected Accommodation Price"
+//   | "Price Per Accompanying Person"
+//   | "Registration Price"
+//   | "Total Price";
 
-type FieldName = string;
-type FieldValue = string | number | boolean;
+// type FieldName = string;
+// type FieldValue = string | number | boolean;
 
 interface RegisterProps {
   generalData: ApiResponse;
@@ -83,8 +82,6 @@ const Registration: React.FC<RegisterProps> = ({
   registerData,
 }) => {
   const general = generalData?.data || {};
-
-  console.log("register data in register", registerData);
 
   const router = useRouter();
 
@@ -125,8 +122,8 @@ const Registration: React.FC<RegisterProps> = ({
   const [checkOutDatesM, setCheckOutDatesM] = useState<string[]>([]);
   const [pricesData, setPricesData] = useState<PriceData[]>([]);
   const [unitRegistrationPrice, setUnitRegistrationPrice] = useState<number>(0);
-  const [webToken, setWebToken] = useState<string>("");
-  console.log("webToken", webToken);
+  // const [webToken, setWebToken] = useState<string>("");
+  // console.log("webToken", webToken);
 
   // Tab
   const [activeTab, setActiveTab] = useState<string>("tab1");
@@ -147,11 +144,12 @@ const Registration: React.FC<RegisterProps> = ({
   const checkInRef = useRef<HTMLSelectElement>(null);
   const checkOutRef = useRef<HTMLSelectElement>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [formValues, setFormValues] = useState<Record<string, unknown>>({});
 
   // Function to generate a unique token
-  const generateWebToken = (): string => {
-    return Date.now() + "_" + Math.floor(Math.random() * 1000000);
-  };
+  // const generateWebToken = (): string => {
+  //   return Date.now() + "_" + Math.floor(Math.random() * 1000000);
+  // };
 
   // Sending draft data to API
   const [formData, setFormData] = useState<FormData>({
@@ -172,7 +170,6 @@ const Registration: React.FC<RegisterProps> = ({
     web_token: "",
     form_type: "register",
     submit_status: "0", // Default submit_status to 0
-    cid: process.env.NEXT_PUBLIC_CID || "",
     no_participants: numParticipants,
     no_accompanying: numAccompanyingPersons,
     other_info: {
@@ -231,74 +228,188 @@ const Registration: React.FC<RegisterProps> = ({
     }
   }, [pricesData, activeTab]);
 
- const logError = useCallback(async (message: string) => {
-  try {
-    const formData = new FormData();
-    formData.append("form_based", "Registration Form");
-    formData.append("cid", process.env.NEXT_PUBLIC_CID ?? "");
-    formData.append("error_message", message);
-    formData.append("name", name);
-    formData.append("email", email);
+  //  const logError = useCallback(async (message: string) => {
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append("form_based", "Registration Form");
+  //     formData.append("cid", process.env.NEXT_PUBLIC_CID ?? "");
+  //     formData.append("error_message", message);
+  //     formData.append("name", name);
+  //     formData.append("email", email);
 
-    await fetch("/api/register", {
-      method: "POST",
-      body: formData,
-    });
-  } catch (err) {
-    console.error("Error Logging API Failure", err);
-  }
-}, [name, email]);
+  //     await fetch("/api/register", {
+  //       method: "POST",
+  //       body: formData,
+  //     });
+  //   } catch (err) {
+  //     console.error("Error Logging API Failure", err);
+  //   }
+  // }, [name, email]);
 
-  const sendFullFormData = useCallback(
-    async (updatedData: UpdatedData) => {
+  const logError = useCallback(
+    async (message: string) => {
       try {
         const formData = new FormData();
+        formData.append("form_based", "Registration Form");
+        formData.append("error_message", message);
+        formData.append("name", name);
+        formData.append("email", email);
 
-        Object.entries(updatedData).forEach(([key, value]) => {
-          if (key === "other_info") {
-            formData.append(key, JSON.stringify(value));
-          } else if (
-            !["altEmail", "whatsappNumber", "institution"].includes(key)
+        await fetch("/api/send-to-telegram", {
+          method: "POST",
+          body: formData,
+        });
+      } catch (err) {
+        console.error("Error logging error:", err);
+      }
+    },
+    [name, email]
+  );
+
+  // const sendFullFormData = useCallback(
+  //   async (updatedData: Record<string, unknown>) => {
+  //     try {
+  //       const formData = new FormData();
+
+  //       Object.entries(updatedData).forEach(([key, value]) => {
+  //         if (key === "other_info") {
+  //           formData.append(key, JSON.stringify(value));
+  //         } else if (
+  //           typeof value === "string" ||
+  //           typeof value === "number" ||
+  //           typeof value === "boolean"
+  //         ) {
+  //           formData.append(key, String(value));
+  //         } else if (value instanceof Blob) {
+  //           formData.append(key, value);
+  //         } else if (value !== undefined && value !== null) {
+  //           formData.append(key, JSON.stringify(value));
+  //         }
+  //       });
+
+  //       const response = await axios.post("/api/send-to-telegram", formData, {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       });
+
+  //       const token = response.data?.data?.web_token;
+  //       if (token) {
+  //         setFormData((prev) => ({
+  //           ...prev,
+  //           web_token: token,
+  //         }));
+  //       }
+  //     } catch (err) {
+  //       console.error("Error saving form data:", err);
+  //       await logError(
+  //         "An unexpected error occurred while saving your registration."
+  //       );
+  //     }
+  //   },
+  //   [logError, setFormData]
+  // );
+
+  // const sendFullFormData = useCallback(
+  //   async (updatedData: Record<string, unknown>) => {
+  //     try {
+  //       const formData = new FormData();
+
+  //       Object.entries(updatedData).forEach(([key, value]) => {
+  //         if (key === "other_info") {
+  //           formData.append(key, JSON.stringify(value));
+  //         } else if (
+  //           typeof value === "string" ||
+  //           typeof value === "number" ||
+  //           typeof value === "boolean"
+  //         ) {
+  //           formData.append(key, String(value));
+  //         } else if (value instanceof Blob) {
+  //           formData.append(key, value);
+  //         } else if (value !== undefined && value !== null) {
+  //           formData.append(key, JSON.stringify(value));
+  //         }
+  //       });
+
+  //       await axios.post("/api/send-to-cms", formData, {
+  //         headers: { "Content-Type": "multipart/form-data" },
+  //       });
+  //     } catch (err) {
+  //       console.error("Error saving form data:", err);
+  //       await logError(
+  //         "An unexpected error occurred while saving your registration."
+  //       );
+  //     }
+  //   },
+  //   [logError]
+  // );
+
+  // const sendFullFormData = useCallback(
+  //   async (updatedData: Record<string, unknown>) => {
+  //     try {
+  //       const formDataObj = new FormData();
+
+  //       Object.entries(updatedData).forEach(([key, value]) => {
+  //         if (key === "other_info") {
+  //           formDataObj.append(key, JSON.stringify(value));
+  //         } else if (
+  //           typeof value === "string" ||
+  //           typeof value === "number" ||
+  //           typeof value === "boolean"
+  //         ) {
+  //           formDataObj.append(key, String(value));
+  //         } else if (value instanceof Blob) {
+  //           formDataObj.append(key, value);
+  //         } else if (value !== undefined && value !== null) {
+  //           formDataObj.append(key, JSON.stringify(value));
+  //         }
+  //       });
+
+  //       await axios.post("/api/send-to-cms", formDataObj, {
+  //         headers: { "Content-Type": "multipart/form-data" },
+  //       });
+
+  //       console.log("Form data sent successfully");
+  //     } catch (err) {
+  //       console.error("Error saving form data:", err);
+  //     }
+  //   },
+  //   []
+  // );
+
+  const sendFullFormData = useCallback(
+    async (data: Record<string, unknown>) => {
+      try {
+        setLoading(true);
+
+        const formDataObj = new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+          if (
+            typeof value === "string" ||
+            typeof value === "number" ||
+            typeof value === "boolean"
           ) {
-            if (
-              typeof value === "string" ||
-              typeof value === "number" ||
-              typeof value === "boolean"
-            ) {
-              formData.append(key, String(value));
-            } else if (value instanceof Blob) {
-              formData.append(key, value);
-            } else if (value !== undefined && value !== null) {
-              formData.append(key, JSON.stringify(value));
-            }
+            formDataObj.append(key, String(value));
+          } else if (value instanceof Blob) {
+            formDataObj.append(key, value);
+          } else if (value !== undefined && value !== null) {
+            formDataObj.append(key, JSON.stringify(value));
           }
         });
 
-        const response = await axios.post("/api/register", formData, {
+        await axios.post("/api/send-to-cms", formDataObj, {
           headers: { "Content-Type": "multipart/form-data" },
         });
 
-        if (response.data?.data?.web_token) {
-          setFormData((prevState) => ({
-            ...prevState,
-            web_token: response.data.data.web_token,
-          }));
-        }
-      } catch (error) {
-        console.error("Error saving form data:", error);
-        if (error instanceof Error) {
-          await logError(
-            `An unexpected error occurred while saving your registration: ${error.message}`
-          );
-        } else {
-          await logError(
-            `An unexpected error occurred while saving your registration.`
-          );
-        }
+        console.log("Form data sent successfully");
+      } catch (err) {
+        console.error("Error saving form data:", err);
+      } finally {
+        setLoading(false);
       }
     },
-    [logError, setFormData]
-  ); // ✅ include logError here
+    []
+  );
 
   // Update `selectedCategory` based on `selectedParticipant`
   useEffect(() => {
@@ -898,60 +1009,217 @@ const Registration: React.FC<RegisterProps> = ({
       : 0;
 
   // Form Submission
+  // const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+  //   e.preventDefault();
+
+  //   // Disable the submit button and other fields during submission
+  //   setLoading(true);
+
+  //   // Reset previous errors
+  //   let valid = true;
+  //   const newErrors: Record<string, string> = {};
+
+  //   // Validate fields
+  //   if (!title) {
+  //     newErrors.title = "Title is required";
+  //     valid = false;
+  //   }
+
+  //   // Stop validation on first error (no need to check further)
+  //   if (!valid) {
+  //     setErrors(newErrors);
+
+  //     // Display toastr message for the first error field only
+  //     for (const field in newErrors) {
+  //       if (newErrors[field]) {
+  //         // toastr.error(newErrors[field], "Validation Error", { timeOut: 3000 });
+  //         break; // Show only the first error message
+  //       }
+  //     }
+
+  //     // Focus on the first field with an error
+  //     if (newErrors.title && titleRef.current) {
+  //       titleRef.current.focus();
+  //     } else if (newErrors.name && nameRef.current) {
+  //       nameRef.current.focus();
+  //     } else if (newErrors.email && emailRef.current) {
+  //       emailRef.current.focus();
+  //     } else if (newErrors.altEmail && altEmailRef.current) {
+  //       altEmailRef.current.focus();
+  //     } else if (newErrors.phone && phoneRef.current) {
+  //       phoneRef.current.focus();
+  //     } else if (newErrors.institution && institutionRef.current) {
+  //       institutionRef.current.focus();
+  //     } else if (newErrors.country && countryRef.current) {
+  //       countryRef.current.focus();
+  //     } else if (newErrors.checkIn && checkInRef.current) {
+  //       checkInRef.current.focus(); // Focus on check-in field
+  //     } else if (newErrors.checkOut && checkOutRef.current) {
+  //       checkOutRef.current.focus(); // Focus on check-out field
+  //     }
+
+  //     setLoading(false);
+  //     return; // Stop form submission until validation passes
+  //   }
+
+  //   // Validate remaining fields if the first field is valid
+  //   if (!name) {
+  //     newErrors.name = "Name is required";
+  //     valid = false;
+  //   } else if (!email) {
+  //     newErrors.email = "Email is required";
+  //     valid = false;
+  //   } else if (!/\S+@\S+\.\S+/.test(email)) {
+  //     newErrors.email = "Email is invalid";
+  //     valid = false;
+  //   } else if (altEmail && !/\S+@\S+\.\S+/.test(altEmail)) {
+  //     newErrors.altEmail = "Alternate Email is invalid";
+  //     valid = false;
+  //   } else if (!phone) {
+  //     newErrors.phone = "Phone is required";
+  //     valid = false;
+  //   } else if (!institution) {
+  //     newErrors.institution = "Institution is required";
+  //     valid = false;
+  //   } else if (!country) {
+  //     newErrors.country = "Country is required";
+  //     valid = false;
+  //   }
+
+  //   // Validate check-in and check-out dates if accommodation is selected
+  //   else if (selectedAccommodation) {
+  //     if (!checkInDate || checkInDate === "NA") {
+  //       newErrors.checkIn = "Check-in Date is required";
+  //       valid = false;
+  //     } else if (!checkOutDate || checkOutDate === "NA") {
+  //       newErrors.checkOut = "Check-out Date is required";
+  //       valid = false;
+  //     }
+  //   }
+
+  //   // If not valid, continue to show error for the first invalid field
+  //   if (!valid) {
+  //     setErrors(newErrors);
+
+  //     // Display toastr message for the first error field only
+  //     for (const field in newErrors) {
+  //       if (newErrors[field]) {
+  //         // toastr.error(newErrors[field], "Validation Error", { timeOut: 3000 });
+  //         break; // Show only the first error message
+  //       }
+  //     }
+
+  //     // Focus on the first field with an error
+  //     if (newErrors.title && titleRef.current) {
+  //       titleRef.current.focus();
+  //     } else if (newErrors.name && nameRef.current) {
+  //       nameRef.current.focus();
+  //     } else if (newErrors.email && emailRef.current) {
+  //       emailRef.current.focus();
+  //     } else if (newErrors.altEmail && altEmailRef.current) {
+  //       altEmailRef.current.focus();
+  //     } else if (newErrors.phone && phoneRef.current) {
+  //       phoneRef.current.focus();
+  //     } else if (newErrors.institution && institutionRef.current) {
+  //       institutionRef.current.focus();
+  //     } else if (newErrors.country && countryRef.current) {
+  //       countryRef.current.focus();
+  //     } else if (newErrors.checkIn && checkInRef.current) {
+  //       checkInRef.current.focus(); // Focus on check-in field
+  //     } else if (newErrors.checkOut && checkOutRef.current) {
+  //       checkOutRef.current.focus(); // Focus on check-out field
+  //     }
+
+  //     setLoading(false);
+  //     return; // Stop form submission until validation passes
+  //   }
+
+  //   // Update formData with submit_status
+  //   const updatedFormData = { ...formData, submit_status: "1" };
+
+  //   // Proceed to submit form if valid
+  //   const postData = {
+  //     module_name: "registration_save",
+  //     keys: {
+  //       data: [
+  //         {
+  //           title,
+  //           name,
+  //           email,
+  //           alt_email: altEmail,
+  //           phone,
+  //           whatsapp_number: whatsappNumber,
+  //           institution,
+  //           country,
+  //           reg_category: selectedCategory,
+  //           occupency_text: selectedAccommodation,
+  //           occupancy: selectedAccommodationPrice.toString(),
+  //           check_insel: checkInDate,
+  //           check_outsel: checkOutDate,
+  //           nights: numNights.toString(),
+  //           no_of_participants: numParticipants.toString(),
+  //           no_of_accompanying: numAccompanyingPersons.toString(),
+  //           reg_tot_hidden: unitRegistrationPrice.toString(),
+  //           price_of_each_accompanying: pricePerAccompanyingPerson.toString(),
+  //           final_amt_input: totalPrice.toString(),
+  //         },
+  //       ],
+  //     },
+  //   };
+
+  //   console.log("payload", postData);
+
+  //   // Call sendFullFormData after updating formData
+  //   sendFullFormData(updatedFormData);
+
+  //   // Submit the data
+  //   try {
+  //     const response = await axios.post("/api/register", postData, {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+
+  //     const token = response.data?.data;
+  //     if (token) {
+  //       // setWebToken(token);
+  //       router.push(`/register_details?web_token=${token}`);
+  //     } else {
+  //       console.error("Web token not found in response");
+  //       await logError("Web token is missing in the API response.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error submitting registration:", error);
+  //     await logError("Registration failed: something went wrong.");
+  //   }
+
+  //   // Re-enable the submit button and form fields after submission
+  //   setLoading(false);
+  // };
+
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
 
-    // Disable the submit button and other fields during submission
     setLoading(true);
+    setErrors({});
 
-    // Reset previous errors
+    // Validation
     let valid = true;
     const newErrors: Record<string, string> = {};
 
-    // Validate fields
     if (!title) {
       newErrors.title = "Title is required";
       valid = false;
     }
-
-    // Stop validation on first error (no need to check further)
+    // Stop validation early
     if (!valid) {
       setErrors(newErrors);
-
-      // Display toastr message for the first error field only
-      for (const field in newErrors) {
-        if (newErrors[field]) {
-          // toastr.error(newErrors[field], "Validation Error", { timeOut: 3000 });
-          break; // Show only the first error message
-        }
-      }
-
-      // Focus on the first field with an error
-      if (newErrors.title && titleRef.current) {
-        titleRef.current.focus();
-      } else if (newErrors.name && nameRef.current) {
-        nameRef.current.focus();
-      } else if (newErrors.email && emailRef.current) {
-        emailRef.current.focus();
-      } else if (newErrors.altEmail && altEmailRef.current) {
-        altEmailRef.current.focus();
-      } else if (newErrors.phone && phoneRef.current) {
-        phoneRef.current.focus();
-      } else if (newErrors.institution && institutionRef.current) {
-        institutionRef.current.focus();
-      } else if (newErrors.country && countryRef.current) {
-        countryRef.current.focus();
-      } else if (newErrors.checkIn && checkInRef.current) {
-        checkInRef.current.focus(); // Focus on check-in field
-      } else if (newErrors.checkOut && checkOutRef.current) {
-        checkOutRef.current.focus(); // Focus on check-out field
-      }
-
+      // Focus first invalid field
+      if (newErrors.title && titleRef.current) titleRef.current.focus();
       setLoading(false);
-      return; // Stop form submission until validation passes
+      return;
     }
 
-    // Validate remaining fields if the first field is valid
     if (!name) {
       newErrors.name = "Name is required";
       valid = false;
@@ -973,10 +1241,7 @@ const Registration: React.FC<RegisterProps> = ({
     } else if (!country) {
       newErrors.country = "Country is required";
       valid = false;
-    }
-
-    // Validate check-in and check-out dates if accommodation is selected
-    else if (selectedAccommodation) {
+    } else if (selectedAccommodation) {
       if (!checkInDate || checkInDate === "NA") {
         newErrors.checkIn = "Check-in Date is required";
         valid = false;
@@ -986,47 +1251,34 @@ const Registration: React.FC<RegisterProps> = ({
       }
     }
 
-    // If not valid, continue to show error for the first invalid field
     if (!valid) {
       setErrors(newErrors);
-
-      // Display toastr message for the first error field only
-      for (const field in newErrors) {
-        if (newErrors[field]) {
-          // toastr.error(newErrors[field], "Validation Error", { timeOut: 3000 });
-          break; // Show only the first error message
-        }
-      }
-
-      // Focus on the first field with an error
-      if (newErrors.title && titleRef.current) {
-        titleRef.current.focus();
-      } else if (newErrors.name && nameRef.current) {
-        nameRef.current.focus();
-      } else if (newErrors.email && emailRef.current) {
-        emailRef.current.focus();
-      } else if (newErrors.altEmail && altEmailRef.current) {
+      // Focus on the first invalid field
+      if (newErrors.name && nameRef.current) nameRef.current.focus();
+      else if (newErrors.email && emailRef.current) emailRef.current.focus();
+      else if (newErrors.altEmail && altEmailRef.current)
         altEmailRef.current.focus();
-      } else if (newErrors.phone && phoneRef.current) {
-        phoneRef.current.focus();
-      } else if (newErrors.institution && institutionRef.current) {
+      else if (newErrors.phone && phoneRef.current) phoneRef.current.focus();
+      else if (newErrors.institution && institutionRef.current)
         institutionRef.current.focus();
-      } else if (newErrors.country && countryRef.current) {
+      else if (newErrors.country && countryRef.current)
         countryRef.current.focus();
-      } else if (newErrors.checkIn && checkInRef.current) {
-        checkInRef.current.focus(); // Focus on check-in field
-      } else if (newErrors.checkOut && checkOutRef.current) {
-        checkOutRef.current.focus(); // Focus on check-out field
-      }
+      else if (newErrors.checkIn && checkInRef.current)
+        checkInRef.current.focus();
+      else if (newErrors.checkOut && checkOutRef.current)
+        checkOutRef.current.focus();
 
       setLoading(false);
-      return; // Stop form submission until validation passes
+      return;
     }
 
-    // Update formData with submit_status
+    // Form data with submit status
     const updatedFormData = { ...formData, submit_status: "1" };
 
-    // Proceed to submit form if valid
+    // Call sendFullFormData (your existing function) with the form data
+    sendFullFormData(updatedFormData);
+
+    // Prepare API payload
     const postData = {
       module_name: "registration_save",
       keys: {
@@ -1054,55 +1306,27 @@ const Registration: React.FC<RegisterProps> = ({
           },
         ],
       },
-      cid: process.env.NEXT_PUBLIC_CID,
     };
 
-    console.log("payload", postData);
-
-    // Call sendFullFormData after updating formData
-    sendFullFormData(updatedFormData);
-
-    // Submit the data
     try {
-      const response = await axios.post("/api/register", postData);
+      const response = await axios.post("/api/register", postData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-      if (response.status === 200) {
-        const token = response.data.data; // Adjust this to the actual response structure
-
-        if (token) {
-          setWebToken(token);
-          router.push(`/register_details?web_token=${token}`);
-        } else {
-          console.error("Web token not found in response data");
-          await logError(
-            "Registration failed: Web token is missing in the API response."
-          );
-        }
+      const token = response.data?.data;
+      if (token) {
+        router.push(`/register_details?web_token=${token}`);
       } else {
-        console.error(
-          "Received an unexpected response from the server:",
-          response
-        );
-        await logError(
-          "Registration failed: Unexpected response from the server."
-        );
+        console.error("Web token not found in response");
+        await logError("Web token is missing in the API response.");
       }
     } catch (error) {
-      console.error("Error submitting registration data:", error);
-      await logError(
-        `Registration failed: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
-
-      // toastr.error(
-      //   "Registration could not be completed due to an error. Please try again.",
-      //   "Error",
-      //   { timeOut: 3000 }
-      // );
+      console.error("Error submitting registration:", error);
+      await logError("Registration failed: something went wrong.");
     }
 
-    // Re-enable the submit button and form fields after submission
     setLoading(false);
   };
 
@@ -1221,7 +1445,7 @@ const Registration: React.FC<RegisterProps> = ({
     setCheckInDate("");
     setCheckOutDate("");
     setUnitRegistrationPrice(0);
-    setWebToken("");
+    // setWebToken("");
 
     // Clear all errors
     setErrors({});
@@ -1256,57 +1480,82 @@ const Registration: React.FC<RegisterProps> = ({
     }
   };
 
-  const handleFieldUpdate = (fieldName: FieldName, value: FieldValue) => {
-    setFormData((prevState) => {
-      const otherInfoFields: OtherInfoField[] = [
-        "Selected Accommodation",
-        "check In Date",
-        "check Out Date",
-        "Num of Nights",
-        "selected Accommodation Price",
-        "Price Per Accompanying Person",
-        "Registration Price",
-        "Total Price",
-      ];
+  // const handleFieldUpdate = (fieldName: FieldName, value: FieldValue) => {
+  //   setFormData((prevState) => {
+  //     const otherInfoFields: OtherInfoField[] = [
+  //       "Selected Accommodation",
+  //       "check In Date",
+  //       "check Out Date",
+  //       "Num of Nights",
+  //       "selected Accommodation Price",
+  //       "Price Per Accompanying Person",
+  //       "Registration Price",
+  //       "Total Price",
+  //     ];
 
-      const updatedOtherInfo: Partial<Record<OtherInfoField, string | number>> =
-        {
-          ...prevState.other_info,
-        };
+  //     const updatedOtherInfo: Partial<Record<OtherInfoField, string | number>> =
+  //       {
+  //         ...prevState.other_info,
+  //       };
 
-      if (otherInfoFields.includes(fieldName as OtherInfoField)) {
-        updatedOtherInfo[fieldName as OtherInfoField] = value as
-          | string
-          | number;
-      }
+  //     if (otherInfoFields.includes(fieldName as OtherInfoField)) {
+  //       updatedOtherInfo[fieldName as OtherInfoField] = value as
+  //         | string
+  //         | number;
+  //     }
 
-      const updatedData = {
-        ...prevState,
-        [fieldName]: value,
-        other_info: updatedOtherInfo,
-        submit_status: prevState.submit_status || "0",
-      };
+  //     const updatedData = {
+  //       ...prevState,
+  //       [fieldName]: value,
+  //       other_info: updatedOtherInfo,
+  //       submit_status: prevState.submit_status || "0",
+  //     };
 
-      const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
+  //     const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
 
-      if (
-        typeof updatedData.email === "string" &&
-        isValidEmail(updatedData.email)
-      ) {
-        if (!prevState.web_token) {
-          updatedData.web_token = generateWebToken();
-        }
-        sendFullFormData(updatedData);
-      } else {
-        console.error("Invalid email format. API not triggered.");
-      }
+  //     if (
+  //       typeof updatedData.email === "string" &&
+  //       isValidEmail(updatedData.email)
+  //     ) {
+  //       if (!prevState.web_token) {
+  //         updatedData.web_token = generateWebToken();
+  //       }
+  //       sendFullFormData(updatedData);
+  //     } else {
+  //       console.error("Invalid email format. API not triggered.");
+  //     }
 
-      return updatedData;
-    });
-  };
+  //     return updatedData;
+  //   });
+  // };
 
   // Error Messages sending to API when submitting form
- 
+
+  const handleFieldUpdate = (fieldName: string, value: string) => {
+    setFormValues((prev) => ({
+      ...prev,
+      [fieldName]: value,
+    }));
+  };
+
+  const handleBlur = (fieldName: string, value: string) => {
+    handleFieldUpdate(fieldName, value);
+
+    if ((fieldName === "email" || fieldName === "altEmail") && value) {
+      const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
+      if (!isValidEmail(value)) {
+        console.error(
+          `Invalid email format for ${fieldName}. API not triggered.`
+        );
+        return;
+      }
+    }
+
+    setTimeout(() => {
+      sendFullFormData(formValues);
+    }, 0);
+  };
+
   return (
     <div>
       <div className="regist_wrap_white">
@@ -1354,7 +1603,7 @@ const Registration: React.FC<RegisterProps> = ({
                       ref={nameRef}
                       onKeyDown={(e) => handleKeyDown(e, "name", emailRef)}
                       disabled={loading}
-                      onBlur={(e) => handleFieldUpdate("name", e.target.value)}
+                      onBlur={(e) => handleBlur("name", e.target.value)}
                       autoComplete="new-password"
                     />
                     {errors.name && <div className="error">{errors.name}</div>}
@@ -1374,9 +1623,10 @@ const Registration: React.FC<RegisterProps> = ({
                       ref={emailRef}
                       onKeyDown={(e) => handleKeyDown(e, "email", altEmailRef)}
                       disabled={loading}
-                      onBlur={(e) => handleFieldUpdate("email", e.target.value)}
+                      onBlur={(e) => handleBlur("email", e.target.value)}
                       autoComplete="off"
                     />
+
                     <div className="error" id="email_error">
                       {errors.email}
                     </div>
@@ -1393,9 +1643,7 @@ const Registration: React.FC<RegisterProps> = ({
                       onKeyDown={(e) => handleKeyDown(e, "altEmail", phoneRef)}
                       type="email"
                       disabled={loading}
-                      onBlur={(e) =>
-                        handleFieldUpdate("alt_email", e.target.value)
-                      }
+                      onBlur={(e) => handleBlur("alt_email", e.target.value)}
                       autoComplete="off"
                     />
                     <div className="error" id="alt_email_error">
@@ -1419,7 +1667,7 @@ const Registration: React.FC<RegisterProps> = ({
                         handleKeyDown(e, "phone", whatsappNumberRef)
                       }
                       disabled={loading}
-                      onBlur={(e) => handleFieldUpdate("phone", e.target.value)}
+                      onBlur={(e) => handleBlur("phone", e.target.value)}
                       autoComplete="new-password"
                     />
                     <div className="error" id="phone_error">
@@ -1440,9 +1688,7 @@ const Registration: React.FC<RegisterProps> = ({
                       onKeyDown={(e) =>
                         handleKeyDown(e, "whatsapp", institutionRef)
                       }
-                      onBlur={(e) =>
-                        handleFieldUpdate("whatsapp", e.target.value)
-                      }
+                      onBlur={(e) => handleBlur("whatsapp", e.target.value)}
                       autoComplete="off"
                     />
                     <div className="error" id="whatsapp_number_error"></div>
@@ -1464,9 +1710,7 @@ const Registration: React.FC<RegisterProps> = ({
                         handleKeyDown(e, "institution", countryRef)
                       }
                       disabled={loading}
-                      onBlur={(e) =>
-                        handleFieldUpdate("organization", e.target.value)
-                      }
+                      onBlur={(e) => handleBlur("organization", e.target.value)}
                       autoComplete="off"
                     />
                     <div className="error" id="institution_error">

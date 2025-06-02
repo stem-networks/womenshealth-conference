@@ -8,12 +8,12 @@ export async function POST(req: NextRequest) {
     const { enquiryname, enquiryemail, category } = body;
 
     // Basic validation
-    if (!enquiryname || !enquiryemail || !category) {
-      return NextResponse.json(
-        { success: false, message: "All fields are required." },
-        { status: 400 }
-      );
-    }
+    // if (!enquiryname) {
+    //   return NextResponse.json(
+    //     { success: false, message: "All fields are required." },
+    //     { status: 400 }
+    //   );
+    // }
 
     const payload = {
       module_name: "enquiry_form",
