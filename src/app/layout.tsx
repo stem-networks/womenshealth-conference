@@ -56,6 +56,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: eventName,
     description: pageData?.register?.[0]?.content || "",
+    keywords: pageData?.register?.[0]?.meta_keywords || "",
     icons: {
       icon: `${general?.site_url || ""}/images/images/favicon.png`,
     },
@@ -132,7 +133,7 @@ export default async function RootLayout({
   // JSON-LD structured data
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Event",
+    "@type": "Event", 
     name: eventName,
     startDate: formattedStartDate,
     endDate: formattedEndDate,
@@ -165,6 +166,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="icon" href="/images/images/favicon.png" />
         {/* Google Tag Manager */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-S9QFE3JLKN"

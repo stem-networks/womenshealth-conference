@@ -2,10 +2,11 @@
 
 import React from "react";
 import { useEffect, useState, useRef, useCallback } from "react";
-// import Link from "next/link";
+import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { ApiResponse, RegistrationInfo } from "@/types";
+import countries from '../../data/countries';
 
 interface AccommodationPrices {
   single: string;
@@ -539,10 +540,10 @@ const Registration: React.FC<RegisterProps> = ({
       updatedAccomodation === "single"
         ? parseFloat(accommodationPrices.single)
         : updatedAccomodation === "double"
-        ? parseFloat(accommodationPrices.doubl)
-        : updatedAccomodation === "triple"
-        ? parseFloat(accommodationPrices.tri)
-        : 0;
+          ? parseFloat(accommodationPrices.doubl)
+          : updatedAccomodation === "triple"
+            ? parseFloat(accommodationPrices.tri)
+            : 0;
 
     setSelectedAccommodation(updatedAccomodation);
 
@@ -910,10 +911,10 @@ const Registration: React.FC<RegisterProps> = ({
     selectedAccommodation === "single"
       ? parseFloat(accommodationPrices.single)
       : selectedAccommodation === "double"
-      ? parseFloat(accommodationPrices.doubl)
-      : selectedAccommodation === "triple"
-      ? parseFloat(accommodationPrices.tri)
-      : 0;
+        ? parseFloat(accommodationPrices.doubl)
+        : selectedAccommodation === "triple"
+          ? parseFloat(accommodationPrices.tri)
+          : 0;
 
   // Form Submission
   // const handleSubmit = async (e: React.FormEvent): Promise<void> => {
@@ -1467,6 +1468,26 @@ const Registration: React.FC<RegisterProps> = ({
 
   return (
     <div>
+      <div className="brand_wrap">
+        <div className="auto-container">
+          <div className="row">
+            <div className="col-md-12">
+              <Link href="/" title="Navigate to Homepage">
+                Home
+              </Link>{" "}
+              <i className="fa fa-angle-right"></i>
+              <span>Register</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2
+        className="abs_wrap5 wow fadeInUp"
+        data-wow-delay="400ms"
+        data-wow-duration="1000ms"
+      >
+        Registration
+      </h2>
       <div className="regist_wrap_white">
         <div className="auto-container container">
           <form onSubmit={handleSubmit}>
@@ -1639,9 +1660,11 @@ const Registration: React.FC<RegisterProps> = ({
                       autoComplete="off"
                     >
                       <option value="">Select Country</option>
-                      <option value="Afghanistan">Afghanistan</option>
-                      <option value="Albania">Albania</option>
-                      <option value="Algeria">Algeria</option>
+                      {countries.map((country: string) => (
+                        <option key={country} value={country}>
+                          {country}
+                        </option>
+                      ))}
                     </select>
                     <div className="error" id="country_error">
                       {errors.country}
@@ -1662,9 +1685,8 @@ const Registration: React.FC<RegisterProps> = ({
                   <div className="tabs">
                     <button
                       type="button"
-                      className={`tab-button ${
-                        activeTab === "tab1" ? "active" : ""
-                      }`}
+                      className={`tab-button ${activeTab === "tab1" ? "active" : ""
+                        }`}
                       onClick={() => switchTab("tab1")}
                     >
                       <label className="container15">
@@ -1683,9 +1705,8 @@ const Registration: React.FC<RegisterProps> = ({
                     </button>
                     <button
                       type="button"
-                      className={`tab-button ${
-                        activeTab === "tab2" ? "active" : ""
-                      }`}
+                      className={`tab-button ${activeTab === "tab2" ? "active" : ""
+                        }`}
                       onClick={() => switchTab("tab2")}
                     >
                       <label className="container15">
@@ -1748,7 +1769,7 @@ const Registration: React.FC<RegisterProps> = ({
                                             value={item.type}
                                             checked={
                                               selectedParticipant ===
-                                                item.type ||
+                                              item.type ||
                                               (index === 0 &&
                                                 selectedParticipant === "")
                                             }
@@ -1760,7 +1781,7 @@ const Registration: React.FC<RegisterProps> = ({
 
                                         {/* Conditional rendering based on item type */}
                                         {item.type ===
-                                        "Student/Young Researcher" ? (
+                                          "Student/Young Researcher" ? (
                                           <>
                                             <td className="mak1">
                                               <s>{item.standard_price}</s>
@@ -1844,7 +1865,7 @@ const Registration: React.FC<RegisterProps> = ({
                                             value={item.type}
                                             checked={
                                               selectedParticipant ===
-                                                item.type ||
+                                              item.type ||
                                               (index === 0 &&
                                                 selectedParticipant === "")
                                             } // Check if it's the first radio
@@ -2048,7 +2069,7 @@ const Registration: React.FC<RegisterProps> = ({
                         <label>
                           No of Accompanying Persons (
                           {accommodationPrices &&
-                          accommodationPrices.accompanying
+                            accommodationPrices.accompanying
                             ? `$${accommodationPrices.accompanying} each`
                             : "N/A"}
                           )
