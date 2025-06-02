@@ -6,7 +6,7 @@ import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { ApiResponse, RegistrationInfo } from "@/types";
-import countries from '../../data/countries';
+import countries from "../../data/countries";
 
 interface AccommodationPrices {
   single: string;
@@ -35,6 +35,7 @@ interface FormData {
   phone: string;
   whatsapp: string;
   city: string;
+  institution: string;
   organization: string;
   country: string;
   intrested: string;
@@ -45,9 +46,17 @@ interface FormData {
   submit_status: string;
   no_participants: number;
   no_accompanying: number;
-  other_info: Record<string, string | number>;
+  other_info: {
+    "Selected Accommodation": string;
+    "check In Date": string;
+    "check Out Date": string;
+    "Num of Nights": number;
+    "selected Accommodation Price": number;
+    "Price Per Accompanying Person": number;
+    "Registration Price": number;
+    "Total Price": number;
+  };
 }
-
 
 interface RegisterProps {
   generalData: ApiResponse;
@@ -59,81 +68,9 @@ const Registration: React.FC<RegisterProps> = ({
   registerData,
 }) => {
   const general = generalData?.data || {};
-
   const router = useRouter();
 
-  // ==============registration form general info================
-  const [title, setTitle] = useState<string>("");
-  const [name, setName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [altEmail, setAltEmail] = useState<string>("");
-  const [phone, setPhone] = useState<string>("");
-  const [whatsappNumber, setWhatsappNumber] = useState<string>("");
-  const [institution, setInstitution] = useState<string>("");
-  const [country, setCountry] = useState<string>("");
-
-  // =======registration table info==============
-  const [checkInDate, setCheckInDate] = useState<string>("");
-  const [checkOutDate, setCheckOutDate] = useState<string>("");
-  const [numNights, setNumNights] = useState<number>(0);
-  const [selectedParticipant, setSelectedParticipant] = useState<string>("");
-  const [numParticipants, setNumParticipants] = useState<number>(1);
-  const [numAccompanyingPersons, setNumAccompanyingPersons] =
-    useState<number>(0);
-  const [accommodationPrices, setAccommodationPrices] =
-    useState<AccommodationPrices>({} as AccommodationPrices);
-  const [selectedAccommodation, setSelectedAccommodation] =
-    useState<string>("");
-  const [totalAccompanyingPersonsPrice, setTotalAccompanyingPersonsPrice] =
-    useState<number>(0);
-  const [pricePerAccompanyingPerson, setPricePerAccompanyingPerson] =
-    useState<number>(0);
-  const [totalAccommodationPrice, setTotalAccommodationPrice] =
-    useState<number>(0);
-  const [nightsError, setNightsError] = useState<string>("");
-
-  const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const [checkInDates, setCheckInDates] = useState<string[]>([]);
-  const [checkOutDates, setCheckOutDates] = useState<string[]>([]);
-  const [checkOutDatesM, setCheckOutDatesM] = useState<string[]>([]);
-  const [pricesData, setPricesData] = useState<PriceData[]>([]);
-  const [unitRegistrationPrice, setUnitRegistrationPrice] = useState<number>(0);
-  // const [webToken, setWebToken] = useState<string>("");
-  // console.log("webToken", webToken);
-
-  // Tab
-  const [activeTab, setActiveTab] = useState<string>("tab1");
-  const [selectedOption, setSelectedOption] = useState<string>("inperson");
-
-  // reg_category
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-
-  // Focusing for form fields
-  const titleRef = useRef<HTMLSelectElement>(null);
-  const nameRef = useRef<HTMLInputElement>(null);
-  const emailRef = useRef<HTMLInputElement>(null);
-  const altEmailRef = useRef<HTMLInputElement>(null);
-  const phoneRef = useRef<HTMLInputElement>(null);
-  const whatsappNumberRef = useRef<HTMLInputElement>(null);
-  const institutionRef = useRef<HTMLInputElement>(null);
-  const countryRef = useRef<HTMLSelectElement>(null);
-  const checkInRef = useRef<HTMLSelectElement>(null);
-  const checkOutRef = useRef<HTMLSelectElement>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  // const [fieldLoading, setFieldLoading] = useState<{ [key: string]: boolean }>(
-  //   {}
-  // );
-
-  const [formValues, setFormValues] = useState<Record<string, unknown>>({});
-
-  // Function to generate a unique token
-  // const generateWebToken = (): string => {
-  //   return Date.now() + "_" + Math.floor(Math.random() * 1000000);
-  // };
-
-  // Sending draft data to API
-  const [formData, setFormData] = useState<FormData>({
+  const initialFormData: FormData = {
     title: "",
     name: "",
     first_name: "",
@@ -145,211 +82,147 @@ const Registration: React.FC<RegisterProps> = ({
     city: "",
     organization: "",
     country: "",
-    intrested: selectedCategory,
+    institution: "",
+    intrested: "",
     abstract_title: "",
     message: "",
     web_token: "",
     form_type: "register",
-    submit_status: "0", // Default submit_status to 0
-    no_participants: numParticipants,
-    no_accompanying: numAccompanyingPersons,
+    submit_status: "0",
+    no_participants: 1,
+    no_accompanying: 0,
     other_info: {
-      "Selected Accommodation": selectedAccommodation,
-      "check In Date": checkInDate,
-      "check Out Date": checkOutDate,
-      "Num of Nights": numNights,
+      "Selected Accommodation": "",
+      "check In Date": "",
+      "check Out Date": "",
+      "Num of Nights": 0,
       "selected Accommodation Price": 0,
-      "Price Per Accompanying Person": pricePerAccompanyingPerson,
-      "Registration Price": unitRegistrationPrice,
+      "Price Per Accompanying Person": 0,
+      "Registration Price": 0,
       "Total Price": 0,
     },
-  });
-
-  // Handler for selecting participant type
-  const handleParticipantChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ): void => {
-    setSelectedParticipant(event.target.value);
   };
 
-  // Set default participant based on activeTab and pricesData
-  useEffect(() => {
-    if (pricesData.length > 0) {
-      if (activeTab === "tab1") {
-        // For In-Person Tab
-        const listenerInPersonItem = pricesData.find(
-          (item) => item.type === "Presenter (In-Person)"
-        );
-        if (listenerInPersonItem) {
-          setSelectedParticipant(listenerInPersonItem.type);
-        } else {
-          const inPersonItems = pricesData.filter(
-            (item) => item.category === "inperson"
-          );
-          if (inPersonItems.length > 0) {
-            setSelectedParticipant(inPersonItems[0].type);
-          }
-        }
-      } else if (activeTab === "tab2") {
-        // For Virtual Tab
-        const listenerVirtualItem = pricesData.find(
-          (item) => item.type === "Presenter (Virtual)"
-        );
-        if (listenerVirtualItem) {
-          setSelectedParticipant(listenerVirtualItem.type);
-        } else {
-          const virtualItems = pricesData.filter(
-            (item) => item.category === "virtual"
-          );
-          if (virtualItems.length > 0) {
-            setSelectedParticipant(virtualItems[0].type);
-          }
-        }
-      }
-    }
-  }, [pricesData, activeTab]);
+  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [accommodationPrices, setAccommodationPrices] =
+    useState<AccommodationPrices>({} as AccommodationPrices);
+  const [pricesData, setPricesData] = useState<PriceData[]>([]);
+  const [checkInDates, setCheckInDates] = useState<string[]>([]);
+  const [checkOutDates, setCheckOutDates] = useState<string[]>([]);
+  const [checkOutDatesM, setCheckOutDatesM] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState<string>("tab1");
+  const [selectedOption, setSelectedOption] = useState<string>("inperson");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState<boolean>(false);
+  const [isHydrated, setIsHydrated] = useState<boolean>(false);
+  const [nightsError, setNightsError] = useState<string>("");
 
-  //  const logError = useCallback(async (message: string) => {
-  //   try {
-  //     const formData = new FormData();
-  //     formData.append("form_based", "Registration Form");
-  //     formData.append("cid", process.env.NEXT_PUBLIC_CID ?? "");
-  //     formData.append("error_message", message);
-  //     formData.append("name", name);
-  //     formData.append("email", email);
-
-  //     await fetch("/api/register", {
-  //       method: "POST",
-  //       body: formData,
-  //     });
-  //   } catch (err) {
-  //     console.error("Error Logging API Failure", err);
-  //   }
-  // }, [name, email]);
+  // Refs
+  const titleRef = useRef<HTMLSelectElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const altEmailRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
+  const whatsappNumberRef = useRef<HTMLInputElement>(null);
+  const institutionRef = useRef<HTMLInputElement>(null);
+  const countryRef = useRef<HTMLSelectElement>(null);
+  const checkInRef = useRef<HTMLSelectElement>(null);
+  const checkOutRef = useRef<HTMLSelectElement>(null);
 
   const logError = useCallback(
     async (message: string) => {
       try {
-        const formData = new FormData();
-        formData.append("form_based", "Registration Form");
-        formData.append("error_message", message);
-        formData.append("name", name);
-        formData.append("email", email);
+        const payload = new FormData();
+        payload.append("form_based", "Registration Form");
+        payload.append("error_message", message);
+        payload.append("name", formData.name);
+        payload.append("email", formData.email);
 
         await fetch("/api/send-to-telegram", {
           method: "POST",
-          body: formData,
+          body: payload,
         });
       } catch (err) {
         console.error("Error logging error:", err);
       }
     },
-    [name, email]
+    [formData.name, formData.email]
   );
 
-  const sendFullFormData = useCallback(
-    async (data: Record<string, unknown>) => {
-      try {
-        // setLoading(true);
+  const sendFullFormData = useCallback(async (data: FormData) => {
+    try {
+      const formDataObj = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (
+          typeof value === "string" ||
+          typeof value === "number" ||
+          typeof value === "boolean"
+        ) {
+          formDataObj.append(key, String(value));
+        } else if (value instanceof Blob) {
+          formDataObj.append(key, value);
+        } else if (value !== undefined && value !== null) {
+          formDataObj.append(key, JSON.stringify(value));
+        }
+      });
 
-        const formDataObj = new FormData();
-        Object.entries(data).forEach(([key, value]) => {
-          if (
-            typeof value === "string" ||
-            typeof value === "number" ||
-            typeof value === "boolean"
-          ) {
-            formDataObj.append(key, String(value));
-          } else if (value instanceof Blob) {
-            formDataObj.append(key, value);
-          } else if (value !== undefined && value !== null) {
-            formDataObj.append(key, JSON.stringify(value));
-          }
-        });
+      await axios.post("/api/send-to-cms", formDataObj, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-        await axios.post("/api/send-to-cms", formDataObj, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-
-        console.log("Form data sent successfully");
-      } catch (err) {
-        console.error("Error saving form data:", err);
-      } finally {
-        setLoading(false);
-      }
-    },
-    []
-  );
-
-  // const sendFullFormData = useCallback(
-  //   async (data: Record<string, unknown>, field?: string) => {
-  //     try {
-  //       if (field) {
-  //         setFieldLoading((prev) => ({ ...prev, [field]: true }));
-  //       }
-
-  //       const formDataObj = new FormData();
-  //       Object.entries(data).forEach(([key, value]) => {
-  //         if (
-  //           typeof value === "string" ||
-  //           typeof value === "number" ||
-  //           typeof value === "boolean"
-  //         ) {
-  //           formDataObj.append(key, String(value));
-  //         } else if (value instanceof Blob) {
-  //           formDataObj.append(key, value);
-  //         } else if (value !== undefined && value !== null) {
-  //           formDataObj.append(key, JSON.stringify(value));
-  //         }
-  //       });
-
-  //       await axios.post("/api/send-to-cms", formDataObj, {
-  //         headers: { "Content-Type": "multipart/form-data" },
-  //       });
-
-  //       console.log("Form data sent successfully");
-  //     } catch (err) {
-  //       console.error("Error saving form data:", err);
-  //     } finally {
-  //       if (field) {
-  //         setFieldLoading((prev) => ({ ...prev, [field]: false }));
-  //       }
-  //     }
-  //   },
-  //   []
-  // );
-
-  // Update `selectedCategory` based on `selectedParticipant`
-  useEffect(() => {
-    let category = "";
-
-    if (selectedParticipant === "Listener (In-Person)") {
-      category = "1_Listener-In-Person_listener-in-person";
-    } else if (selectedParticipant === "Presenter (In-Person)") {
-      category = "2_Presenter-In-Person_presenter-in-person";
-    } else if (selectedParticipant === "Student/Young Researcher") {
-      category = "3_Young-Researcher-In-Person_young-researcher-in-person";
-    } else if (selectedParticipant === "Listener (Virtual)") {
-      category = "4_Listener-Virtual_listener-virtual";
-    } else if (selectedParticipant === "Presenter (Virtual)") {
-      category = "5_Presenter-Virtual_presenter-virtual";
+      console.log("Form data sent successfully");
+    } catch (err) {
+      console.error("Error saving form data:", err);
     }
+  }, []);
 
-    setSelectedCategory(category);
+  // Handler for selecting participant type
+  const handleParticipantChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    const participantType = event.target.value;
+    const selectedItem = pricesData.find(
+      (item) => item.type === participantType
+    );
+    const regPrice = selectedItem ? selectedItem.total : 0;
 
-    setFormData((prevState) => {
-      const updatedData = {
-        ...prevState,
-        intrested: category,
-      };
+    setFormData((prev) => ({
+      ...prev,
+      intrested: getCategoryFromParticipant(participantType),
+      other_info: {
+        ...prev.other_info,
+        "Registration Price": regPrice,
+      },
+    }));
 
-      if (updatedData.email) {
-        sendFullFormData(updatedData);
-      }
+    if (formData.email) {
+      sendFullFormData({
+        ...formData,
+        intrested: getCategoryFromParticipant(participantType),
+        other_info: {
+          ...formData.other_info,
+          "Registration Price": regPrice,
+        },
+      });
+    }
+  };
 
-      return updatedData;
-    });
-  }, [selectedParticipant, sendFullFormData]);
+  const getCategoryFromParticipant = (participant: string): string => {
+    switch (participant) {
+      case "Listener (In-Person)":
+        return "1_Listener-In-Person_listener-in-person";
+      case "Presenter (In-Person)":
+        return "2_Presenter-In-Person_presenter-in-person";
+      case "Student/Young Researcher":
+        return "3_Young-Researcher-In-Person_young-researcher-in-person";
+      case "Listener (Virtual)":
+        return "4_Listener-Virtual_listener-virtual";
+      case "Presenter (Virtual)":
+        return "5_Presenter-Virtual_presenter-virtual";
+      default:
+        return "";
+    }
+  };
 
   const fetchData2 = (data: RegistrationInfo): void => {
     const { accommodation_prices, checkdates, increment_price } = data;
@@ -392,140 +265,44 @@ const Registration: React.FC<RegisterProps> = ({
 
   useEffect(() => {
     if (pricesData.length > 0) {
-      // Set initial selected participant type from the first item in pricesData
-      setSelectedParticipant(pricesData[0].type);
-    }
-  }, [pricesData]);
+      const initialParticipant =
+        activeTab === "tab1"
+          ? pricesData.find((item) => item.type === "Presenter (In-Person)")
+              ?.type ||
+            pricesData.filter((item) => item.category === "inperson")[0]?.type
+          : pricesData.find((item) => item.type === "Presenter (Virtual)")
+              ?.type ||
+            pricesData.filter((item) => item.category === "virtual")[0]?.type;
 
-  useEffect(() => {
-    if (selectedParticipant && pricesData.length > 0) {
-      try {
-        // Find the selected item from pricesData
-        const selectedItem = pricesData.find(
-          (item) => item.type === selectedParticipant
-        );
-
-        // Set price based on API data or default to 0
-        setUnitRegistrationPrice(selectedItem ? selectedItem.total : 0);
-      } catch (error) {
-        console.error("Error retrieving price data:", error);
-        setUnitRegistrationPrice(0);
+      if (initialParticipant) {
+        setFormData((prev) => ({
+          ...prev,
+          intrested: getCategoryFromParticipant(initialParticipant),
+          other_info: {
+            ...prev.other_info,
+            "Registration Price":
+              pricesData.find((item) => item.type === initialParticipant)
+                ?.total || 0,
+          },
+        }));
       }
     }
-
-    // if (pricesData.length > 0) {
-    //   const types = pricesData.map((item) => item.type);
-    //   const fees = pricesData.map((item) => item.total);
-
-    //   setTypesOfParticipation(types);
-    //   setStandardFees(fees);
-    // }
-  }, [selectedParticipant, pricesData]);
-
-  useEffect(() => {
-    if (selectedParticipant && pricesData.length > 0) {
-      try {
-        // Find the selected item from pricesData
-        const selectedItem = pricesData.find(
-          (item) => item.type === selectedParticipant
-        );
-
-        const regPrice = selectedItem ? selectedItem.total : 0;
-        setUnitRegistrationPrice(regPrice);
-
-        setFormData((prevState) => {
-          const updatedData = {
-            ...prevState,
-            other_info: {
-              ...prevState.other_info,
-              "Registration Price": regPrice,
-            },
-          };
-
-          if (updatedData.email) {
-            sendFullFormData(updatedData);
-          }
-          return updatedData;
-        });
-      } catch (error) {
-        console.error("Error retrieving price data:", error);
-        setUnitRegistrationPrice(0);
-      }
-    }
-  }, [selectedParticipant, pricesData]);
-
-  useEffect(() => {
-    let price = 0;
-    switch (selectedAccommodation) {
-      case "single":
-        price = parseFloat(accommodationPrices.single);
-        break;
-      case "double":
-        price = parseFloat(accommodationPrices.doubl);
-        break;
-      case "triple":
-        price = parseFloat(accommodationPrices.tri);
-        break;
-      default:
-        price = 0;
-    }
-    setTotalAccommodationPrice(price * numNights);
-  }, [selectedAccommodation, accommodationPrices, numNights]);
-
-  // ============registration info===========
-  const [isHydrated, setIsHydrated] = useState<boolean>(false);
+  }, [pricesData, activeTab]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ): void => {
     const { name, value } = e.target;
 
-    // Update state and clear errors
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
 
-    // Trigger API only when title or country is selected
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+
     if ((name === "title" || name === "country") && formData.email) {
       sendFullFormData({ ...formData, [name]: value });
-    }
-
-    // Update state and clear errors for that field
-    switch (name) {
-      case "title":
-        setTitle(value);
-        setErrors((prevErrors) => ({ ...prevErrors, title: "" }));
-        break;
-      case "name":
-        setName(value);
-        setErrors((prevErrors) => ({ ...prevErrors, name: "" }));
-        break;
-      case "altEmail":
-        setAltEmail(value);
-        setErrors((prevErrors) => ({ ...prevErrors, altEmail: "" }));
-        break;
-      case "email":
-        setEmail(value);
-        setErrors((prevErrors) => ({ ...prevErrors, email: "" }));
-        break;
-      case "whatsappNumber":
-        setWhatsappNumber(value);
-        setErrors((prevErrors) => ({ ...prevErrors, whatsappNumber: "" }));
-        break;
-      case "phone":
-        setPhone(value);
-        setErrors((prevErrors) => ({ ...prevErrors, phone: "" }));
-        break;
-      case "institution":
-        setInstitution(value);
-        setErrors((prevErrors) => ({ ...prevErrors, institution: "" }));
-        break;
-      case "country":
-        setCountry(value);
-        setErrors((prevErrors) => ({ ...prevErrors, country: "" }));
-        break;
-      // Add cases for other inputs as needed...
-      default:
-        break;
     }
   };
 
@@ -533,46 +310,59 @@ const Registration: React.FC<RegisterProps> = ({
     e: React.ChangeEvent<HTMLInputElement>
   ): void => {
     const value = e.target.value;
-    const updatedAccomodation = selectedAccommodation === value ? "" : value;
+    const updatedAccomodation =
+      formData.other_info["Selected Accommodation"] === value ? "" : value;
 
-    // Fix: Ensure we use updatedAccomodation instead of selectedAccommodation
     const selectedAccommodationPrice =
       updatedAccomodation === "single"
         ? parseFloat(accommodationPrices.single)
         : updatedAccomodation === "double"
-          ? parseFloat(accommodationPrices.doubl)
-          : updatedAccomodation === "triple"
-            ? parseFloat(accommodationPrices.tri)
-            : 0;
+        ? parseFloat(accommodationPrices.doubl)
+        : updatedAccomodation === "triple"
+        ? parseFloat(accommodationPrices.tri)
+        : 0;
 
-    setSelectedAccommodation(updatedAccomodation);
+    setFormData((prev) => ({
+      ...prev,
+      other_info: {
+        ...prev.other_info,
+        "Selected Accommodation": updatedAccomodation,
+        "selected Accommodation Price": selectedAccommodationPrice,
+        "check In Date": updatedAccomodation
+          ? prev.other_info["check In Date"]
+          : "NA",
+        "check Out Date": updatedAccomodation
+          ? prev.other_info["check Out Date"]
+          : "NA",
+        "Num of Nights": updatedAccomodation
+          ? prev.other_info["Num of Nights"]
+          : 0,
+      },
+    }));
 
-    if (selectedAccommodation !== value) {
-      setCheckInDate("NA");
-      setCheckOutDate("NA");
-      setNumNights(0);
-    }
-
-    setFormData((prevState) => {
-      const updatedData = {
-        ...prevState,
+    if (formData.email) {
+      sendFullFormData({
+        ...formData,
         other_info: {
-          ...prevState.other_info,
+          ...formData.other_info,
           "Selected Accommodation": updatedAccomodation,
           "selected Accommodation Price": selectedAccommodationPrice,
+          "check In Date": updatedAccomodation
+            ? formData.other_info["check In Date"]
+            : "NA",
+          "check Out Date": updatedAccomodation
+            ? formData.other_info["check Out Date"]
+            : "NA",
+          "Num of Nights": updatedAccomodation
+            ? formData.other_info["Num of Nights"]
+            : 0,
         },
-      };
-
-      if (updatedData.email) {
-        sendFullFormData(updatedData);
-      }
-
-      return updatedData;
-    });
+      });
+    }
   };
 
   const formatDateWithDay = (dateStr: string): string => {
-    if (dateStr === "NA") return "NA"; // Return NA directly if the value is 'NA'
+    if (dateStr === "NA") return "NA";
 
     const [day, month, year] = dateStr.split("-");
     const dateObj = new Date(`${year}-${month}-${day}`);
@@ -602,8 +392,8 @@ const Registration: React.FC<RegisterProps> = ({
     ];
 
     const dayName = daysOfWeek[dateObj.getUTCDay()];
-    const monthName = months[parseInt(month, 10) - 1]; // Convert month number to short name
-    const formattedDay = day.padStart(2, "0"); // Ensure two-digit day format
+    const monthName = months[parseInt(month, 10) - 1];
+    const formattedDay = day.padStart(2, "0");
 
     return `${monthName} ${formattedDay}, ${year} (${dayName})`;
   };
@@ -612,7 +402,6 @@ const Registration: React.FC<RegisterProps> = ({
     e: React.ChangeEvent<HTMLSelectElement>
   ): void => {
     const selectedDate = e.target.value || "NA";
-    setCheckInDate(selectedDate);
 
     // Convert selected date to a Date object
     const [day, month, year] = selectedDate.split("-");
@@ -637,41 +426,35 @@ const Registration: React.FC<RegisterProps> = ({
       });
     }
 
-    // Format the new checkout dates to include the day of the week
-    const formattedCheckOutDates = newCheckOutDates.map((date) => date);
-    setCheckOutDates(formattedCheckOutDates);
-    setCheckOutDate(""); // Clear pre-selected checkout date
+    setCheckOutDates(newCheckOutDates.map((date) => date));
 
-    // **Clear the check-in error dynamically**
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      checkIn: selectedDate !== "NA" ? "" : prevErrors.checkIn,
-    }));
-
-    // **Clear check-out error as well if a valid check-in date is chosen**
-    setErrors((prevErrors) => ({
-      ...prevErrors,
+    // Clear errors
+    setErrors((prev) => ({
+      ...prev,
+      checkIn: selectedDate !== "NA" ? "" : prev.checkIn,
       checkOut: "",
     }));
 
-    // Calculate nights whenever the check-in date changes
-    calculateNights(selectedDate, ""); // Pass empty string for checkOut if not selected
+    // Calculate nights
+    calculateNights(selectedDate, formData.other_info["check Out Date"]);
 
-    setFormData((prevState) => {
-      const updatedData = {
-        ...prevState,
+    setFormData((prev) => ({
+      ...prev,
+      other_info: {
+        ...prev.other_info,
+        "check In Date": selectedDate,
+      },
+    }));
+
+    if (formData.email) {
+      sendFullFormData({
+        ...formData,
         other_info: {
-          ...prevState.other_info,
+          ...formData.other_info,
           "check In Date": selectedDate,
         },
-      };
-
-      if (updatedData.email) {
-        sendFullFormData(updatedData);
-      }
-
-      return updatedData;
-    });
+      });
+    }
   };
 
   const handleCheckOutChange = (
@@ -680,55 +463,55 @@ const Registration: React.FC<RegisterProps> = ({
     const selectedDate = e.target.value;
 
     // Ensure checkout date is after check-in date
-    if (checkInDate && selectedDate) {
+    if (formData.other_info["check In Date"] && selectedDate) {
       const isValidDate =
         new Date(selectedDate.split("-").reverse().join("-")) >
-        new Date(checkInDate.split("-").reverse().join("-"));
+        new Date(
+          formData.other_info["check In Date"].split("-").reverse().join("-")
+        );
 
       if (!isValidDate) {
-        //  set an error message
-        setErrors((prevErrors) => ({
-          ...prevErrors,
+        setErrors((prev) => ({
+          ...prev,
           checkOut: "Check-out date must be after check-in date",
         }));
         return;
       }
     }
 
-    setCheckOutDate(selectedDate);
-
-    // **Clear the check-out error dynamically**
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      checkOut: selectedDate !== "NA" ? "" : prevErrors.checkOut,
+    // Clear the check-out error
+    setErrors((prev) => ({
+      ...prev,
+      checkOut: selectedDate !== "NA" ? "" : prev.checkOut,
     }));
 
-    // Calculate nights whenever the check-out date changes
-    calculateNights(checkInDate, selectedDate);
+    // Calculate nights
+    calculateNights(formData.other_info["check In Date"], selectedDate);
 
-    setFormData((prevState) => {
-      const updatedData = {
-        ...prevState,
+    setFormData((prev) => ({
+      ...prev,
+      other_info: {
+        ...prev.other_info,
+        "check Out Date": selectedDate,
+      },
+    }));
+
+    if (formData.email) {
+      sendFullFormData({
+        ...formData,
         other_info: {
-          ...prevState.other_info,
+          ...formData.other_info,
           "check Out Date": selectedDate,
         },
-      };
-
-      if (updatedData.email) {
-        sendFullFormData(updatedData);
-      }
-      return updatedData;
-    });
+      });
+    }
   };
 
   const calculateNights = (checkIn: string, checkOut: string): void => {
-    if (checkIn && checkOut) {
-      // Remove the day of the week (anything inside parentheses)
+    if (checkIn && checkOut && checkIn !== "NA" && checkOut !== "NA") {
       const cleanCheckIn = checkIn.replace(/\s*\(.*?\)/, "");
       const cleanCheckOut = checkOut.replace(/\s*\(.*?\)/, "");
 
-      // Split the date strings by '-' and create Date objects
       const [checkInDay, checkInMonth, checkInYear] = cleanCheckIn
         .split("-")
         .map(Number);
@@ -736,7 +519,6 @@ const Registration: React.FC<RegisterProps> = ({
         .split("-")
         .map(Number);
 
-      // Create Date objects (months are 0-indexed in JavaScript)
       const checkInDate = new Date(checkInYear, checkInMonth - 1, checkInDay);
       const checkOutDate = new Date(
         checkOutYear,
@@ -745,62 +527,71 @@ const Registration: React.FC<RegisterProps> = ({
       );
 
       if (checkOutDate <= checkInDate) {
-        setNumNights(0);
+        setFormData((prev) => ({
+          ...prev,
+          other_info: {
+            ...prev.other_info,
+            "Num of Nights": 0,
+          },
+        }));
         setNightsError("Check-out date must be after check-in date");
         return;
       }
 
       const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
-      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)); // convert to days
+      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
       if (daysDiff <= 0) {
-        setNumNights(0);
+        setFormData((prev) => ({
+          ...prev,
+          other_info: {
+            ...prev.other_info,
+            "Num of Nights": 0,
+          },
+        }));
         setNightsError("Number of nights must be greater than 0");
         return;
       }
 
-      setNumNights(daysDiff);
+      setFormData((prev) => ({
+        ...prev,
+        other_info: {
+          ...prev.other_info,
+          "Num of Nights": daysDiff,
+        },
+      }));
       setNightsError("");
 
-      // Update numNights in State and formData
-      setNumNights(daysDiff);
-      setNightsError("");
-
-      setFormData((prevState) => {
-        const updatedData = {
-          ...prevState,
+      if (formData.email) {
+        sendFullFormData({
+          ...formData,
           other_info: {
-            ...prevState.other_info,
-            "check In Date": checkIn,
-            "check Out Date": checkOut,
+            ...formData.other_info,
             "Num of Nights": daysDiff,
           },
-        };
-
-        // Trigger API only after email is entered
-        if (updatedData.email) {
-          sendFullFormData(updatedData);
-        }
-
-        return updatedData;
-      });
-    } else if (checkIn && !checkOut) {
-      // If check-in is selected but no check-out, set nights to 0
-      setNumNights(0);
-      setNightsError("");
-
-      setFormData((prevState) => ({
-        ...prevState,
+        });
+      }
+    } else if (
+      checkIn &&
+      checkIn !== "NA" &&
+      (!checkOut || checkOut === "NA")
+    ) {
+      setFormData((prev) => ({
+        ...prev,
         other_info: {
-          ...prevState.other_info,
-          "check In Date": checkIn,
-          "check Out Date": "",
+          ...prev.other_info,
           "Num of Nights": 0,
         },
       }));
+      setNightsError("");
     } else {
-      // Handle cases where one or both dates are not set
-      setNumNights(0);
+      setFormData((prev) => ({
+        ...prev,
+        other_info: {
+          ...prev.other_info,
+          "Num of Nights": 0,
+        },
+      }));
       setNightsError("Both check-in and check-out dates must be selected");
     }
   };
@@ -809,34 +600,34 @@ const Registration: React.FC<RegisterProps> = ({
     e: React.ChangeEvent<HTMLSelectElement>
   ): void => {
     const newValue = parseInt(e.target.value, 10);
-    setNumParticipants(newValue);
+    setFormData((prev) => ({
+      ...prev,
+      no_participants: newValue,
+    }));
 
-    setFormData((prevState) => {
-      const updatedData = { ...prevState, no_participants: newValue };
-
-      if (updatedData.email) {
-        sendFullFormData(updatedData);
-      }
-
-      return updatedData;
-    });
+    if (formData.email) {
+      sendFullFormData({
+        ...formData,
+        no_participants: newValue,
+      });
+    }
   };
 
   const handleNumAccompanyingPersonsChange = (
     e: React.ChangeEvent<HTMLSelectElement>
   ): void => {
     const newValueAccom = parseInt(e.target.value, 10);
-    setNumAccompanyingPersons(newValueAccom);
+    setFormData((prev) => ({
+      ...prev,
+      no_accompanying: newValueAccom,
+    }));
 
-    setFormData((prevState) => {
-      const updatedData = { ...prevState, no_accompanying: newValueAccom };
-
-      if (updatedData.email) {
-        sendFullFormData(updatedData);
-      }
-
-      return updatedData;
-    });
+    if (formData.email) {
+      sendFullFormData({
+        ...formData,
+        no_accompanying: newValueAccom,
+      });
+    }
   };
 
   useEffect(() => {
@@ -844,54 +635,43 @@ const Registration: React.FC<RegisterProps> = ({
       const pricePerAccompanyingPerson = parseFloat(
         accommodationPrices.accompanying
       );
-      setPricePerAccompanyingPerson(pricePerAccompanyingPerson);
-      setTotalAccompanyingPersonsPrice(
-        numAccompanyingPersons * pricePerAccompanyingPerson
-      );
+      // const totalAccompanyingPersonsPrice =
+      //   formData.no_accompanying * pricePerAccompanyingPerson;
 
-      setFormData((prevState) => {
-        const updatedData = {
-          ...prevState,
-          other_info: {
-            ...prevState.other_info,
-            "Price Per Accompanying Person": pricePerAccompanyingPerson,
-          },
-        };
-
-        if (updatedData.email) {
-          sendFullFormData(updatedData);
-        }
-
-        return updatedData;
-      });
-    } else {
-      // Handle the case when accommodationPrices or accommodationPrices.accompanying is not available
-      setTotalAccompanyingPersonsPrice(0);
-      setPricePerAccompanyingPerson(0);
-
-      setFormData((prevState) => ({
-        ...prevState,
+      setFormData((prev) => ({
+        ...prev,
         other_info: {
-          ...prevState.other_info,
-          "Price Per Accompanying Person": 0,
+          ...prev.other_info,
+          "Price Per Accompanying Person": pricePerAccompanyingPerson,
         },
       }));
+
+      if (formData.email) {
+        sendFullFormData({
+          ...formData,
+          other_info: {
+            ...formData.other_info,
+            "Price Per Accompanying Person": pricePerAccompanyingPerson,
+          },
+        });
+      }
     }
-  }, [numAccompanyingPersons, accommodationPrices]);
+  }, [formData.no_accompanying, accommodationPrices]);
 
   const totalPrice =
-    unitRegistrationPrice * numParticipants +
-    totalAccommodationPrice +
-    totalAccompanyingPersonsPrice;
+    formData.other_info["Registration Price"] * formData.no_participants +
+    formData.other_info["selected Accommodation Price"] *
+      formData.other_info["Num of Nights"] +
+    formData.other_info["Price Per Accompanying Person"] *
+      formData.no_accompanying;
 
   useEffect(() => {
-    setFormData((prevState) => {
-      // Prevent unnecessary re-renders by updating state only if value changes
-      if (prevState.other_info["Total Price"] !== totalPrice) {
+    setFormData((prev) => {
+      if (prev.other_info["Total Price"] !== totalPrice) {
         const updatedData = {
-          ...prevState,
+          ...prev,
           other_info: {
-            ...prevState.other_info,
+            ...prev.other_info,
             "Total Price": totalPrice,
           },
         };
@@ -902,212 +682,12 @@ const Registration: React.FC<RegisterProps> = ({
 
         return updatedData;
       }
-
-      return prevState;
+      return prev;
     });
-  }, [totalPrice]); //Only runs when totalPrice changes
-
-  const selectedAccommodationPrice =
-    selectedAccommodation === "single"
-      ? parseFloat(accommodationPrices.single)
-      : selectedAccommodation === "double"
-        ? parseFloat(accommodationPrices.doubl)
-        : selectedAccommodation === "triple"
-          ? parseFloat(accommodationPrices.tri)
-          : 0;
-
-  // Form Submission
-  // const handleSubmit = async (e: React.FormEvent): Promise<void> => {
-  //   e.preventDefault();
-
-  //   // Disable the submit button and other fields during submission
-  //   setLoading(true);
-
-  //   // Reset previous errors
-  //   let valid = true;
-  //   const newErrors: Record<string, string> = {};
-
-  //   // Validate fields
-  //   if (!title) {
-  //     newErrors.title = "Title is required";
-  //     valid = false;
-  //   }
-
-  //   // Stop validation on first error (no need to check further)
-  //   if (!valid) {
-  //     setErrors(newErrors);
-
-  //     // Display toastr message for the first error field only
-  //     for (const field in newErrors) {
-  //       if (newErrors[field]) {
-  //         // toastr.error(newErrors[field], "Validation Error", { timeOut: 3000 });
-  //         break; // Show only the first error message
-  //       }
-  //     }
-
-  //     // Focus on the first field with an error
-  //     if (newErrors.title && titleRef.current) {
-  //       titleRef.current.focus();
-  //     } else if (newErrors.name && nameRef.current) {
-  //       nameRef.current.focus();
-  //     } else if (newErrors.email && emailRef.current) {
-  //       emailRef.current.focus();
-  //     } else if (newErrors.altEmail && altEmailRef.current) {
-  //       altEmailRef.current.focus();
-  //     } else if (newErrors.phone && phoneRef.current) {
-  //       phoneRef.current.focus();
-  //     } else if (newErrors.institution && institutionRef.current) {
-  //       institutionRef.current.focus();
-  //     } else if (newErrors.country && countryRef.current) {
-  //       countryRef.current.focus();
-  //     } else if (newErrors.checkIn && checkInRef.current) {
-  //       checkInRef.current.focus(); // Focus on check-in field
-  //     } else if (newErrors.checkOut && checkOutRef.current) {
-  //       checkOutRef.current.focus(); // Focus on check-out field
-  //     }
-
-  //     setLoading(false);
-  //     return; // Stop form submission until validation passes
-  //   }
-
-  //   // Validate remaining fields if the first field is valid
-  //   if (!name) {
-  //     newErrors.name = "Name is required";
-  //     valid = false;
-  //   } else if (!email) {
-  //     newErrors.email = "Email is required";
-  //     valid = false;
-  //   } else if (!/\S+@\S+\.\S+/.test(email)) {
-  //     newErrors.email = "Email is invalid";
-  //     valid = false;
-  //   } else if (altEmail && !/\S+@\S+\.\S+/.test(altEmail)) {
-  //     newErrors.altEmail = "Alternate Email is invalid";
-  //     valid = false;
-  //   } else if (!phone) {
-  //     newErrors.phone = "Phone is required";
-  //     valid = false;
-  //   } else if (!institution) {
-  //     newErrors.institution = "Institution is required";
-  //     valid = false;
-  //   } else if (!country) {
-  //     newErrors.country = "Country is required";
-  //     valid = false;
-  //   }
-
-  //   // Validate check-in and check-out dates if accommodation is selected
-  //   else if (selectedAccommodation) {
-  //     if (!checkInDate || checkInDate === "NA") {
-  //       newErrors.checkIn = "Check-in Date is required";
-  //       valid = false;
-  //     } else if (!checkOutDate || checkOutDate === "NA") {
-  //       newErrors.checkOut = "Check-out Date is required";
-  //       valid = false;
-  //     }
-  //   }
-
-  //   // If not valid, continue to show error for the first invalid field
-  //   if (!valid) {
-  //     setErrors(newErrors);
-
-  //     // Display toastr message for the first error field only
-  //     for (const field in newErrors) {
-  //       if (newErrors[field]) {
-  //         // toastr.error(newErrors[field], "Validation Error", { timeOut: 3000 });
-  //         break; // Show only the first error message
-  //       }
-  //     }
-
-  //     // Focus on the first field with an error
-  //     if (newErrors.title && titleRef.current) {
-  //       titleRef.current.focus();
-  //     } else if (newErrors.name && nameRef.current) {
-  //       nameRef.current.focus();
-  //     } else if (newErrors.email && emailRef.current) {
-  //       emailRef.current.focus();
-  //     } else if (newErrors.altEmail && altEmailRef.current) {
-  //       altEmailRef.current.focus();
-  //     } else if (newErrors.phone && phoneRef.current) {
-  //       phoneRef.current.focus();
-  //     } else if (newErrors.institution && institutionRef.current) {
-  //       institutionRef.current.focus();
-  //     } else if (newErrors.country && countryRef.current) {
-  //       countryRef.current.focus();
-  //     } else if (newErrors.checkIn && checkInRef.current) {
-  //       checkInRef.current.focus(); // Focus on check-in field
-  //     } else if (newErrors.checkOut && checkOutRef.current) {
-  //       checkOutRef.current.focus(); // Focus on check-out field
-  //     }
-
-  //     setLoading(false);
-  //     return; // Stop form submission until validation passes
-  //   }
-
-  //   // Update formData with submit_status
-  //   const updatedFormData = { ...formData, submit_status: "1" };
-
-  //   // Proceed to submit form if valid
-  //   const postData = {
-  //     module_name: "registration_save",
-  //     keys: {
-  //       data: [
-  //         {
-  //           title,
-  //           name,
-  //           email,
-  //           alt_email: altEmail,
-  //           phone,
-  //           whatsapp_number: whatsappNumber,
-  //           institution,
-  //           country,
-  //           reg_category: selectedCategory,
-  //           occupency_text: selectedAccommodation,
-  //           occupancy: selectedAccommodationPrice.toString(),
-  //           check_insel: checkInDate,
-  //           check_outsel: checkOutDate,
-  //           nights: numNights.toString(),
-  //           no_of_participants: numParticipants.toString(),
-  //           no_of_accompanying: numAccompanyingPersons.toString(),
-  //           reg_tot_hidden: unitRegistrationPrice.toString(),
-  //           price_of_each_accompanying: pricePerAccompanyingPerson.toString(),
-  //           final_amt_input: totalPrice.toString(),
-  //         },
-  //       ],
-  //     },
-  //   };
-
-  //   console.log("payload", postData);
-
-  //   // Call sendFullFormData after updating formData
-  //   sendFullFormData(updatedFormData);
-
-  //   // Submit the data
-  //   try {
-  //     const response = await axios.post("/api/register", postData, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-
-  //     const token = response.data?.data;
-  //     if (token) {
-  //       // setWebToken(token);
-  //       router.push(`/register_details?web_token=${token}`);
-  //     } else {
-  //       console.error("Web token not found in response");
-  //       await logError("Web token is missing in the API response.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error submitting registration:", error);
-  //     await logError("Registration failed: something went wrong.");
-  //   }
-
-  //   // Re-enable the submit button and form fields after submission
-  //   setLoading(false);
-  // };
+  }, [totalPrice]);
 
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-
     setLoading(true);
     setErrors({});
 
@@ -1115,45 +695,42 @@ const Registration: React.FC<RegisterProps> = ({
     let valid = true;
     const newErrors: Record<string, string> = {};
 
-    if (!title) {
+    if (!formData.title) {
       newErrors.title = "Title is required";
       valid = false;
     }
-    // Stop validation early
-    if (!valid) {
-      setErrors(newErrors);
-      // Focus first invalid field
-      if (newErrors.title && titleRef.current) titleRef.current.focus();
-      setLoading(false);
-      return;
-    }
-
-    if (!name) {
+    if (!formData.name) {
       newErrors.name = "Name is required";
       valid = false;
-    } else if (!email) {
+    } else if (!formData.email) {
       newErrors.email = "Email is required";
       valid = false;
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Email is invalid";
       valid = false;
-    } else if (altEmail && !/\S+@\S+\.\S+/.test(altEmail)) {
+    } else if (formData.alt_email && !/\S+@\S+\.\S+/.test(formData.alt_email)) {
       newErrors.altEmail = "Alternate Email is invalid";
       valid = false;
-    } else if (!phone) {
+    } else if (!formData.phone) {
       newErrors.phone = "Phone is required";
       valid = false;
-    } else if (!institution) {
+    } else if (!formData.organization) {
       newErrors.institution = "Institution is required";
       valid = false;
-    } else if (!country) {
+    } else if (!formData.country) {
       newErrors.country = "Country is required";
       valid = false;
-    } else if (selectedAccommodation) {
-      if (!checkInDate || checkInDate === "NA") {
+    } else if (formData.other_info["Selected Accommodation"]) {
+      if (
+        !formData.other_info["check In Date"] ||
+        formData.other_info["check In Date"] === "NA"
+      ) {
         newErrors.checkIn = "Check-in Date is required";
         valid = false;
-      } else if (!checkOutDate || checkOutDate === "NA") {
+      } else if (
+        !formData.other_info["check Out Date"] ||
+        formData.other_info["check Out Date"] === "NA"
+      ) {
         newErrors.checkOut = "Check-out Date is required";
         valid = false;
       }
@@ -1162,7 +739,8 @@ const Registration: React.FC<RegisterProps> = ({
     if (!valid) {
       setErrors(newErrors);
       // Focus on the first invalid field
-      if (newErrors.name && nameRef.current) nameRef.current.focus();
+      if (newErrors.title && titleRef.current) titleRef.current.focus();
+      else if (newErrors.name && nameRef.current) nameRef.current.focus();
       else if (newErrors.email && emailRef.current) emailRef.current.focus();
       else if (newErrors.altEmail && altEmailRef.current)
         altEmailRef.current.focus();
@@ -1182,8 +760,6 @@ const Registration: React.FC<RegisterProps> = ({
 
     // Form data with submit status
     const updatedFormData = { ...formData, submit_status: "1" };
-
-    // Call sendFullFormData (your existing function) with the form data
     sendFullFormData(updatedFormData);
 
     // Prepare API payload
@@ -1192,25 +768,28 @@ const Registration: React.FC<RegisterProps> = ({
       keys: {
         data: [
           {
-            title,
-            name,
-            email,
-            alt_email: altEmail,
-            phone,
-            whatsapp_number: whatsappNumber,
-            institution,
-            country,
-            reg_category: selectedCategory,
-            occupency_text: selectedAccommodation,
-            occupancy: selectedAccommodationPrice.toString(),
-            check_insel: checkInDate,
-            check_outsel: checkOutDate,
-            nights: numNights.toString(),
-            no_of_participants: numParticipants.toString(),
-            no_of_accompanying: numAccompanyingPersons.toString(),
-            reg_tot_hidden: unitRegistrationPrice.toString(),
-            price_of_each_accompanying: pricePerAccompanyingPerson.toString(),
-            final_amt_input: totalPrice.toString(),
+            title: formData.title,
+            name: formData.name,
+            email: formData.email,
+            alt_email: formData.alt_email,
+            phone: formData.phone,
+            whatsapp_number: formData.whatsapp,
+            institution: formData.organization,
+            country: formData.country,
+            reg_category: formData.intrested,
+            occupency_text: formData.other_info["Selected Accommodation"],
+            occupancy:
+              formData.other_info["selected Accommodation Price"].toString(),
+            check_insel: formData.other_info["check In Date"],
+            check_outsel: formData.other_info["check Out Date"],
+            nights: formData.other_info["Num of Nights"].toString(),
+            no_of_participants: formData.no_participants.toString(),
+            no_of_accompanying: formData.no_accompanying.toString(),
+            reg_tot_hidden:
+              formData.other_info["Registration Price"].toString(),
+            price_of_each_accompanying:
+              formData.other_info["Price Per Accompanying Person"].toString(),
+            final_amt_input: formData.other_info["Total Price"].toString(),
           },
         ],
       },
@@ -1239,7 +818,7 @@ const Registration: React.FC<RegisterProps> = ({
   };
 
   const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLElement>, // Accepts input, textarea, select, etc.
+    e: React.KeyboardEvent<HTMLElement>,
     fieldName: string,
     nextFieldRef: React.RefObject<HTMLElement | null> | null
   ) => {
@@ -1250,43 +829,55 @@ const Registration: React.FC<RegisterProps> = ({
       const newErrors = { ...errors };
 
       // Validation logic
-      if (fieldName === "title" && !title) {
+      if (fieldName === "title" && !formData.title) {
         newErrors.title = "Title is required";
         fieldValid = false;
-      } else if (fieldName === "name" && !name) {
+      } else if (fieldName === "name" && !formData.name) {
         newErrors.name = "Name is required";
         fieldValid = false;
       } else if (fieldName === "email") {
-        if (!email) {
+        if (!formData.email) {
           newErrors.email = "Email is required";
           fieldValid = false;
-        } else if (!/\S+@\S+\.\S+/.test(email)) {
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
           newErrors.email = "Email is invalid";
           fieldValid = false;
         }
       } else if (
         fieldName === "altEmail" &&
-        altEmail &&
-        !/\S+@\S+\.\S+/.test(altEmail)
+        formData.alt_email &&
+        !/\S+@\S+\.\S+/.test(formData.alt_email)
       ) {
         newErrors.altEmail = "Alternative Email is invalid";
         fieldValid = false;
-      } else if (fieldName === "phone" && !phone) {
+      } else if (fieldName === "phone" && !formData.phone) {
         newErrors.phone = "Phone is required";
         fieldValid = false;
-      } else if (fieldName === "institution" && !institution) {
+      } else if (fieldName === "institution" && !formData.organization) {
         newErrors.institution = "Institution is required";
         fieldValid = false;
-      } else if (fieldName === "country" && !country) {
+      } else if (fieldName === "country" && !formData.country) {
         newErrors.country = "Country is required";
         fieldValid = false;
-      } else if (fieldName === "checkIn" && selectedAccommodation) {
-        if (!checkInDate || checkInDate === "NA") {
+      } else if (
+        fieldName === "checkIn" &&
+        formData.other_info["Selected Accommodation"]
+      ) {
+        if (
+          !formData.other_info["check In Date"] ||
+          formData.other_info["check In Date"] === "NA"
+        ) {
           newErrors.checkIn = "Check-in date is required";
           fieldValid = false;
         }
-      } else if (fieldName === "checkOut" && selectedAccommodation) {
-        if (!checkOutDate || checkOutDate === "NA") {
+      } else if (
+        fieldName === "checkOut" &&
+        formData.other_info["Selected Accommodation"]
+      ) {
+        if (
+          !formData.other_info["check Out Date"] ||
+          formData.other_info["check Out Date"] === "NA"
+        ) {
           newErrors.checkOut = "Check-out date is required";
           fieldValid = false;
         }
@@ -1299,7 +890,7 @@ const Registration: React.FC<RegisterProps> = ({
       }
 
       // Clear error and move to next field
-      setErrors((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
+      setErrors((prev) => ({ ...prev, [fieldName]: "" }));
 
       if (nextFieldRef?.current) {
         nextFieldRef.current.focus();
@@ -1309,8 +900,9 @@ const Registration: React.FC<RegisterProps> = ({
 
   // Effect to set the initial tab and checkbox
   useEffect(() => {
-    setActiveTab("tab1"); // Set initial tab
-    setSelectedOption("inperson"); // Set initial checked checkbox
+    setActiveTab("tab1");
+    setSelectedOption("inperson");
+    setIsHydrated(true);
   }, []);
 
   // Function to show the clicked tab
@@ -1323,43 +915,11 @@ const Registration: React.FC<RegisterProps> = ({
     setSelectedOption(value);
   };
 
-  useEffect(() => {
-    setIsHydrated(true);
-  }, []);
-
-  if (!isHydrated) {
-    return null;
-  }
-
   const handleReset = () => {
-    // Reset all form fields
-    setTitle("");
-    setName("");
-    setEmail("");
-    setAltEmail("");
-    setPhone("");
-    setWhatsappNumber("");
-    setInstitution("");
-    setCountry("");
-    setSelectedParticipant("");
-    setNumNights(0);
-    setNumParticipants(1);
-    setNumAccompanyingPersons(0);
-    setSelectedAccommodation("");
-    setTotalAccompanyingPersonsPrice(0);
-    setPricePerAccompanyingPerson(0);
-    setTotalAccommodationPrice(0);
-    setNightsError("");
-    setCheckInDate("");
-    setCheckOutDate("");
-    setUnitRegistrationPrice(0);
-    // setWebToken("");
-
-    // Clear all errors
+    setFormData(initialFormData);
     setErrors({});
-
-    // Reset to first tab (In-Person) and first participant (Listener In-Person)
     setActiveTab("tab1");
+    setNightsError("");
 
     if (pricesData.length > 0) {
       const listenerInPersonItem = pricesData.find(
@@ -1367,89 +927,39 @@ const Registration: React.FC<RegisterProps> = ({
       );
 
       if (listenerInPersonItem) {
-        // Force re-render by briefly setting to null
-        // setSelectedParticipant();
-        setTimeout(() => {
-          setSelectedParticipant(listenerInPersonItem.type);
-          setUnitRegistrationPrice(listenerInPersonItem.total);
-        }, 0);
+        setFormData((prev) => ({
+          ...prev,
+          intrested: getCategoryFromParticipant(listenerInPersonItem.type),
+          other_info: {
+            ...prev.other_info,
+            "Registration Price": listenerInPersonItem.total,
+          },
+        }));
       } else {
         const inPersonItems = pricesData.filter(
           (item) => item.category === "inperson"
         );
         if (inPersonItems.length > 0) {
-          // setSelectedParticipant(null);
-          setTimeout(() => {
-            setSelectedParticipant(inPersonItems[0].type);
-            setUnitRegistrationPrice(inPersonItems[0].total);
-          }, 0);
+          setFormData((prev) => ({
+            ...prev,
+            intrested: getCategoryFromParticipant(inPersonItems[0].type),
+            other_info: {
+              ...prev.other_info,
+              "Registration Price": inPersonItems[0].total,
+            },
+          }));
         }
       }
     }
   };
 
-  // const handleFieldUpdate = (fieldName: FieldName, value: FieldValue) => {
-  //   setFormData((prevState) => {
-  //     const otherInfoFields: OtherInfoField[] = [
-  //       "Selected Accommodation",
-  //       "check In Date",
-  //       "check Out Date",
-  //       "Num of Nights",
-  //       "selected Accommodation Price",
-  //       "Price Per Accompanying Person",
-  //       "Registration Price",
-  //       "Total Price",
-  //     ];
-
-  //     const updatedOtherInfo: Partial<Record<OtherInfoField, string | number>> =
-  //       {
-  //         ...prevState.other_info,
-  //       };
-
-  //     if (otherInfoFields.includes(fieldName as OtherInfoField)) {
-  //       updatedOtherInfo[fieldName as OtherInfoField] = value as
-  //         | string
-  //         | number;
-  //     }
-
-  //     const updatedData = {
-  //       ...prevState,
-  //       [fieldName]: value,
-  //       other_info: updatedOtherInfo,
-  //       submit_status: prevState.submit_status || "0",
-  //     };
-
-  //     const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
-
-  //     if (
-  //       typeof updatedData.email === "string" &&
-  //       isValidEmail(updatedData.email)
-  //     ) {
-  //       if (!prevState.web_token) {
-  //         updatedData.web_token = generateWebToken();
-  //       }
-  //       sendFullFormData(updatedData);
-  //     } else {
-  //       console.error("Invalid email format. API not triggered.");
-  //     }
-
-  //     return updatedData;
-  //   });
-  // };
-
-  // Error Messages sending to API when submitting form
-
-  const handleFieldUpdate = (fieldName: string, value: string) => {
-    setFormValues((prev) => ({
+  const handleBlur = (fieldName: string, value: string) => {
+    setFormData((prev) => ({
       ...prev,
       [fieldName]: value,
     }));
-  };
 
-  const handleBlur = (fieldName: string, value: string) => {
-    handleFieldUpdate(fieldName, value);
-
-    if ((fieldName === "email" || fieldName === "altEmail") && value) {
+    if ((fieldName === "email" || fieldName === "alt_email") && value) {
       const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
       if (!isValidEmail(value)) {
         console.error(
@@ -1459,12 +969,25 @@ const Registration: React.FC<RegisterProps> = ({
       }
     }
 
-    setTimeout(() => {
-      sendFullFormData(formValues);
-    }, 0);
+    if (formData.email) {
+      sendFullFormData({
+        ...formData,
+        [fieldName]: value,
+      });
+    }
   };
 
-   
+  if (!isHydrated) {
+    return null;
+  }
+
+  // const selectedAccommodationPrice =
+  //   formData.other_info["selected Accommodation Price"];
+  // const totalAccommodationPrice =
+  //   selectedAccommodationPrice * formData.other_info["Num of Nights"];
+  // const totalAccompanyingPersonsPrice =
+  //   formData.other_info["Price Per Accompanying Person"] *
+  //   formData.no_accompanying;
 
   return (
     <div>
@@ -1481,6 +1004,7 @@ const Registration: React.FC<RegisterProps> = ({
           </div>
         </div>
       </div>
+
       <h2
         className="abs_wrap5 wow fadeInUp"
         data-wow-delay="400ms"
@@ -1488,9 +1012,11 @@ const Registration: React.FC<RegisterProps> = ({
       >
         Registration
       </h2>
+
       <div className="regist_wrap_white">
         <div className="auto-container container">
           <form onSubmit={handleSubmit}>
+            {/* Personal Information Section */}
             <div className="row clearfix">
               <div
                 className="col-md-11 mar_center wow fadeInUp"
@@ -1504,7 +1030,7 @@ const Registration: React.FC<RegisterProps> = ({
                       name="title"
                       className="set156"
                       id="title"
-                      value={title}
+                      value={formData.title}
                       onChange={handleChange}
                       ref={titleRef}
                       onKeyDown={(e) => handleKeyDown(e, "title", nameRef)}
@@ -1527,7 +1053,7 @@ const Registration: React.FC<RegisterProps> = ({
                       id="name"
                       className="set157"
                       placeholder="Name"
-                      value={name}
+                      value={formData.name}
                       onChange={handleChange}
                       type="text"
                       ref={nameRef}
@@ -1539,6 +1065,8 @@ const Registration: React.FC<RegisterProps> = ({
                     {errors.name && <div className="error">{errors.name}</div>}
                   </div>
                 </div>
+
+                {/* Email and Contact Information */}
                 <div className="row clearfix">
                   <div className="col-md-1"></div>
                   <div className="col-md-5">
@@ -1547,7 +1075,7 @@ const Registration: React.FC<RegisterProps> = ({
                       id="email"
                       className="set157"
                       placeholder="Email"
-                      value={email}
+                      value={formData.email}
                       onChange={handleChange}
                       type="email"
                       ref={emailRef}
@@ -1556,17 +1084,16 @@ const Registration: React.FC<RegisterProps> = ({
                       onBlur={(e) => handleBlur("email", e.target.value)}
                       autoComplete="off"
                     />
-
                     <div className="error" id="email_error">
                       {errors.email}
                     </div>
                   </div>
                   <div className="col-md-5">
                     <input
-                      name="altEmail"
+                      name="alt_email"
                       id="alt_email"
                       className="set157"
-                      value={altEmail}
+                      value={formData.alt_email}
                       placeholder="Alternative Email"
                       onChange={handleChange}
                       ref={altEmailRef}
@@ -1581,6 +1108,8 @@ const Registration: React.FC<RegisterProps> = ({
                     </div>
                   </div>
                 </div>
+
+                {/* Phone and WhatsApp */}
                 <div className="row clearfix">
                   <div className="col-md-1"></div>
                   <div className="col-md-5">
@@ -1589,7 +1118,7 @@ const Registration: React.FC<RegisterProps> = ({
                       id="phone"
                       className="set157"
                       placeholder="Phone"
-                      value={phone}
+                      value={formData.phone}
                       onChange={handleChange}
                       type="text"
                       ref={phoneRef}
@@ -1606,10 +1135,10 @@ const Registration: React.FC<RegisterProps> = ({
                   </div>
                   <div className="col-md-5">
                     <input
-                      name="whatsappNumber"
+                      name="whatsapp"
                       id="whatsapp_number"
                       className="set157"
-                      value={whatsappNumber}
+                      value={formData.whatsapp}
                       placeholder="WhatsApp Number"
                       onChange={handleChange}
                       type="text"
@@ -1621,19 +1150,20 @@ const Registration: React.FC<RegisterProps> = ({
                       onBlur={(e) => handleBlur("whatsapp", e.target.value)}
                       autoComplete="off"
                     />
-                    <div className="error" id="whatsapp_number_error"></div>
                   </div>
                 </div>
+
+                {/* Institution and Country */}
                 <div className="row clearfix">
                   <div className="col-md-1"></div>
                   <div className="col-md-5">
                     <input
-                      name="institution"
+                      name="organization"
                       id="institution"
                       className="set157"
                       placeholder="Institution"
                       type="text"
-                      value={institution}
+                      value={formData.organization}
                       onChange={handleChange}
                       ref={institutionRef}
                       onKeyDown={(e) =>
@@ -1652,7 +1182,7 @@ const Registration: React.FC<RegisterProps> = ({
                       className="set156"
                       name="country"
                       id="country"
-                      value={country}
+                      value={formData.country}
                       onChange={handleChange}
                       ref={countryRef}
                       onKeyDown={(e) => handleKeyDown(e, "country", checkInRef)}
@@ -1673,6 +1203,8 @@ const Registration: React.FC<RegisterProps> = ({
                 </div>
               </div>
             </div>
+
+            {/* Registration Type Section */}
             <div className="row clearfix" style={{ width: "100%" }}>
               <div className="col-md-12 mar_center">
                 <div
@@ -1680,13 +1212,12 @@ const Registration: React.FC<RegisterProps> = ({
                   data-wow-delay="400ms"
                   data-wow-duration="1000ms"
                 >
-                  {/* Tab Design for discount values */}
-
                   <div className="tabs">
                     <button
                       type="button"
-                      className={`tab-button ${activeTab === "tab1" ? "active" : ""
-                        }`}
+                      className={`tab-button ${
+                        activeTab === "tab1" ? "active" : ""
+                      }`}
                       onClick={() => switchTab("tab1")}
                     >
                       <label className="container15">
@@ -1696,8 +1227,7 @@ const Registration: React.FC<RegisterProps> = ({
                           value="inperson"
                           checked={selectedOption === "inperson"}
                           onChange={() => toggleCheckbox("inperson")}
-                           disabled={loading}
-                          // Hide the default checkbox
+                          disabled={loading}
                           style={{ display: "none" }}
                         />
                         <span className="checkmark"></span>
@@ -1705,8 +1235,9 @@ const Registration: React.FC<RegisterProps> = ({
                     </button>
                     <button
                       type="button"
-                      className={`tab-button ${activeTab === "tab2" ? "active" : ""
-                        }`}
+                      className={`tab-button ${
+                        activeTab === "tab2" ? "active" : ""
+                      }`}
                       onClick={() => switchTab("tab2")}
                     >
                       <label className="container15">
@@ -1716,7 +1247,7 @@ const Registration: React.FC<RegisterProps> = ({
                           value="virtual"
                           checked={selectedOption === "virtual"}
                           onChange={() => toggleCheckbox("virtual")}
-                           disabled={loading}
+                          disabled={loading}
                           style={{ display: "none" }}
                         />
                         <span className="checkmark"></span>
@@ -1724,383 +1255,306 @@ const Registration: React.FC<RegisterProps> = ({
                     </button>
                   </div>
 
-                
-
                   <div className="tab-content">
+                    {/* In-Person Registration Tab */}
                     {activeTab === "tab1" && (
                       <div id="tab1" className="tab active">
-                        {/* Tab1 display content */}
-
-                        {activeTab === "tab1" && (
-                          <div id="tab1" className="tab active">
-                            <table className="conference-table">
-                              <thead>
-                                <tr>
-                                  <th className="sty_m1-0">
-                                    TYPES OF PARTICIPATION
-                                  </th>
-                                  <th className="sty_m1-1">
-                                    Standard Registration Fee
-                                  </th>
-                                  <th className="sty_m1-2">Discount %</th>
-                                  <th className="sty_m1-3">
-                                    Early Bird Registration Fee
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {pricesData.filter(
+                        <table className="conference-table">
+                          <thead>
+                            <tr>
+                              <th className="sty_m1-0">
+                                TYPES OF PARTICIPATION
+                              </th>
+                              <th className="sty_m1-1">
+                                Standard Registration Fee
+                              </th>
+                              <th className="sty_m1-2">Discount %</th>
+                              <th className="sty_m1-3">
+                                Early Bird Registration Fee
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {pricesData.filter(
+                              (item) =>
+                                item.category === "inperson" ||
+                                item.category === "student"
+                            ).length > 0 ? (
+                              pricesData
+                                .filter(
                                   (item) =>
                                     item.category === "inperson" ||
                                     item.category === "student"
-                                ).length > 0 ? (
-                                  pricesData
-                                    .filter(
-                                      (item) =>
-                                        item.category === "inperson" ||
-                                        item.category === "student"
-                                    )
-                                    .map((item, index) => (
-                                      <tr key={index}>
-                                        <td className="bg_ap1">
-                                          <input
-                                            type="radio"
-                                            name="registrationType"
-                                            value={item.type}
-                                            checked={
-                                              selectedParticipant ===
-                                              item.type ||
-                                              (index === 0 &&
-                                                selectedParticipant === "")
-                                            }
-                                            onChange={handleParticipantChange}
-                                            disabled={loading}
-                                          />{" "}
-                                          {item.type}
-                                        </td>
-
-                                        {/* Conditional rendering based on item type */}
-                                        {item.type ===
-                                          "Student/Young Researcher" ? (
-                                          <>
-                                            <td className="mak1">
-                                              <s>{item.standard_price}</s>
-                                            </td>
-                                            <td className="mak1">
-                                              {item.min}%
-                                            </td>
-                                            <td className="mak1 active">
-                                              ${item.total}{" "}
-                                              <span className="tick-mark">
-                                                ✓
-                                              </span>
-                                            </td>
-                                          </>
-                                        ) : (
-                                          <>
-                                            <td className="mak1">
-                                              <s> {item.standard_price}</s>
-                                            </td>
-                                            <td className="mak1">
-                                              {item.min}%
-                                            </td>
-                                            <td className="mak1 active">
-                                              ${item.total}{" "}
-                                              <span className="tick-mark">
-                                                ✓
-                                              </span>
-                                            </td>
-                                          </>
-                                        )}
-                                      </tr>
-                                    ))
-                                ) : (
-                                  <tr>
-                                    <td colSpan={4} className="loading-cell">
-                                      Loading data...
+                                )
+                                .map((item, index) => (
+                                  <tr key={index}>
+                                    <td className="bg_ap1">
+                                      <input
+                                        type="radio"
+                                        name="registrationType"
+                                        value={item.type}
+                                        checked={
+                                          formData.intrested ===
+                                          getCategoryFromParticipant(item.type)
+                                        }
+                                        onChange={handleParticipantChange}
+                                        disabled={loading}
+                                      />{" "}
+                                      {item.type}
+                                    </td>
+                                    <td className="mak1">
+                                      <s>{item.standard_price}</s>
+                                    </td>
+                                    <td className="mak1">{item.min}%</td>
+                                    <td className="mak1 active">
+                                      ${item.total}{" "}
+                                      <span className="tick-mark">✓</span>
                                     </td>
                                   </tr>
-                                )}
-                              </tbody>
-                            </table>
-                          </div>
-                        )}
+                                ))
+                            ) : (
+                              <tr>
+                                <td colSpan={4} className="loading-cell">
+                                  Loading data...
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
                       </div>
                     )}
+
+                    {/* Virtual Registration Tab */}
                     {activeTab === "tab2" && (
                       <div id="tab2" className="tab active">
-                        {/* Tab1 display content */}
-
-                        {activeTab === "tab2" && (
-                          <div id="tab2" className="tab active">
-                            <table className="conference-table">
-                              <thead>
-                                <tr>
-                                  <th className="sty_m1-0">
-                                    TYPES OF PARTICIPATION
-                                  </th>
-                                  <th className="sty_m1-1">
-                                    Standard Registration Fee
-                                  </th>
-                                  <th className="sty_m1-2">Discount %</th>
-                                  <th className="sty_m1-3">
-                                    Discounted Registration Fee
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {pricesData.filter(
-                                  (item) => item.category === "virtual"
-                                ).length > 0 ? (
-                                  pricesData
-                                    .filter(
-                                      (item) => item.category === "virtual"
-                                    )
-                                    .map((item, index) => (
-                                      <tr key={index}>
-                                        <td className="bg_ap1">
-                                          <input
-                                            type="radio"
-                                            name="registrationType"
-                                            value={item.type}
-                                            checked={
-                                              selectedParticipant ===
-                                              item.type ||
-                                              (index === 0 &&
-                                                selectedParticipant === "")
-                                            } // Check if it's the first radio
-                                            onChange={handleParticipantChange}
-                                            disabled={loading}
-                                          />{" "}
-                                          {item.type}
-                                        </td>
-                                        <td className="mak1">
-                                          <s>{item.standard_price}</s>
-                                        </td>
-                                        <td className="mak1">{item.min}%</td>
-                                        <td className="mak1 active">
-                                          ${item.total}{" "}
-                                          <span className="tick-mark">✓</span>
-                                        </td>
-                                      </tr>
-                                    ))
-                                ) : (
-                                  <tr>
-                                    <td colSpan={4} className="loading-cell">
-                                      Loading data...
+                        <table className="conference-table">
+                          <thead>
+                            <tr>
+                              <th className="sty_m1-0">
+                                TYPES OF PARTICIPATION
+                              </th>
+                              <th className="sty_m1-1">
+                                Standard Registration Fee
+                              </th>
+                              <th className="sty_m1-2">Discount %</th>
+                              <th className="sty_m1-3">
+                                Discounted Registration Fee
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {pricesData.filter(
+                              (item) => item.category === "virtual"
+                            ).length > 0 ? (
+                              pricesData
+                                .filter((item) => item.category === "virtual")
+                                .map((item, index) => (
+                                  <tr key={index}>
+                                    <td className="bg_ap1">
+                                      <input
+                                        type="radio"
+                                        name="registrationType"
+                                        value={item.type}
+                                        checked={
+                                          formData.intrested ===
+                                          getCategoryFromParticipant(item.type)
+                                        }
+                                        onChange={handleParticipantChange}
+                                        disabled={loading}
+                                      />{" "}
+                                      {item.type}
+                                    </td>
+                                    <td className="mak1">
+                                      <s>{item.standard_price}</s>
+                                    </td>
+                                    <td className="mak1">{item.min}%</td>
+                                    <td className="mak1 active">
+                                      ${item.total}{" "}
+                                      <span className="tick-mark">✓</span>
                                     </td>
                                   </tr>
-                                )}
-                              </tbody>
-                            </table>
-                          </div>
-                        )}
+                                ))
+                            ) : (
+                              <tr>
+                                <td colSpan={4} className="loading-cell">
+                                  Loading data...
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* Based on tabs the Accommodation Will Display */}
-                <div className="tab-content">
+                {/* Accommodation Section (only for in-person) */}
+                {activeTab === "tab1" && (
                   <div
-                    className={
-                      activeTab === "tab1" ? "tab-pane active" : "tab-pane"
-                    }
-                    id="tab1"
+                    className="acc_wrap1556 wow fadeInUp"
+                    data-wow-delay="400ms"
+                    data-wow-duration="1000ms"
                   >
-                    <div
-                      className="acc_wrap1556 wow fadeInUp"
-                      data-wow-delay="400ms"
-                      data-wow-duration="1000ms"
-                    >
-                      <h2>Accommodation (Per Night)</h2>
-
-                      <div className="row clearfix accomodation-block">
-                        {accommodationPrices &&
-                          accommodationPrices &&
-                          Number(accommodationPrices.single) > 0 && (
-                            <div className="col-md-6">
-                              <div className="tk_wrap1">
-                                <label className="container15">
-                                  Single Occupancy - $
-                                  {accommodationPrices.single}
-                                  <input
-                                    type="checkbox"
-                                    value="single"
-                                    checked={selectedAccommodation === "single"}
-                                    onChange={handleAccommodationChange}
-                                    disabled={loading}
-                                  />
-                                  <span className="checkmark"></span>
-                                </label>
-                              </div>
+                    <h2>Accommodation (Per Night)</h2>
+                    <div className="row clearfix accomodation-block">
+                      {accommodationPrices &&
+                        Number(accommodationPrices.single) > 0 && (
+                          <div className="col-md-6">
+                            <div className="tk_wrap1">
+                              <label className="container15">
+                                Single Occupancy - ${accommodationPrices.single}
+                                <input
+                                  type="checkbox"
+                                  value="single"
+                                  checked={
+                                    formData.other_info[
+                                      "Selected Accommodation"
+                                    ] === "single"
+                                  }
+                                  onChange={handleAccommodationChange}
+                                  disabled={loading}
+                                />
+                                <span className="checkmark"></span>
+                              </label>
                             </div>
+                          </div>
+                        )}
+                      {accommodationPrices &&
+                        Number(accommodationPrices.doubl) > 0 && (
+                          <div className="col-md-6">
+                            <div className="tk_wrap1">
+                              <label className="container15">
+                                Double Occupancy - ${accommodationPrices.doubl}
+                                <input
+                                  type="checkbox"
+                                  value="double"
+                                  checked={
+                                    formData.other_info[
+                                      "Selected Accommodation"
+                                    ] === "double"
+                                  }
+                                  onChange={handleAccommodationChange}
+                                  disabled={loading}
+                                />
+                                <span className="checkmark"></span>
+                              </label>
+                            </div>
+                          </div>
+                        )}
+                    </div>
+
+                    {formData.other_info["Selected Accommodation"] && (
+                      <div className="row clearfix mt_p55">
+                        <div className="col-md-4">
+                          <label>Check-in Date</label>
+                          <select
+                            className="set156"
+                            value={formData.other_info["check In Date"] || "NA"}
+                            onChange={handleCheckInChange}
+                            ref={checkInRef}
+                            onKeyDown={(e) =>
+                              handleKeyDown(e, "checkIn", checkOutRef)
+                            }
+                            disabled={loading}
+                          >
+                            <option value="NA">Select Date</option>
+                            {checkInDates.map((date) => (
+                              <option key={date} value={date}>
+                                {formatDateWithDay(date)}
+                              </option>
+                            ))}
+                          </select>
+                          {errors.checkIn && (
+                            <div className="error">{errors.checkIn}</div>
                           )}
-                        {accommodationPrices &&
-                          accommodationPrices &&
-                          Number(accommodationPrices.single) > 0 && (
-                            <div className="col-md-6">
-                              <div className="tk_wrap1">
-                                <label className="container15">
-                                  Double Occupancy - $
-                                  {accommodationPrices.doubl}
-                                  <input
-                                    type="checkbox"
-                                    value="double"
-                                    checked={selectedAccommodation === "double"}
-                                    onChange={handleAccommodationChange}
-                                    disabled={loading}
-                                  />
-                                  <span className="checkmark"></span>
-                                </label>
-                              </div>
-                            </div>
-                          )}
-                        {/* {accommodationPrices &&
-                          accommodationPrices &&
-                          Number(accommodationPrices.single) > 0 && (
-                            <div className="col-md-4">
-                              <div className="tk_wrap1">
-                                <label className="container15">
-                                  Triple Occupancy - ${accommodationPrices.tri}
-                                  <input
-                                    type="checkbox"
-                                    value="triple"
-                                    checked={selectedAccommodation === "triple"}
-                                    onChange={handleAccommodationChange}
-                                    disabled={loading}
-                                  />
-                                  <span className="checkmark"></span>
-                                </label>
-                              </div>
-                            </div>
-                          )} */}
-                      </div>
-
-                      {selectedAccommodation && (
-                        <div className="row clearfix mt_p55">
-                          <div className="col-md-4">
-                            <label>Check-in Date</label>
-                            <select
-                              className="set156"
-                              value={checkInDate || "NA"} // Keeping original format for submission
-                              onChange={handleCheckInChange}
-                              ref={checkInRef}
-                              onKeyDown={(e) =>
-                                handleKeyDown(e, "checkIn", checkOutRef)
-                              }
-                              disabled={loading}
-                            >
-                              <option value="NA">Select Date</option>
-                              {checkInDates.map((date) => (
-                                <option key={date} value={date}>
-                                  {formatDateWithDay(date)}
-                                </option>
-                                // Shows formatted date, but value remains "DD-MM-YYYY"
-                              ))}
-                            </select>
-
-                            {errors.checkIn && (
-                              <div className="error">{errors.checkIn}</div>
-                            )}
-                          </div>
-                          <div className="col-md-4">
-                            <label>Check-out Date</label>
-                            <select
-                              className="set156"
-                              value={checkOutDate || "NA"}
-                              onChange={handleCheckOutChange}
-                              ref={checkOutRef}
-                              onKeyDown={(e) =>
-                                handleKeyDown(e, "checkOut", null)
-                              }
-                              disabled={loading}
-                            >
-                              <option value="NA">Select Date</option>
-                              {checkOutDates.map((date) => (
-                                <option key={date} value={date}>
-                                  {formatDateWithDay(date)}
-                                </option>
-                              ))}
-                            </select>
-                            {errors.checkOut && (
-                              <div className="error">{errors.checkOut}</div>
-                            )}
-                          </div>
-                          <div className="col-md-4">
-                            <label>Number of Nights</label>
-                            <input
-                              className="re-input"
-                              type="number"
-                              value={numNights || 0}
-                              readOnly
-                            />
-                            {nightsError && (
-                              <span className="error-msg">{nightsError}</span>
-                            )}
-                          </div>
                         </div>
-                      )}
-                    </div>
-
-                    <div className="row clearfix mt_p551 container">
-                      <div className="col-md-6 new_po5">
-                        <label>
-                          No. of Participants
-                          {selectedParticipant
-                            ? `($${unitRegistrationPrice} each under ${selectedParticipant}  category)`
-                            : ""}
-                        </label>
-
-                        <select
-                          value={numParticipants}
-                          onChange={handleNumParticipantsChange}
-                          disabled={loading}
-                        >
-                          <option value="1">01</option>
-                          <option value="2">02</option>
-                          <option value="3">03</option>
-                          <option value="4">04</option>
-                          <option value="5">05</option>
-                        </select>
+                        <div className="col-md-4">
+                          <label>Check-out Date</label>
+                          <select
+                            className="set156"
+                            value={
+                              formData.other_info["check Out Date"] || "NA"
+                            }
+                            onChange={handleCheckOutChange}
+                            ref={checkOutRef}
+                            onKeyDown={(e) =>
+                              handleKeyDown(e, "checkOut", null)
+                            }
+                            disabled={loading}
+                          >
+                            <option value="NA">Select Date</option>
+                            {checkOutDates.map((date) => (
+                              <option key={date} value={date}>
+                                {formatDateWithDay(date)}
+                              </option>
+                            ))}
+                          </select>
+                          {errors.checkOut && (
+                            <div className="error">{errors.checkOut}</div>
+                          )}
+                        </div>
+                        <div className="col-md-4">
+                          <label>Number of Nights</label>
+                          <input
+                            className="re-input"
+                            type="number"
+                            value={formData.other_info["Num of Nights"] || 0}
+                            readOnly
+                          />
+                          {nightsError && (
+                            <span className="error-msg">{nightsError}</span>
+                          )}
+                        </div>
                       </div>
+                    )}
+                  </div>
+                )}
 
-                      <div className="col-md-6 new_po5">
-                        <label>
-                          No of Accompanying Persons (
-                          {accommodationPrices &&
-                            accommodationPrices.accompanying
-                            ? `$${accommodationPrices.accompanying} each`
-                            : "N/A"}
-                          )
-                        </label>
-
-                        <select
-                          value={numAccompanyingPersons}
-                          onChange={handleNumAccompanyingPersonsChange}
-                          disabled={loading}
-                        >
-                          <option value="0">00</option>
-                          <option value="1">01</option>
-                          <option value="2">02</option>
-                          <option value="3">03</option>
-                          <option value="4">04</option>
-                        </select>
-                      </div>
-                    </div>
+                {/* Participants Section */}
+                <div className="row clearfix mt_p551 container">
+                  <div className="col-md-6 new_po5">
+                    <label>
+                      No. of Participants
+                      {formData.intrested
+                        ? ` ($${formData.other_info["Registration Price"]} each)`
+                        : ""}
+                    </label>
+                    <select
+                      value={formData.no_participants}
+                      onChange={handleNumParticipantsChange}
+                      disabled={loading}
+                    >
+                      <option value="1">01</option>
+                      <option value="2">02</option>
+                      <option value="3">03</option>
+                      <option value="4">04</option>
+                      <option value="5">05</option>
+                    </select>
                   </div>
 
-                  {/* Other tabs */}
-                  <div
-                    className={
-                      activeTab === "tab2" ? "tab-pane active" : "tab-pane"
-                    }
-                    id="tab2"
-                  >
-                    {/* Content for tab2 */}
+                  <div className="col-md-6 new_po5">
+                    <label>
+                      No of Accompanying Persons (
+                      {accommodationPrices && accommodationPrices.accompanying
+                        ? `$${accommodationPrices.accompanying} each`
+                        : "N/A"}
+                      )
+                    </label>
+                    <select
+                      value={formData.no_accompanying}
+                      onChange={handleNumAccompanyingPersonsChange}
+                      disabled={loading}
+                    >
+                      <option value="0">00</option>
+                      <option value="1">01</option>
+                      <option value="2">02</option>
+                      <option value="3">03</option>
+                      <option value="4">04</option>
+                    </select>
                   </div>
                 </div>
 
+                {/* Price Summary Section */}
                 <div
                   className="count_total_wrap wow fadeInUp"
                   data-wow-delay="400ms"
@@ -2117,14 +1571,13 @@ const Registration: React.FC<RegisterProps> = ({
                         <tr>
                           <td className="re_p3">Registration Price:</td>
                           <td className="re_p3 text-right">
-                            $
-                            {unitRegistrationPrice ? unitRegistrationPrice : ""}
+                            ${formData.other_info["Registration Price"]}
                           </td>
                         </tr>
                         <tr>
                           <td className="re_p3">No. of Participants:</td>
                           <td className="re_p3 text-right">
-                            {numParticipants ? numParticipants : ""}
+                            {formData.no_participants}
                           </td>
                         </tr>
                         <tr>
@@ -2132,78 +1585,83 @@ const Registration: React.FC<RegisterProps> = ({
                             Total Registration Price:
                           </td>
                           <td className="re_p3_main text-right">
-                            {unitRegistrationPrice && numParticipants
-                              ? `$${unitRegistrationPrice * numParticipants}`
-                              : ""}
+                            $
+                            {formData.other_info["Registration Price"] *
+                              formData.no_participants}
                           </td>
                         </tr>
 
-                        {selectedAccommodationPrice ? (
-                          <tr>
-                            <td className="re_p3">
-                              Accommodation Price Per Night:
-                            </td>
-                            <td className="re_p3 text-right">
-                              ${selectedAccommodationPrice}
-                            </td>
-                          </tr>
-                        ) : (
-                          ""
+                        {formData.other_info["selected Accommodation Price"] >
+                          0 && (
+                          <>
+                            <tr>
+                              <td className="re_p3">
+                                Accommodation Price Per Night:
+                              </td>
+                              <td className="re_p3 text-right">
+                                $
+                                {
+                                  formData.other_info[
+                                    "selected Accommodation Price"
+                                  ]
+                                }
+                              </td>
+                            </tr>
+                            {formData.other_info["check In Date"] &&
+                              formData.other_info["check In Date"] !== "NA" && (
+                                <tr>
+                                  <td className="re_p3">Check In Date:</td>
+                                  <td className="re_p3 text-right">
+                                    {formatDateWithDay(
+                                      formData.other_info["check In Date"]
+                                    )}
+                                  </td>
+                                </tr>
+                              )}
+                            {formData.other_info["check Out Date"] &&
+                              formData.other_info["check Out Date"] !==
+                                "NA" && (
+                                <tr>
+                                  <td className="re_p3">Check Out Date:</td>
+                                  <td className="re_p3 text-right">
+                                    {formatDateWithDay(
+                                      formData.other_info["check Out Date"]
+                                    )}
+                                  </td>
+                                </tr>
+                              )}
+                            <tr>
+                              <td className="re_p3">Total No. Nights:</td>
+                              <td className="re_p3 text-right">
+                                {formData.other_info["Num of Nights"]}
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="re_p3_main">
+                                Total Accommodation Price:
+                              </td>
+                              <td className="re_p3_main text-right">
+                                $
+                                {formData.other_info[
+                                  "selected Accommodation Price"
+                                ] * formData.other_info["Num of Nights"]}
+                              </td>
+                            </tr>
+                          </>
                         )}
 
-                        {selectedAccommodation && checkInDate && (
-                          <tr>
-                            <td className="re_p3">Check In Date:</td>
-                            <td className="re_p3 text-right">
-                              {formatDateWithDay(checkInDate)}
-                            </td>
-                          </tr>
-                        )}
-
-                        {selectedAccommodation && (
-                          <tr>
-                            <td className="re_p3">Check Out Date:</td>
-                            <td className="re_p3 text-right">
-                              {checkOutDate
-                                ? formatDateWithDay(checkOutDate)
-                                : "NA"}
-                            </td>
-                          </tr>
-                        )}
-
-                        {selectedAccommodation && (
-                          <tr>
-                            <td className="re_p3">Total No. Nights:</td>
-                            <td className="re_p3 text-right">
-                              {numNights >= 0 && checkOutDate ? numNights : "0"}
-                            </td>
-                          </tr>
-                        )}
-
-                        {totalAccommodationPrice ? (
-                          <tr>
-                            <td className="re_p3_main">
-                              Total Accommodation Price:
-                            </td>
-                            <td className="re_p3_main text-right">
-                              ${totalAccommodationPrice}
-                            </td>
-                          </tr>
-                        ) : (
-                          ""
-                        )}
-
-                        {totalAccompanyingPersonsPrice ? (
+                        {formData.no_accompanying > 0 && (
                           <tr>
                             <td className="re_p3">
                               Accompanying Persons Price:
                             </td>
                             <td className="re_p3 text-right">
-                              ${totalAccompanyingPersonsPrice}
+                              $
+                              {formData.other_info[
+                                "Price Per Accompanying Person"
+                              ] * formData.no_accompanying}
                             </td>
                           </tr>
-                        ) : (
-                          ""
                         )}
 
                         <tr>
@@ -2217,6 +1675,7 @@ const Registration: React.FC<RegisterProps> = ({
               </div>
             </div>
 
+            {/* Form Buttons */}
             <div
               className="process_wrap12 wow fadeInUp"
               data-wow-delay="400ms"
@@ -2236,7 +1695,6 @@ const Registration: React.FC<RegisterProps> = ({
               >
                 Reset
               </button>
-
               <button
                 type="submit"
                 title="Proceed to pay"
@@ -2247,45 +1705,6 @@ const Registration: React.FC<RegisterProps> = ({
               </button>
             </div>
           </form>
-
-          {/* {showModal && (
-            <div className="modal" id="myModal" tabIndex={-1} role="dialog">
-              <div
-                className="modal-dialog modal-confirm fade-in"
-                role="document"
-                ref={modalRef}
-              >
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <div className="icon-box">
-                      <i
-                        className="material-icons"
-                        style={{ marginBottom: "35px" }}
-                      >
-                        &#10003;
-                      </i>
-                    </div>
-                    <h4 className="modal-title w-100">
-                      Registration completed successfully!{" "}
-                    </h4>
-                    <p className="modal-text">
-                      You’ll receive a confirmation email shortly with further
-                      details.
-                    </p>
-                  </div>
-                  <div className="modal-footer">
-                    <button
-                      type="button"
-                      className="btn btn-success btn-block"
-                      onClick={closeModal}
-                    >
-                      OK
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )} */}
         </div>
       </div>
     </div>
