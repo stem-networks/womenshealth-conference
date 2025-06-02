@@ -28,7 +28,7 @@ const AbstractNetwork: React.FC<AbstractNetworkProps> = ({ generalAbstractInfo, 
 
     const onelinerAbstract = onelinerAbstractInfo?.oneliner?.Submit_Your_Abstract?.content;
 
-    console.log('Network', onelinerNetwork)
+    // console.log('Network', onelinerNetwork)
 
     return (
         <div>

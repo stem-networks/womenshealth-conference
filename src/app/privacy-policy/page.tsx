@@ -1,19 +1,59 @@
-"use client";
+// "use client"
 
 import React from "react";
 import Link from "next/link";
-import { useAppData } from "../../context/AppDataContext";
+// import { useAppData } from '../../context/AppDataContext';
+import { ApiResponse } from "@/types";
+import { Metadata } from "next";
 
-const PrivacyPolicy = () => {
-  const { general } = useAppData();
+async function fetchGeneralData(): Promise<ApiResponse> {
+  const baseUrl = process.env.BASE_URL;
+  const res = await fetch(`${baseUrl}/api/general`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch general data");
+  return res.json();
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    // const generalData = await fetchGeneralData();
+    // const meta = generalData?.pages?.sessions_meta?.[0] || {
+    //     title: "Sessions",
+    //     content: "Explore the sessions of the conference.",
+    //     meta_keywords: "",
+    // };
+
+    // Canonical
+    const baseUrl = process.env.BASE_URL || "";
+    const canonicalPath = "/privacy-policy"; // hardcode since we know this is sessions page
+    const canonicalURL = `${baseUrl}${canonicalPath}`;
+
+    return {
+      // title: meta.title,
+      // description: meta.content,
+      // keywords: meta.meta_keywords,
+      metadataBase: new URL(baseUrl),
+      alternates: {
+        canonical: canonicalURL,
+      },
+    };
+  } catch (error) {
+    console.error("Metadata generation error sessions:", error);
+    return {
+      title: "Sessions",
+      description: "Explore the sessions of the conference.",
+      keywords: "",
+    };
+  }
+}
+
+const PrivacyPolicy = async () => {
+  // const { general } = useAppData();
+  const generalFetch = await fetchGeneralData();
+  const general = generalFetch?.data || {};
+
+  console.log("General data", general);
   return (
     <div>
-      {/* <Head>
-                <title>{privacy_policy ? privacy_policy[0]?.title : ''}</title>
-                <meta name="description" content={privacy_policy ? privacy_policy[0]?.content : ''} />
-                <meta name="keywords" content={privacy_policy ? privacy_policy[0]?.meta_keywords : ''} />
-                <link rel="canonical" href={canonicalUrl} />
-            </Head> */}
       <div className="brand_wrap">
         <div className="auto-container">
           <div className="row">

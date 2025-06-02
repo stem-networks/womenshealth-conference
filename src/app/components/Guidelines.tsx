@@ -25,7 +25,7 @@ const Guidelines: React.FC<GuidelinesProps> = ({ guidelinesContent }) => {
 
       {/* Content Section */}
       {guidelinesContent ? (
-        <div className="auto-container mt-4 mb-5" dangerouslySetInnerHTML={{ __html: guidelinesContent }} />
+        <div dangerouslySetInnerHTML={{ __html: guidelinesContent }} />
       ) : (
         <p className="auto-container mt-4 mb-5">No guidelines available at the moment.</p>
       )}

@@ -1,3 +1,6 @@
+/* theme.css
+--------- */
+
 /* 
 Intructions:
 1) Any kind of changes to be made in only the theme.css. i.e., color code changes,fontsizes, logo width, mobile logo width.
@@ -27,7 +30,6 @@ Intructions:
 
 .error {
 	color: red;
-
 }
 
 b {
@@ -108,7 +110,6 @@ a {
 
 .banner_wrap hr {
 	background-color: var(--secondary-color);
-
 }
 
 .banner_wrap h1 {
@@ -120,9 +121,7 @@ a {
 	color: var(--secondary-color);
 }
 
-
 /* Menu Bar code*/
-
 
 .main-menu .navigation>li:hover>a,
 .main-menu .navigation>li.current>a,
@@ -149,8 +148,6 @@ a {
 }
 
 .main-menu .navigation>li>ul>li>ul {
-
-
 	background: var(--third-color);
 }
 
@@ -159,7 +156,6 @@ a {
 }
 
 .main-header .links-nav li .fa {
-
 	color: var(--secondary-color);
 }
 
@@ -198,7 +194,6 @@ a {
 
 .banner_wrap a {
 	background-color: var(--primary-color);
-
 }
 
 .banner_wrap a:hover {
@@ -207,7 +202,6 @@ a {
 
 .banner_wrap button {
 	background-color: var(--primary-color);
-
 }
 
 .banner_wrap button:hover {
@@ -216,12 +210,10 @@ a {
 
 .sq_mainbox {
 	border: solid 10px var(--primary-color);
-
 }
 
 .sq_box1 {
 	border: solid 8px var(--secondary-color);
-
 }
 
 .sq_box2 {
@@ -229,20 +221,15 @@ a {
 }
 
 .sq_abmainbox {
-
 	border: solid 10px var(--primary-color);
-
 }
 
 .sq_abbox1 {
-
 	border: solid 8px var(--secondary-color);
-
 }
 
 .sq_abbox2 {
 	background: var(--primary-color);
-
 }
 
 .book_wrap {
@@ -252,13 +239,16 @@ a {
 }
 
 .book_wrap h3:before {
-	background: radial-gradient(circle, var(--white-color) 29%, var(--offerbg-color) 84%);
+	background: radial-gradient(circle,
+			var(--white-color) 29%,
+			var(--offerbg-color) 84%);
 }
 
 .book_wrap h3:after {
-	background: radial-gradient(circle, var(--white-color) 29%, var(--offerbg-color) 84%);
+	background: radial-gradient(circle,
+			var(--white-color) 29%,
+			var(--offerbg-color) 84%);
 }
-
 
 .book_wrap a,
 .index-contact {
@@ -296,7 +286,6 @@ a {
 	line-height: 35px;
 }
 
-
 .nur_wrap11 {
 	color: var(--primary-color);
 }
@@ -333,35 +322,26 @@ a {
 
 .date-topbg-color2 {
 	background: var(--contentbg-color);
-
 }
 
 .date-circle1 {
-
 	background: var(--white-color);
-
 }
 
 .date-circle2 {
-
 	background: var(--white-color);
-
 }
 
 .date-lstrip1 {
-
 	background: var(--contentbg-color);
-
 }
 
 .date-lstrip2 {
 	background: var(--contentbg-color);
-
 }
 
 .date-lstrip3 {
 	background: var(--contentbg-color);
-
 }
 
 .date-lstrip4 {
@@ -369,24 +349,19 @@ a {
 }
 
 .date-rstrip1 {
-
 	background: var(--primary-color);
-
 }
 
 .date-rstrip2 {
 	background: var(--primary-color);
-
 }
 
 .date-rstrip3 {
 	background: var(--primary-color);
-
 }
 
 .date-rstrip4 {
 	background: var(--primary-color);
-
 }
 
 .test-imp-row {
@@ -455,7 +430,6 @@ a {
 }
 
 .ess_wrap5 {
-
 	border: solid 1px var(--primary-color);
 }
 
@@ -468,12 +442,10 @@ a {
 }
 
 .blue_wrap55 {
-
 	border: solid 2px var(--primary-color);
 }
 
 .box_wrap155 {
-
 	border: solid 8px var(--primary-color);
 }
 
@@ -540,9 +512,7 @@ a {
 }
 
 .footer_add_st1 hr {
-
 	background-color: var(--primary-color);
-
 }
 
 .footer_add_st1 p {
@@ -568,7 +538,6 @@ a {
 }
 
 .footer_last_wrap {
-
 	background-color: var(--primary-color);
 }
 
@@ -613,7 +582,6 @@ a {
 }
 
 .set_meber_add h3 {
-
 	background-color: var(--primary-color);
 }
 
@@ -639,7 +607,6 @@ a {
 }
 
 .bt_nmk6 {
-
 	border: solid 1.5px var(--primary-color);
 }
 
@@ -657,7 +624,6 @@ a {
 }
 
 .tabl_wrap155 {
-
 	border: 2px solid var(--primary-color);
 }
 
@@ -666,7 +632,6 @@ a {
 }
 
 .checkmark {
-
 	background-color: var(--primary-color);
 }
 
@@ -726,7 +691,6 @@ a {
 }
 
 #myModal .modal-confirm .icon-box {
-
 	background: var(--primary-color);
 }
 
@@ -740,19 +704,12 @@ a {
 }
 
 .cookie-button {
-
 	background: var(--primary-color);
 }
 
 .sidebar-page-container .blog-detail .post-tags a:hover {
 	color: var(--primary-color);
 }
-
-
-
-
-
-
 
 @media screen and (max-width: 950px) {
 	.banner_wrap p {
@@ -790,16 +747,13 @@ a {
 		font-size: 30px;
 		line-height: 40px;
 	}
-
 }
 
 .main-header .links-nav li a:hover {
-
 	color: var(--white-color);
 }
 
 @media only screen and (max-width: 912px) {
-
 	.banner_wrap {
 		width: 100%;
 		height: 400px;
@@ -808,7 +762,7 @@ a {
 
 	.main-menu .navbar-header .navbar-toggle {
 		background: var(--primary-color);
-		margin-top: 15px !important;
+		/* margin-top: 15px !important; */
 	}
 
 	.main-menu .navbar-header .navbar-toggle .icon-bar {
@@ -819,17 +773,13 @@ a {
 		background: var(--white-color);
 		border: 1px solid var(--white-color);
 		border-top: none;
-
 	}
 
 	.main-menu .navbar-collapse>.navigation>li>a,
 	.main-menu .navbar-collapse>.navigation>li>ul>li>ul>li>a {
-
-		color: var(--white-color);
+		color: var(--white-color) !important;
 		background: var(--primary-color);
 	}
-
-
 
 	.main-menu .navbar-collapse>.navigation>li>a:hover,
 	.main-menu .navbar-collapse>.navigation>li>a:active,
@@ -846,7 +796,6 @@ a {
 		background: var(--primary-color);
 		color: var(--white-color) !important;
 	}
-
 }
 
 .ab-dbtn {
@@ -861,15 +810,15 @@ a {
 }
 
 .notfound .notfound-404 h2 {
-	background: linear-gradient(130deg, var(--primary-color), var(--secondary-color));
+	background: linear-gradient(130deg,
+			var(--primary-color),
+			var(--secondary-color));
 }
 
 .notfound a {
-
 	color: var(--primary-color);
 	border-bottom: 1px dashed var(--primary-color);
 }
-
 
 .register-active {
 	background: var(--primary-color);
@@ -885,10 +834,7 @@ a {
 	color: var(--white-color) !important;
 }
 
-
-
 /* modal styles  */
-
 
 .modal-dialog {
 	display: flex;
@@ -924,7 +870,6 @@ a {
 
 .modal-header {
 	padding: 1rem;
-
 }
 
 .modal-title {
@@ -1053,7 +998,6 @@ a {
 }
 
 @media screen and (max-width: 768px) {
-
 	.session_wrap_style1 p {
 		padding: 0px !important;
 	}
@@ -1089,7 +1033,7 @@ a {
 		width: 100%;
 		display: block;
 		padding: 55px 0px 0px 16px;
-		margin: 0px 4%
+		margin: 0px 4%;
 	}
 
 	.test2 {
@@ -1102,8 +1046,6 @@ a {
 		flex-direction: column;
 		justify-content: center;
 	}
-
-
 
 	.modal {
 		display: flex;
@@ -1120,12 +1062,9 @@ a {
 		padding: 20px;
 	}
 
-
-
 	.modal-body .name-info {
 		display: flex;
 		flex-direction: column;
-
 	}
 
 	.fade-in {
@@ -1210,8 +1149,6 @@ a {
 		background: rgba(0, 0, 0, 0.5);
 	}
 
-
-
 	.fade-in {
 		animation: fadeIn 0.5s;
 	}
@@ -1250,7 +1187,6 @@ a {
 		padding: 20px;
 
 		box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-
 	}
 
 	.modal-title {
@@ -1280,16 +1216,14 @@ a {
 	}
 }
 
-@media screen and (max-width:576px) {
+@media screen and (max-width: 576px) {
 	.count_total_wrap {
 		width: 100%;
 		margin-left: 16px;
 	}
 }
 
-
 /* ======== modal styles======== */
-
 
 .error {
 	color: red;
@@ -1310,8 +1244,6 @@ a {
 	overflow: auto;
 	background: rgba(0, 0, 0, 0.5);
 }
-
-
 
 .fade-in {
 	animation: fadeIn 0.5s;
@@ -1380,11 +1312,9 @@ a {
 	background-color: #218838;
 }
 
-
 .text-uppercase {
 	text-transform: uppercase;
 }
-
 
 .add_wrap_session ul li a {
 	display: flex;
@@ -1395,7 +1325,6 @@ a {
 	display: flex;
 	align-items: center;
 }
-
 
 .modal {
 	display: flex;
@@ -1410,8 +1339,6 @@ a {
 	overflow: auto;
 	background: rgba(0, 0, 0, 0.5);
 }
-
-
 
 .fade-in {
 	animation: fadeIn 0.5s;
@@ -1494,8 +1421,6 @@ a {
 	background: rgba(0, 0, 0, 0.5);
 }
 
-
-
 .fade-in {
 	animation: fadeIn 0.5s;
 }
@@ -1563,8 +1488,6 @@ a {
 	background-color: #218838;
 }
 
-
-
 /* ============== last test ========== */
 .work-item {
 	position: relative;
@@ -1579,7 +1502,6 @@ a {
 	border-radius: 20px 0px 0px 20px;
 } */
 
-
 .work-item h4 {
 	color: #006a7b;
 }
@@ -1589,8 +1511,6 @@ a {
 	justify-content: center !important;
 }
 
-
-
 .payment-section .payment-img {
 	width: 285px;
 	height: 150px !important;
@@ -1598,7 +1518,6 @@ a {
 	padding-bottom: 0px !important;
 	border-bottom: 2px solid black;
 }
-
 
 /* =============== .accordion-box======== */
 .accordion-box .acc-btn {
@@ -1660,7 +1579,6 @@ a {
 .sup_wrap_blue {
 	background-color: var(--abstractfilebg-color);
 }
-
 
 /* Contact Modal Form */
 .modal2 {
@@ -1736,13 +1654,13 @@ a {
 	}
 }
 
-@media only screen and (min-width:768px) and (max-width: 991px) {
+@media only screen and (min-width: 768px) and (max-width: 991px) {
 	.welcomemsg-section {
 		background: url(/images/images/welcomebg-mobile.webp) !important;
 	}
 }
 
-@media only screen and (min-width:992px) and (max-width: 1250px) {
+@media only screen and (min-width: 992px) and (max-width: 1250px) {
 	.welcomemsg-section {
 		background: url(/images/images/welcomebg-mobile.webp) !important;
 	}
@@ -1774,16 +1692,16 @@ a {
 
 .speakers-section .committee-spacing .member-spacing {
 	text-align: center;
-	margin-top: 135px;                     
+	margin-top: 135px;
 	margin-bottom: 0px;
 }
 
-.members-view-all-btn-block .view-more-speakers-btn{
+.members-view-all-btn-block .view-more-speakers-btn {
 	background-color: var(--primary-color);
-    padding: 13px 37px 14px;
-    font-size: 19px;
-    color: #fff;
-    border-radius: 25px;
+	padding: 13px 37px 14px;
+	font-size: 19px;
+	color: #fff;
+	border-radius: 25px;
 	border: 1px solid var(--primary-color);
 }
 
@@ -1804,7 +1722,6 @@ a {
 .sessions-spacing {
 	padding: 40px 0 70px !important;
 }
-
 
 /* Active color for navbar links */
 
@@ -1861,7 +1778,6 @@ a {
 	border-radius: 10px;
 	padding: 8px;
 	margin-bottom: 20px;
-
 }
 
 .refresh-icon {

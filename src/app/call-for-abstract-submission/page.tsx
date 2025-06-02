@@ -14,21 +14,30 @@ export async function generateMetadata(): Promise<Metadata> {
   try {
     const generalData = await fetchGeneralData();
     const meta = generalData?.pages?.submit_abstract?.[0] || {
-      title: "Sessions",
-      content: "Explore the sessions of the conference.",
+      title: "Abstract Submission",
+      content: "Explore the Abstract Submission of the conference.",
       meta_keywords: "",
     };
+
+    // Canonical 
+    const baseUrl = process.env.BASE_URL || '';
+    const canonicalPath = '/call-for-abstract-submission'; // hardcode since we know this is sessions page
+    const canonicalURL = `${baseUrl}${canonicalPath}`;
 
     return {
       title: meta.title,
       description: meta.content,
       keywords: meta.meta_keywords,
+      metadataBase: new URL(baseUrl),
+      alternates: {
+        canonical: canonicalURL,
+      },
     };
   } catch (error) {
-    console.error("Metadata generation error sessions:", error);
+    console.error("Metadata generation error Abstract Submission:", error);
     return {
-      title: "Sessions",
-      description: "Explore the sessions of the conference.",
+      title: "Abstract Submission",
+      description: "Explore the Abstract Submission of the conference.",
       keywords: "",
     };
   }
