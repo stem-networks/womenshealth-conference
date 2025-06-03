@@ -20,10 +20,19 @@ async function fetchRegisterData(): Promise<RegistrationInfo> {
   return res.json();
 }
 
+async function fetchGeneralDataStatic(): Promise<ApiResponse> {
+  const baseUrl = process.env.BASE_URL;
+  const res = await fetch(`${baseUrl}/api/general`, {
+    next: { revalidate: 3600 }, // Cache for 1 hour
+  });
+  if (!res.ok) throw new Error("Failed to fetch general data statically");
+  return res.json();
+}
+
 // For Metadata (SEO)
 export async function generateMetadata(): Promise<Metadata> {
   try {
-    const generalData = await fetchGeneralData();
+    const generalData = await fetchGeneralDataStatic();
     const meta = generalData?.pages?.register?.[0] || {
       title: "Register",
       content: "Explore the Register of the conference.",
