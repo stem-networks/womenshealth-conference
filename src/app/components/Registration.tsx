@@ -149,8 +149,47 @@ const Registration: React.FC<RegisterProps> = ({
     [formData.name, formData.email]
   );
 
+  const isValidEmail = (email: string): boolean => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  // const sendFullFormData = useCallback(async (data: FormData) => {
+  //   try {
+  //     const formDataObj = new FormData();
+  //     Object.entries(data).forEach(([key, value]) => {
+  //       if (
+  //         typeof value === "string" ||
+  //         typeof value === "number" ||
+  //         typeof value === "boolean"
+  //       ) {
+  //         formDataObj.append(key, String(value));
+  //       } else if (value instanceof Blob) {
+  //         formDataObj.append(key, value);
+  //       } else if (value !== undefined && value !== null) {
+  //         formDataObj.append(key, JSON.stringify(value));
+  //       }
+  //     });
+
+  //     await axios.post("/api/send-to-cms", formDataObj, {
+  //       headers: { "Content-Type": "multipart/form-data" },
+  //     });
+
+  //     console.log("Form data sent successfully");
+  //   } catch (err) {
+  //     console.error("Error saving form data:", err);
+  //   }
+  // }, []);
+
+  // Handler for selecting participant type
+
   const sendFullFormData = useCallback(async (data: FormData) => {
     try {
+      // First check if email exists and is valid
+      if (!data.email || !isValidEmail(String(data.email))) {
+        console.error("Invalid or missing email");
+        return; // Exit the function if email is invalid
+      }
+
       const formDataObj = new FormData();
       Object.entries(data).forEach(([key, value]) => {
         if (
@@ -176,7 +215,6 @@ const Registration: React.FC<RegisterProps> = ({
     }
   }, []);
 
-  // Handler for selecting participant type
   const handleParticipantChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
@@ -1077,7 +1115,7 @@ const Registration: React.FC<RegisterProps> = ({
                       placeholder="Email"
                       value={formData.email}
                       onChange={handleChange}
-                      type="email"
+                      type="text"
                       ref={emailRef}
                       onKeyDown={(e) => handleKeyDown(e, "email", altEmailRef)}
                       disabled={loading}

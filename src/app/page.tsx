@@ -14,7 +14,12 @@ import Venue from "./components/Venue";
 
 // Types
 import { Metadata } from "next";
-import { IndexPageData, ApiResponse, CommonContent, RegistrationInfo } from "@/types";
+import {
+  IndexPageData,
+  ApiResponse,
+  CommonContent,
+  RegistrationInfo,
+} from "@/types";
 
 // Fetch functions
 async function fetchGeneralData(): Promise<ApiResponse> {
@@ -54,18 +59,28 @@ async function fetchCommonData(): Promise<CommonContent> {
   return res.json();
 }
 
+async function fetchGeneralDataStatic(): Promise<ApiResponse> {
+  const baseUrl = process.env.BASE_URL;
+  const res = await fetch(`${baseUrl}/api/general`, {
+    next: { revalidate: 3600 }, // Cache for 1 hour
+  });
+  if (!res.ok) throw new Error("Failed to fetch general data statically");
+  return res.json();
+}
+
 // Metadata generator
 export async function generateMetadata(): Promise<Metadata> {
   try {
-    const generalData = await fetchGeneralData();
+    const generalData = await fetchGeneralDataStatic();
     const meta = generalData?.pages?.index?.[0] || {
       title: "Conference",
-      content: "Discover engaging sessions and expert talks at our global conference event.",
+      content:
+        "Discover engaging sessions and expert talks at our global conference event.",
       meta_keywords: "",
     };
 
-    // Canonical 
-    const baseUrl = process.env.BASE_URL || '';
+    // Canonical
+    const baseUrl = process.env.BASE_URL || "";
     const canonicalURL = `${baseUrl}/`;
 
     return {
@@ -81,7 +96,8 @@ export async function generateMetadata(): Promise<Metadata> {
     console.error("Metadata generation error:", error);
     return {
       title: "Conference",
-      description: "Discover engaging sessions and expert talks at our global conference event.",
+      description:
+        "Discover engaging sessions and expert talks at our global conference event.",
       keywords: "",
     };
   }
@@ -89,12 +105,13 @@ export async function generateMetadata(): Promise<Metadata> {
 
 // Main page component
 const Home = async () => {
-  const [general, indexPageData, commonContent, registerData] = await Promise.all([
-    fetchGeneralData(),
-    fetchIndexPageData(),
-    fetchCommonData(),
-    fetchRegPageData()
-  ]);
+  const [general, indexPageData, commonContent, registerData] =
+    await Promise.all([
+      fetchGeneralData(),
+      fetchIndexPageData(),
+      fetchCommonData(),
+      fetchRegPageData(),
+    ]);
   // console.log('Sessions',indexPageData)
 
   const general_info = general?.data || {};
@@ -106,7 +123,10 @@ const Home = async () => {
 
   return (
     <div>
-      <BannerSection generalbannerInfo={general} onelinerBannerInfo={indexPageData} />
+      <BannerSection
+        generalbannerInfo={general}
+        onelinerBannerInfo={indexPageData}
+      />
       {/* <WelcomeMessage />
       <Members /> */}
       {/* Uncomment when sessions are ready */}
@@ -120,9 +140,15 @@ const Home = async () => {
       <ImportantDates onelinerInfo={indexPageData} />
       <FaqsMain commonInfo={commonContent} />
       <Venue onelinerVenueInfo={indexPageData} />
-      <AbstractNetwork generalAbstractInfo={general} onelinerAbstractInfo={indexPageData} />
+      <AbstractNetwork
+        generalAbstractInfo={general}
+        onelinerAbstractInfo={indexPageData}
+      />
       <Downloads generalDownloadsInfo={general} />
-      <VolunteerCommunity generalVolunteerInfo={general} onelinerVolunteerInfo={indexPageData} />
+      <VolunteerCommunity
+        generalVolunteerInfo={general}
+        onelinerVolunteerInfo={indexPageData}
+      />
     </div>
   );
 };

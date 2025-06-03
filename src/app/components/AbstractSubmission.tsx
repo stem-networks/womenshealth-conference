@@ -5,7 +5,7 @@ import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import toastr from "toastr";
-import countries from '../../data/countries';
+import countries from "../../data/countries";
 // import Captcha from "./Captcha"; // Make sure you have this component
 
 interface FormData {
@@ -31,8 +31,8 @@ interface CaptchaRefType {
 
 type PossibleRef =
   | React.RefObject<
-    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
-  >
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
+    >
   | React.RefObject<CaptchaRefType | null>;
 
 interface FormAutoData {
@@ -75,8 +75,8 @@ interface CaptchaRefType {
 // FieldRef type union includes both types of refs
 type FieldRef =
   | React.RefObject<
-    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
-  >
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
+    >
   | React.RefObject<CaptchaRefType | null>
   | null;
 
@@ -582,7 +582,8 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
         { timeOut: 3000 }
       );
       await logError(
-        `Abstract Form Submission Error: ${error instanceof Error ? error.message : "Unknown error"
+        `Abstract Form Submission Error: ${
+          error instanceof Error ? error.message : "Unknown error"
         }`
       );
     } finally {
@@ -878,11 +879,88 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
   //   }
   // };
 
+  // const sendFullFormData = async (
+  //   updatedData: FormAutoData,
+  //   submitStatus?: string
+  // ) => {
+  //   try {
+  //     const formData = new FormData();
+
+  //     Object.entries(updatedData).forEach(([key, value]) => {
+  //       formData.append(key, value || "");
+  //     });
+
+  //     if (submitStatus) {
+  //       formData.append("submit_status", submitStatus);
+  //     }
+
+  //     const response = await axios.post("/api/send-to-cms", formData, {
+  //       headers: { "Content-Type": "multipart/form-data" },
+  //     });
+
+  //     console.log("Response:", response.data);
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error("Error sending form data:", error);
+  //     return null;
+  //   }
+  // };
+
+  // const isValidEmail = (email: string): boolean => {
+  //   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  // };
+
+  // const handleBlur = (
+  //   e: React.FocusEvent<
+  //     HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+  //   >
+  // ) => {
+  //   const { name, value } = e.target;
+
+  //   const updatedData = {
+  //     ...formAutoData,
+  //     [name]: value,
+  //     submit_status: formAutoData.submit_status || "0",
+  //   };
+
+  //   setFormAutoData(updatedData);
+
+  //   // Validate email only if it exists
+  //   const emailValue = name === "email" ? value : updatedData.email;
+
+  //   if (!emailValue) {
+  //     if (name === "email") {
+  //       setErrors((prev) => ({ ...prev, email: "Email is required." }));
+  //     }
+  //     return; // Don't send API if email is missing
+  //   }
+
+  //   if (!isValidEmail(emailValue)) {
+  //     if (name === "email") {
+  //       setErrors((prev) => ({ ...prev, email: "Invalid email format." }));
+  //     }
+  //     return; // Don't send API if email is invalid
+  //   }
+
+  //   // Clear email error and send form data
+  //   if (name === "email") {
+  //     setErrors((prev) => ({ ...prev, email: "" }));
+  //   }
+
+  //   sendFullFormData(updatedData);
+  // };
+
   const sendFullFormData = async (
     updatedData: FormAutoData,
     submitStatus?: string
   ) => {
     try {
+      // First validate the email
+      if (!updatedData.email || !isValidEmail(String(updatedData.email))) {
+        console.error("Cannot send form data - invalid or missing email");
+        return null;
+      }
+
       const formData = new FormData();
 
       Object.entries(updatedData).forEach(([key, value]) => {
@@ -906,50 +984,49 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
   };
 
   const isValidEmail = (email: string): boolean => {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-};
-
-
-const handleBlur = (
-  e: React.FocusEvent<
-    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-  >
-) => {
-  const { name, value } = e.target;
-
-  const updatedData = {
-    ...formAutoData,
-    [name]: value,
-    submit_status: formAutoData.submit_status || "0",
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-  setFormAutoData(updatedData);
+  const handleBlur = (
+    e: React.FocusEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value } = e.target;
 
-  // Validate email only if it exists
-  const emailValue = name === "email" ? value : updatedData.email;
+    const updatedData = {
+      ...formAutoData,
+      [name]: value,
+      submit_status: formAutoData.submit_status || "0",
+    };
 
-  if (!emailValue) {
-    if (name === "email") {
-      setErrors((prev) => ({ ...prev, email: "Email is required." }));
+    setFormAutoData(updatedData);
+
+    // Validate email only if it exists
+    const emailValue = name === "email" ? value : updatedData.email;
+
+    if (!emailValue) {
+      if (name === "email") {
+        setErrors((prev) => ({ ...prev, email: "Email is required." }));
+      }
+      return; // Don't send API if email is missing
     }
-    return; // Don't send API if email is missing
-  }
 
-  if (!isValidEmail(emailValue)) {
-    if (name === "email") {
-      setErrors((prev) => ({ ...prev, email: "Invalid email format." }));
+    if (!isValidEmail(emailValue)) {
+      if (name === "email") {
+        setErrors((prev) => ({ ...prev, email: "Invalid email format." }));
+      }
+      return; // Don't send API if email is invalid
     }
-    return; // Don't send API if email is invalid
-  }
 
-  // Clear email error and send form data
-  if (name === "email") {
-    setErrors((prev) => ({ ...prev, email: "" }));
-  }
+    // Clear email error and send form data
+    if (name === "email") {
+      setErrors((prev) => ({ ...prev, email: "" }));
+    }
 
-  sendFullFormData(updatedData);
-};
-
+    // The email is valid at this point, so we can send the data
+    sendFullFormData(updatedData);
+  };
 
   return (
     <div>
