@@ -25,14 +25,15 @@ interface FormData {
   upload_abstract_file: File | null;
 }
 
+
 interface CaptchaRefType {
   focusCaptcha: () => void;
 }
 
 type PossibleRef =
   | React.RefObject<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
-    >
+    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
+  >
   | React.RefObject<CaptchaRefType | null>;
 
 interface FormAutoData {
@@ -70,13 +71,14 @@ interface CaptchaRefType {
   focusCaptcha: () => void;
   resetCaptchaInput: () => void;
   refreshCaptcha: () => void;
+
 }
 
 // FieldRef type union includes both types of refs
 type FieldRef =
   | React.RefObject<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
-    >
+    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
+  >
   | React.RefObject<CaptchaRefType | null>
   | null;
 
@@ -93,7 +95,7 @@ interface CaptchaValue {
 
 import map2 from "../../../public/images/images/map.png";
 import { ApiResponse } from "@/types";
-import Captcha from "./Captcha";
+import Captcha, { CaptchaRef } from "./Captcha";
 
 interface generalInfoProps {
   generalInfo: ApiResponse;
@@ -140,7 +142,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     submit_status: "0",
   });
 
-  console.log(formAutoData);
+  // console.log(formAutoData);
 
   const [selectedFileName, setSelectedFileName] =
     useState<string>("No File Chosen");
@@ -170,88 +172,13 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
   const abstractTitleRef = useRef<HTMLInputElement>(null);
   const messageRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const captchaRef = React.useRef<CaptchaRefType>(null);
+  // const captchaRef = React.useRef<CaptchaRefType>(null);
+  const captchaRef = useRef<CaptchaRef>(null);
   const [isCaptchaValid, setIsCaptchaValid] = useState<boolean>(false);
 
   const [formErrors, setFormErrors] = useState<{
     [key: string]: string | undefined;
   }>({});
-
-  // const handleChange = (
-  //   e: React.ChangeEvent<
-  //     HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-  //   >
-  // ) => {
-  //   const { name, value } = e.target;
-  //   const target = e.target as HTMLInputElement;
-  //   const files = target.files;
-
-  //   setFormAutoData((prevState) => {
-  //     const updatedData = { ...prevState, [name]: value };
-
-  //     setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-
-  //     const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
-
-  //     // if (updatedData.email) {
-  //     //   if (
-  //     //     (name === "title" || name === "country" || name === "intrested") &&
-  //     //     isValidEmail(updatedData.email)
-  //     //   ) {
-  //     //     sendFullFormData(updatedData);
-  //     //   }
-  //     // }
-  //     if (isValidEmail(updatedData.email)) {
-  //       sendFullFormData(updatedData);
-  //     }
-  //     return updatedData;
-  //   });
-
-  //   if (name === "upload_abstract_file" && files) {
-  //     const file = files[0];
-
-  //     if (file) {
-  //       const allowedTypes = [
-  //         "application/pdf",
-  //         "application/msword",
-  //         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  //         "text/rtf",
-  //       ];
-
-  //       if (!allowedTypes.includes(file.type)) {
-  //         setErrors((prevErrors) => ({
-  //           ...prevErrors,
-  //           upload_abstract_file:
-  //             "Please select a PDF, DOC, DOCX, or RTF file.",
-  //         }));
-  //         return;
-  //       }
-
-  //       setErrors((prevErrors) => ({
-  //         ...prevErrors,
-  //         upload_abstract_file: "",
-  //       }));
-
-  //       setFormData((prevData) => ({
-  //         ...prevData,
-  //         [name]: file,
-  //       }));
-  //       setSelectedFileName(file.name);
-  //     } else {
-  //       setErrors((prevErrors) => ({
-  //         ...prevErrors,
-  //         upload_abstract_file: "File is required.",
-  //       }));
-  //     }
-  //   } else {
-  //     setFormData((prevData) => ({
-  //       ...prevData,
-  //       [name]: value,
-  //     }));
-
-  //     setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
-  //   }
-  // };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -300,169 +227,6 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     }
   };
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-
-  //   setErrors({});
-  //   const formErrors: Errors = {};
-  //   let firstErrorField: FieldRef = null;
-
-  //   if (!formData.title) {
-  //     formErrors.title = "Title is required";
-  //     firstErrorField = titleRef;
-  //   } else if (!formData.name) {
-  //     formErrors.name = "Name is required";
-  //     firstErrorField = nameRef;
-  //   } else if (!formData.email) {
-  //     formErrors.email = "Email is required";
-  //     firstErrorField = emailRef;
-  //   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-  //     formErrors.email = "Email is Invalid";
-  //     firstErrorField = emailRef;
-  //   } else if (formData.alt_email && !/\S+@\S+\.\S+/.test(formData.alt_email)) {
-  //     formErrors.alt_email = "Alternative Email is Invalid";
-  //     firstErrorField = altEmailRef;
-  //   } else if (!formData.phone) {
-  //     formErrors.phone = "Phone number is required";
-  //     firstErrorField = phoneRef;
-  //   } else if (!formData.city) {
-  //     formErrors.city = "City is required";
-  //     firstErrorField = cityRef;
-  //   } else if (!formData.country) {
-  //     formErrors.country = "Country is required";
-  //     firstErrorField = countryRef;
-  //   } else if (!formData.organization) {
-  //     formErrors.organization = "Organization is required";
-  //     firstErrorField = organizationRef;
-  //   } else if (!formData.intrested) {
-  //     formErrors.intrested = "Interested In is required";
-  //     firstErrorField = intrestedRef;
-  //   } else if (!formData.abstract_title) {
-  //     formErrors.abstract_title = "Abstract Title is required";
-  //     firstErrorField = abstractTitleRef;
-  //   } else if (!formData.upload_abstract_file) {
-  //     formErrors.upload_abstract_file = "Abstract file is required";
-  //     firstErrorField = fileRef;
-  //   } else {
-  //   }
-  //   if (!isCaptchaValid) {
-  //     formErrors.captcha = "Invalid or expired CAPTCHA.";
-  //     setErrors(formErrors);
-  //     toastr.error(formErrors.captcha, "Validation Error", { timeOut: 3000 });
-
-  //     if (captchaRef.current?.focusCaptcha) {
-  //       captchaRef.current.focusCaptcha();
-  //     }
-  //     return;
-  //   }
-
-  //   function isHtmlElement(
-  //     el: unknown
-  //   ): el is HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement {
-  //     return (
-  //       el !== null &&
-  //       typeof el === "object" &&
-  //       "focus" in el &&
-  //       typeof (el as { focus: unknown }).focus === "function"
-  //     );
-  //   }
-
-  //   if (Object.keys(formErrors).length > 0) {
-  //     setErrors({ ...formErrors });
-  //     const firstErrorMessage = Object.values(formErrors)[0];
-  //     toastr.error(
-  //       firstErrorMessage ?? "Validation Error",
-  //       "Validation Error",
-  //       { timeOut: 3000 }
-  //     );
-
-  //     if (firstErrorField === captchaRef && captchaRef.current?.focusCaptcha) {
-  //       captchaRef.current.focusCaptcha();
-  //     } else if (
-  //       firstErrorField?.current &&
-  //       isHtmlElement(firstErrorField.current)
-  //     ) {
-  //       firstErrorField.current.focus();
-  //     }
-  //     return;
-  //   }
-
-  //   setIsSubmitting(true);
-
-  //   const formDataToSend = new FormData();
-  //   Object.entries(formData).forEach(([key, value]) => {
-  //     if (value !== null && value !== undefined) {
-  //       formDataToSend.append(
-  //         key,
-  //         value instanceof File ? value : String(value)
-  //       );
-  //     }
-  //   });
-
-  //   try {
-  //     const response = await fetch("/api/abstract", {
-  //       method: "POST",
-  //       body: formDataToSend,
-  //     });
-
-  //     const result = await response.json();
-
-  //     if (result.success) {
-  //       toastr.success("Abstract form submitted successfully!", "Success", {
-  //         timeOut: 3000,
-  //       });
-  //       setShowModal(true);
-
-  //       setFormData({
-  //         module_name: "abstract_save",
-  //         title: "",
-  //         // cid: conf_id,
-  //         name: "",
-  //         email: "",
-  //         alt_email: "",
-  //         phone: "",
-  //         whatsapp_number: "",
-  //         city: "",
-  //         country: "",
-  //         organization: "",
-  //         intrested: "",
-  //         abstract_title: "",
-  //         message: "",
-  //         upload_abstract_file: null,
-  //       });
-  //       setErrors({});
-  //       setSelectedFileName("No File Chosen");
-
-  //       if (fileRef.current) {
-  //         fileRef.current.value = "";
-  //       }
-
-  //       captchaRef.current?.resetCaptchaInput();
-  //       captchaRef.current?.refreshCaptcha();
-  //       setCaptchaValue(null);
-  //       sessionStorage.removeItem("captchaId");
-  //     } else {
-  //       toastr.error(result.error || "Failed to submit the form", "Error", {
-  //         timeOut: 3000,
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Form submission failed:", error);
-  //     toastr.error(
-  //       "There was an error submitting the form. Please try again.",
-  //       "Error",
-  //       { timeOut: 3000 }
-  //     );
-  //     await logError(
-  //       `Abstract Form Submission Error: ${
-  //         error instanceof Error ? error.message : "Unknown error"
-  //       }`
-  //     );
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -510,12 +274,15 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     }
 
     // ====== CAPTCHA CHECK ======
-    if (!isCaptchaValid) {
+
+    else if (!isCaptchaValid) {
       formErrors.captcha = "Invalid or expired CAPTCHA.";
       setErrors(formErrors);
       toastr.error(formErrors.captcha, "Validation Error", { timeOut: 3000 });
 
+      // captchaRef.current?.refreshCaptcha();
       captchaRef.current?.focusCaptcha?.();
+
       return;
     }
 
@@ -566,7 +333,29 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
         });
 
         setShowModal(true);
-      } else {
+
+        setFormData({
+          module_name: "abstract_save",
+          title: "",
+          name: "",
+          email: "",
+          alt_email: "",
+          phone: "",
+          whatsapp_number: "", // add missing field
+          city: "",
+          country: "",
+          organization: "",
+          intrested: "",
+          abstract_title: "",
+          message: "", //  add missing field
+          upload_abstract_file: null,
+        });
+        captchaRef.current?.refreshCaptcha();
+
+      }
+
+
+      else {
         toastr.error(result.error || "Failed to submit the form", "Error", {
           timeOut: 3000,
         });
@@ -582,8 +371,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
         { timeOut: 3000 }
       );
       await logError(
-        `Abstract Form Submission Error: ${
-          error instanceof Error ? error.message : "Unknown error"
+        `Abstract Form Submission Error: ${error instanceof Error ? error.message : "Unknown error"
         }`
       );
     } finally {
@@ -975,7 +763,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      console.log("Response:", response.data);
+      // console.log("Response:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error sending form data:", error);
@@ -1403,7 +1191,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
                       isSubmitting={isSubmitting}
                     />
                     {formErrors.captcha && (
-                      <p className="text-danger small">{formErrors.captcha}</p>
+                      <p className="error">{formErrors.captcha}</p>
                     )}
                   </div>
                 </div>
