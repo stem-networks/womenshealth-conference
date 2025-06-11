@@ -4,8 +4,8 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
-import toastr from "toastr";
 import countries from "../../data/countries";
+import { toast } from 'react-toastify';
 // import Captcha from "./Captcha"; // Make sure you have this component
 
 interface FormData {
@@ -275,10 +275,20 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
 
     // ====== CAPTCHA CHECK ======
 
-    else if (!isCaptchaValid) {
-      formErrors.captcha = "Invalid or expired CAPTCHA.";
+    else if (!captchaValue || !captchaValue.text || captchaValue.text.trim() === "") {
+      formErrors.captcha = "CAPTCHA is required";
       setErrors(formErrors);
-      toastr.error(formErrors.captcha, "Validation Error", { timeOut: 3000 });
+      toast.error(formErrors.captcha);
+
+      captchaRef.current?.focusCaptcha?.();
+
+      return;
+    }
+
+    else if (!isCaptchaValid) {
+      formErrors.captcha = "Invalid CAPTCHA";
+      setErrors(formErrors);
+      toast.error(formErrors.captcha);
 
       // captchaRef.current?.refreshCaptcha();
       captchaRef.current?.focusCaptcha?.();
@@ -291,12 +301,8 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
       setErrors({ ...formErrors });
 
       const firstErrorMessage = Object.values(formErrors)[0];
-      toastr.error(
-        firstErrorMessage ?? "Validation Error",
-        "Validation Error",
-        {
-          timeOut: 3000,
-        }
+      toast.error(
+        firstErrorMessage ?? "Validation Error"
       );
 
       if (firstErrorField?.current?.focus) {
@@ -328,9 +334,9 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
       const result = await response.json();
 
       if (result.success) {
-        toastr.success("Abstract form submitted successfully!", "Success", {
-          timeOut: 3000,
-        });
+        // toast.success("Abstract form submitted successfully!", {
+        //   autoClose: 3000,
+        // });
 
         setShowModal(true);
 
@@ -356,20 +362,15 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
 
 
       else {
-        toastr.error(result.error || "Failed to submit the form", "Error", {
-          timeOut: 3000,
-        });
+        toast.error(result.error || "Failed to submit the form");
         await logError(
           `Abstract Form Submission Error: ${result.error || "Unknown error"}`
         );
       }
     } catch (error) {
       console.error("Form submission failed:", error);
-      toastr.error(
-        "There was an error submitting the form. Please try again.",
-        "Error",
-        { timeOut: 3000 }
-      );
+      toast.error("There was an error submitting the form. Please try again.");
+
       await logError(
         `Abstract Form Submission Error: ${error instanceof Error ? error.message : "Unknown error"
         }`
@@ -438,9 +439,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
 
       if (!fieldValid) {
         setErrors(newErrors);
-        toastr.error(newErrors[fieldName]!, "Validation Error", {
-          timeOut: 3000,
-        });
+        toast.error(newErrors[fieldName]!);
 
         switch (fieldName) {
           case "title":
