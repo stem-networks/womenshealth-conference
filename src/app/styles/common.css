@@ -2905,7 +2905,7 @@ li {
 	margin-bottom: 0px;
 	cursor: pointer;
 	background: none;
-	line-height: 30px;
+	/* line-height: 30px; */
 	padding: 10px 50px 10px 48px;
 	overflow: hidden;
 	font-weight: 400;
@@ -3008,7 +3008,7 @@ li {
 .accordion-box .block .content p {
 	margin-bottom: 12px;
 	line-height: 23px;
-	padding-left: 28px;
+	/* padding-left: 28px; */
 	font-size: 16px;
 	margin-top: -9px;
 }
