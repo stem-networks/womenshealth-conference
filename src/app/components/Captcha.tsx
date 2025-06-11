@@ -181,9 +181,9 @@ const Captcha = forwardRef<CaptchaRef, CaptchaProps>(
         </div>
 
         {errorMessage && !isVerified && (
-          <p className="text-danger small">{errorMessage}</p>
+          <p className="error">{errorMessage}</p>
         )}
-        {isVerified && <p className="text-success small">CAPTCHA Verified!</p>}
+        {isVerified && <p className="text-success">CAPTCHA Verified!</p>}
       </div>
     );
   }

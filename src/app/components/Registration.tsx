@@ -7,6 +7,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { ApiResponse, RegistrationInfo } from "@/types";
 import countries from "../../data/countries";
+import { toast } from "react-toastify";
 
 interface AccommodationPrices {
   single: string;
@@ -306,11 +307,11 @@ const Registration: React.FC<RegisterProps> = ({
       const initialParticipant =
         activeTab === "tab1"
           ? pricesData.find((item) => item.type === "Presenter (In-Person)")
-              ?.type ||
-            pricesData.filter((item) => item.category === "inperson")[0]?.type
+            ?.type ||
+          pricesData.filter((item) => item.category === "inperson")[0]?.type
           : pricesData.find((item) => item.type === "Presenter (Virtual)")
-              ?.type ||
-            pricesData.filter((item) => item.category === "virtual")[0]?.type;
+            ?.type ||
+          pricesData.filter((item) => item.category === "virtual")[0]?.type;
 
       if (initialParticipant) {
         setFormData((prev) => ({
@@ -355,10 +356,10 @@ const Registration: React.FC<RegisterProps> = ({
       updatedAccomodation === "single"
         ? parseFloat(accommodationPrices.single)
         : updatedAccomodation === "double"
-        ? parseFloat(accommodationPrices.doubl)
-        : updatedAccomodation === "triple"
-        ? parseFloat(accommodationPrices.tri)
-        : 0;
+          ? parseFloat(accommodationPrices.doubl)
+          : updatedAccomodation === "triple"
+            ? parseFloat(accommodationPrices.tri)
+            : 0;
 
     setFormData((prev) => ({
       ...prev,
@@ -699,9 +700,9 @@ const Registration: React.FC<RegisterProps> = ({
   const totalPrice =
     formData.other_info["Registration Price"] * formData.no_participants +
     formData.other_info["selected Accommodation Price"] *
-      formData.other_info["Num of Nights"] +
+    formData.other_info["Num of Nights"] +
     formData.other_info["Price Per Accompanying Person"] *
-      formData.no_accompanying;
+    formData.no_accompanying;
 
   useEffect(() => {
     setFormData((prev) => {
@@ -737,7 +738,7 @@ const Registration: React.FC<RegisterProps> = ({
       newErrors.title = "Title is required";
       valid = false;
     }
-    if (!formData.name) {
+    else if (!formData.name) {
       newErrors.name = "Name is required";
       valid = false;
     } else if (!formData.email) {
@@ -776,6 +777,11 @@ const Registration: React.FC<RegisterProps> = ({
 
     if (!valid) {
       setErrors(newErrors);
+
+      // Example: show the first validation error via toast
+      const firstError = Object.values(newErrors)[0];
+      toast.error(firstError);
+
       // Focus on the first invalid field
       if (newErrors.title && titleRef.current) titleRef.current.focus();
       else if (newErrors.name && nameRef.current) nameRef.current.focus();
@@ -849,6 +855,7 @@ const Registration: React.FC<RegisterProps> = ({
       }
     } catch (error) {
       console.error("Error submitting registration:", error);
+      toast.error("Something went wrong while submitting the form.");
       await logError("Registration failed: something went wrong.");
     }
 
@@ -924,6 +931,13 @@ const Registration: React.FC<RegisterProps> = ({
       // If field is invalid
       if (!fieldValid) {
         setErrors(newErrors);
+
+        // Show the first error message from the newErrors object
+        const firstError = newErrors[fieldName];
+        if (firstError) {
+          toast.error(firstError);
+        }
+
         return;
       }
 
@@ -1253,9 +1267,8 @@ const Registration: React.FC<RegisterProps> = ({
                   <div className="tabs">
                     <button
                       type="button"
-                      className={`tab-button ${
-                        activeTab === "tab1" ? "active" : ""
-                      }`}
+                      className={`tab-button ${activeTab === "tab1" ? "active" : ""
+                        }`}
                       onClick={() => switchTab("tab1")}
                     >
                       <label className="container15">
@@ -1273,9 +1286,8 @@ const Registration: React.FC<RegisterProps> = ({
                     </button>
                     <button
                       type="button"
-                      className={`tab-button ${
-                        activeTab === "tab2" ? "active" : ""
-                      }`}
+                      className={`tab-button ${activeTab === "tab2" ? "active" : ""
+                        }`}
                       onClick={() => switchTab("tab2")}
                     >
                       <label className="container15">
@@ -1446,7 +1458,7 @@ const Registration: React.FC<RegisterProps> = ({
                                   value="single"
                                   checked={
                                     formData.other_info[
-                                      "Selected Accommodation"
+                                    "Selected Accommodation"
                                     ] === "single"
                                   }
                                   onChange={handleAccommodationChange}
@@ -1468,7 +1480,7 @@ const Registration: React.FC<RegisterProps> = ({
                                   value="double"
                                   checked={
                                     formData.other_info[
-                                      "Selected Accommodation"
+                                    "Selected Accommodation"
                                     ] === "double"
                                   }
                                   onChange={handleAccommodationChange}
@@ -1631,62 +1643,62 @@ const Registration: React.FC<RegisterProps> = ({
 
                         {formData.other_info["selected Accommodation Price"] >
                           0 && (
-                          <>
-                            <tr>
-                              <td className="re_p3">
-                                Accommodation Price Per Night:
-                              </td>
-                              <td className="re_p3 text-right">
-                                $
-                                {
-                                  formData.other_info[
+                            <>
+                              <tr>
+                                <td className="re_p3">
+                                  Accommodation Price Per Night:
+                                </td>
+                                <td className="re_p3 text-right">
+                                  $
+                                  {
+                                    formData.other_info[
                                     "selected Accommodation Price"
-                                  ]
-                                }
-                              </td>
-                            </tr>
-                            {formData.other_info["check In Date"] &&
-                              formData.other_info["check In Date"] !== "NA" && (
-                                <tr>
-                                  <td className="re_p3">Check In Date:</td>
-                                  <td className="re_p3 text-right">
-                                    {formatDateWithDay(
-                                      formData.other_info["check In Date"]
-                                    )}
-                                  </td>
-                                </tr>
-                              )}
-                            {formData.other_info["check Out Date"] &&
-                              formData.other_info["check Out Date"] !==
+                                    ]
+                                  }
+                                </td>
+                              </tr>
+                              {formData.other_info["check In Date"] &&
+                                formData.other_info["check In Date"] !== "NA" && (
+                                  <tr>
+                                    <td className="re_p3">Check In Date:</td>
+                                    <td className="re_p3 text-right">
+                                      {formatDateWithDay(
+                                        formData.other_info["check In Date"]
+                                      )}
+                                    </td>
+                                  </tr>
+                                )}
+                              {formData.other_info["check Out Date"] &&
+                                formData.other_info["check Out Date"] !==
                                 "NA" && (
-                                <tr>
-                                  <td className="re_p3">Check Out Date:</td>
-                                  <td className="re_p3 text-right">
-                                    {formatDateWithDay(
-                                      formData.other_info["check Out Date"]
-                                    )}
-                                  </td>
-                                </tr>
-                              )}
-                            <tr>
-                              <td className="re_p3">Total No. Nights:</td>
-                              <td className="re_p3 text-right">
-                                {formData.other_info["Num of Nights"]}
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="re_p3_main">
-                                Total Accommodation Price:
-                              </td>
-                              <td className="re_p3_main text-right">
-                                $
-                                {formData.other_info[
-                                  "selected Accommodation Price"
-                                ] * formData.other_info["Num of Nights"]}
-                              </td>
-                            </tr>
-                          </>
-                        )}
+                                  <tr>
+                                    <td className="re_p3">Check Out Date:</td>
+                                    <td className="re_p3 text-right">
+                                      {formatDateWithDay(
+                                        formData.other_info["check Out Date"]
+                                      )}
+                                    </td>
+                                  </tr>
+                                )}
+                              <tr>
+                                <td className="re_p3">Total No. Nights:</td>
+                                <td className="re_p3 text-right">
+                                  {formData.other_info["Num of Nights"]}
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="re_p3_main">
+                                  Total Accommodation Price:
+                                </td>
+                                <td className="re_p3_main text-right">
+                                  $
+                                  {formData.other_info[
+                                    "selected Accommodation Price"
+                                  ] * formData.other_info["Num of Nights"]}
+                                </td>
+                              </tr>
+                            </>
+                          )}
 
                         {formData.no_accompanying > 0 && (
                           <tr>
