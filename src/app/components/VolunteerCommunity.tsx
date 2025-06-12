@@ -81,8 +81,8 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
   const [userAnswer, setUserAnswer] = useState("");
   const [error, setError] = useState(""); // For general errors
   const [showModal3, setShowModal3] = useState(false); // For success modal
-  // const [showModal6, setShowModal6] = useState(false); // For success modal
-  // const [showModal9, setShowModal9] = useState(false);
+  const [submittingVolunteer, setSubmittingVolunteer] = useState(false);
+
   const [formData, setFormData] = useState<FormDataType>({
     firstName: "",
     lastName: "",
@@ -90,7 +90,6 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
     category: "volunteer",
   });
   console.log("Errror", error);
-  // const [showModal5, setShowModal5] = useState(false);
 
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
@@ -99,6 +98,8 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   // form for discover community
+  const [submitting, setSubmitting] = useState(false);
+
   const [communityFormData, setCommunityFormData] = useState<CommunityFormData>(
     {
       email: "",
@@ -134,6 +135,7 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
+    setSubmitting(true);
     const errors = validateCommunityForm();
     setCommunityFormErrors(errors); // Always set errors
 
@@ -156,6 +158,8 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
         setCommunityFormErrors({}); // Clear previous errors
       } catch (error) {
         console.error("Error submitting community form:", error);
+      } finally {
+        setSubmitting(false); // Stop submitting
       }
     } else {
       // Focus and toast the first field that has an error
@@ -167,6 +171,7 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
           break;
         }
       }
+      setSubmitting(false);
     }
   };
 
@@ -232,6 +237,8 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
       return;
     }
 
+    setSubmittingVolunteer(true);
+
     // Submit form
     try {
       const fullName = `${formData.firstName} ${formData.lastName}`;
@@ -259,6 +266,8 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
     } catch (err) {
       toast.error("Something went wrong. Please try again later.");
       console.error(err);
+    } finally {
+      setSubmittingVolunteer(false)
     }
   };
 
@@ -385,6 +394,7 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
                           id="community-email"
                           type="email"
                           placeholder="Enter Email"
+                          disabled={submitting}
                           value={
                             communityFormData ? communityFormData.email : ""
                           }
@@ -399,15 +409,15 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
                         />
                         {communityFormErrors
                           ? communityFormErrors.email && (
-                              <div
-                                id="joinourcommunityemail-error"
-                                style={{ color: "red" }}
-                              >
-                                {communityFormErrors
-                                  ? communityFormErrors.email
-                                  : ""}
-                              </div>
-                            )
+                            <div
+                              id="joinourcommunityemail-error"
+                              style={{ color: "red" }}
+                            >
+                              {communityFormErrors
+                                ? communityFormErrors.email
+                                : ""}
+                            </div>
+                          )
                           : ""}
                       </div>
                       <div className="col-md-6 cont_wrap14666">
@@ -420,6 +430,7 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
                           value={
                             communityFormData ? communityFormData.fname : " "
                           }
+                          disabled={submitting}
                           onChange={(e) =>
                             setCommunityFormData({
                               ...communityFormData,
@@ -429,12 +440,12 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
                         />
                         {communityFormErrors
                           ? communityFormErrors.fname && (
-                              <div id="jocfname-error" style={{ color: "red" }}>
-                                {communityFormErrors
-                                  ? communityFormErrors.fname
-                                  : ""}
-                              </div>
-                            )
+                            <div id="jocfname-error" style={{ color: "red" }}>
+                              {communityFormErrors
+                                ? communityFormErrors.fname
+                                : ""}
+                            </div>
+                          )
                           : ""}
                       </div>
                       <div className="col-md-6 cont_wrap14666">
@@ -444,6 +455,7 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
                           id="community-lname"
                           type="text"
                           placeholder="Enter Last Name"
+                          disabled={submitting}
                           value={
                             communityFormData ? communityFormData.lname : ""
                           }
@@ -467,10 +479,11 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
                           <input
                             type="submit"
                             name="submit"
-                            value="Submit"
+                            value={submitting ? "Submitting..." : "Submit"}
                             title="Submit"
                             className="appy15"
                             id="joinourcommunitysubmitbtn"
+                            disabled={submitting}
                           />
                         </div>
                         <input
@@ -578,6 +591,7 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
                         type="text"
                         placeholder="Enter email"
                         value={formData.email}
+                        disabled={submittingVolunteer}
                         onChange={(e) =>
                           setFormData({ ...formData, email: e.target.value })
                         }
@@ -595,6 +609,7 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
                           name="firstName"
                           placeholder="Enter first name"
                           value={formData.firstName}
+                          disabled={submittingVolunteer}
                           onChange={(e) =>
                             setFormData({
                               ...formData,
@@ -614,6 +629,7 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
                           name="lastName"
                           placeholder="Enter last name"
                           value={formData.lastName}
+                          disabled={submittingVolunteer}
                           onChange={(e) =>
                             setFormData({
                               ...formData,
@@ -635,6 +651,7 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
                         ref={captchaRef}
                         placeholder="Enter your answer"
                         value={userAnswer}
+                        disabled={submittingVolunteer}
                         onChange={(e) => setUserAnswer(e.target.value)}
                       />
                       {formErrors.userAnswer && (
@@ -655,8 +672,9 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
                       type="submit"
                       title="Submit"
                       className="btn btn-success btn-block"
+                      disabled={submittingVolunteer}
                     >
-                      Submit
+                      {submittingVolunteer ? "Submitting..." : "Submit"}
                     </button>
                   </div>
                 </form>
