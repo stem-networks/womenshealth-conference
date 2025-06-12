@@ -66,6 +66,7 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
     const [showModal8, setShowModal8] = useState<boolean>(false);
     const [mathExpression, setMathExpression] = useState('');
     const [correctAnswer, setCorrectAnswer] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [contactFormData, setContactFormData] = useState<ContactFormData>({
         name: '',
         email: '',
@@ -168,13 +169,14 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
 
     const handleSubmitContact = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setIsSubmitting(true);
         const errors = validateFormContact();
 
         if (Object.keys(errors).length === 0) {
             if (parseFloat(userAnswer) !== parseFloat(correctAnswer || '0')) {
                 setContactFormErrors({ userAnswer: 'Incorrect answer. Please try again.' });
                 toast.error('Incorrect answer. Please try again.');
-
+                setIsSubmitting(false);
                 const answerInput = document.getElementById('userAnswer');
                 if (answerInput) answerInput.focus();
 
@@ -220,6 +222,9 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
                 // setError('Error submitting form. Please try again later.');
                 toast.error('Error submitting form. Please try again later.');
             }
+            finally {
+                setIsSubmitting(false)
+            }
 
         } else {
             setContactFormErrors(errors);
@@ -232,6 +237,7 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
             // Focus the field with the first error
             const errorInput = document.getElementById(firstErrorField);
             if (errorInput) errorInput.focus();
+            setIsSubmitting(false);
         }
     };
 
@@ -239,8 +245,6 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
         const { expression, correctAnswer } = generateRandomMathExpression();
         setMathExpression(expression);
         setCorrectAnswer(correctAnswer);
-        // Optionally clear input field
-        // setUserAnswer('');
     };
 
     return (
@@ -341,6 +345,7 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
                                                     name="name"
                                                     type="text"
                                                     placeholder="Enter first name"
+                                                    disabled={isSubmitting}
                                                     value={contactFormData.name}
                                                     onChange={(e) => setContactFormData({ ...contactFormData, name: e.target.value })}
                                                 />
@@ -353,6 +358,7 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
                                                     name="email"
                                                     type="text"
                                                     placeholder="Enter email"
+                                                    disabled={isSubmitting}
                                                     value={contactFormData.email}
                                                     onChange={(e) => setContactFormData({ ...contactFormData, email: e.target.value })}
                                                 />
@@ -366,6 +372,7 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
                                                     id="phone"
                                                     name="phone"
                                                     type='text'
+                                                    disabled={isSubmitting}
                                                     placeholder='Enter phone number'
                                                     value={contactFormData.phone}
                                                     onChange={(e) => setContactFormData({ ...contactFormData, phone: e.target.value })}
@@ -377,6 +384,7 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
                                                 <textarea
                                                     id="query"
                                                     name="query"
+                                                    disabled={isSubmitting}
                                                     placeholder='Enter your message'
                                                     value={contactFormData.query}
                                                     onChange={(e) => setContactFormData({ ...contactFormData, query: e.target.value })}
@@ -391,17 +399,18 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
                                                 id="userAnswer"
                                                 name="userAnswer"
                                                 type='text'
+                                                disabled={isSubmitting}
                                                 placeholder='Enter your answer'
                                                 value={userAnswer}
                                                 onChange={(e) => setUserAnswer(e.target.value)}
                                             />
                                             {contactFormErrors.userAnswer && <p style={{ color: 'red', textAlign: 'left' }}>{contactFormErrors.userAnswer}</p>}
-                                            <button type="button" title='Refresh Captcha' onClick={refreshCaptcha} className="btn btn-secondary mt-2">Refresh Captcha</button>
+                                            <button type="button" title='Refresh Captcha' disabled={isSubmitting} onClick={refreshCaptcha} className="btn btn-secondary mt-2">Refresh Captcha</button>
                                         </div>
                                         <input type="hidden" name="category" value={contactFormData.category || "joinourcommunity"} />
                                     </div>
                                     <div className="modal-footer">
-                                        <button type="submit" title="Submit" className="btn btn-success btn-block">Submit</button>
+                                        <button type="submit" title={isSubmitting ? 'Please Wait..' : "Submit"} disabled={isSubmitting} className="btn btn-success btn-block">{isSubmitting ? 'Please Wait..' : "Submit"}</button>
                                     </div>
                                 </form>
                             </div>

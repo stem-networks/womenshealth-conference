@@ -195,72 +195,6 @@ const Downloads: React.FC<DownloadsProps> = ({ generalDownloadsInfo }) => {
         return errors;
     };
 
-    // const handleSubmitBrochure = async (e: React.FormEvent<HTMLFormElement>) => {
-    //     e.preventDefault();
-
-    //     const errors = validateBrochureForm(brochureFormData);
-
-    //     if (Object.keys(errors).length > 0) {
-    //         setBrochureFormErrors(errors);
-
-    //         // Show toast for the first error only
-    //         const firstErrorField = Object.keys(errors)[0];
-    //         const firstErrorMessage = errors[firstErrorField as keyof BrochureFormErrors];
-
-    //         toast.error(firstErrorMessage);
-
-    //         // Auto-focus the corresponding input
-    //         switch (firstErrorField) {
-    //             case 'first_name':
-    //                 nameRef.current?.focus();
-    //                 break;
-    //             case 'email':
-    //                 emailRef.current?.focus();
-    //                 break;
-    //             case 'phone':
-    //                 phoneRef.current?.focus();
-    //                 break;
-    //             case 'country':
-    //                 countryRef.current?.focus();
-    //                 break;
-    //         }
-
-    //         return;
-    //     }
-
-    //     // No errors, continue submission
-    //     setBrochureFormErrors({});
-    //     setIsSubmitting(true);
-
-    //     try {
-    //         const res = await axios.post('/api/brochure', brochureFormData);
-
-    //         if (res.status === 200) {
-    //             handleDownload();
-    //             closeBrochureModal();
-
-    //             setBrochureFormData({
-    //                 first_name: '',
-    //                 email: '',
-    //                 phone: '',
-    //                 country: '',
-    //                 message: '',
-    //                 interested_in: '',
-    //             });
-
-    //             setUserAnswer('');
-    //             setBrochureFormErrors({});
-    //         } else {
-    //             toast.error('Failed to submit form. Please try again.');
-    //         }
-    //     } catch (error) {
-    //         console.error('Error submitting form:', error);
-    //         toast.error('An error occurred. Please try again later.');
-    //     } finally {
-    //         setIsSubmitting(false);
-    //     }
-    // };
-
     const handleDownload = async () => {
         const conferenceName = `${general.clogotext}`;
         const brochureFile = `${conferenceName}_Brochure.pdf`;
@@ -292,15 +226,6 @@ const Downloads: React.FC<DownloadsProps> = ({ generalDownloadsInfo }) => {
             setShowModal5(true);  // Show error modal
         }
     };
-
-
-    // const refreshCaptcha = () => {
-    //     const { expression, correctAnswer } = generateRandomMathExpression();
-    //     setMathExpression(expression);
-    //     setCorrectAnswer(correctAnswer);
-    //     // Optionally clear input field
-    //     // setUserAnswer('');
-    // };
 
     return (
         <div>
