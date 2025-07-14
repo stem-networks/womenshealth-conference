@@ -7,9 +7,13 @@ export async function POST(req: NextRequest) {
     const { orderID } = await req.json();
     console.log('📥 Received orderID:', orderID);
 
+    const PAYPAL_API_BASE = process.env.PAYPAL_ENV === 'live'
+      ? 'https://api-m.paypal.com'
+      : 'https://api-m.sandbox.paypal.com';
+
     // Step 1: Get OAuth2 access token
     const authResponse = await axios.post(
-      'https://api-m.sandbox.paypal.com/v1/oauth2/token',
+      `${PAYPAL_API_BASE}/v1/oauth2/token`,
       'grant_type=client_credentials',
       {
         auth: {
@@ -27,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     // Step 2: Capture order
     const captureResponse = await axios.post(
-      `https://api-m.sandbox.paypal.com/v2/checkout/orders/${orderID}/capture`,
+      `${PAYPAL_API_BASE}/v2/checkout/orders/${orderID}/capture`,
       {},
       {
         headers: {
