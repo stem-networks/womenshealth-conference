@@ -33,8 +33,6 @@ declare global {
   }
 }
 
-
-
 const Footer: React.FC<FooterProps> = ({ generalData, indexPageData }) => {
   const general = generalData?.data || {};
   const socialLinks = generalData?.social_links || {};
@@ -308,6 +306,7 @@ const Footer: React.FC<FooterProps> = ({ generalData, indexPageData }) => {
                     className="form-control color-white"
                     value={formData.enquiryname}
                     onChange={handleChange}
+                    disabled={submitting}
                     ref={nameRef}
                   />
                   {formErrors.enquiryname && (
@@ -322,6 +321,7 @@ const Footer: React.FC<FooterProps> = ({ generalData, indexPageData }) => {
                   className="form-control mt-2 color-white"
                   value={formData.enquiryemail}
                   onChange={handleChange}
+                  disabled={submitting}
                   ref={emailRef}
                 />
                 {formErrors.enquiryemail && (
@@ -336,6 +336,7 @@ const Footer: React.FC<FooterProps> = ({ generalData, indexPageData }) => {
                     style={{ height: "50px" }}
                     value={formData.enquiryquery}
                     onChange={handleChange}
+                    disabled={submitting}
                     ref={queryRef}
                   ></textarea>
                   {formErrors.enquiryquery && (

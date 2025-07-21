@@ -7,9 +7,13 @@ export async function POST(req: NextRequest) {
   try {
     const { totalAmount, description } = await req.json();
 
+    const PAYPAL_API_BASE = process.env.PAYPAL_ENV === 'live'
+      ? 'https://api-m.paypal.com'
+      : 'https://api-m.sandbox.paypal.com';
+
     // Step 1: Get OAuth2 access token from PayPal
     const authResponse = await axios.post(
-      'https://api-m.sandbox.paypal.com/v1/oauth2/token',
+      `${PAYPAL_API_BASE}/v1/oauth2/token`,
       'grant_type=client_credentials',
       {
         auth: {
@@ -26,7 +30,7 @@ export async function POST(req: NextRequest) {
 
     // Step 2: Create PayPal order
     const orderResponse = await axios.post(
-      'https://api-m.sandbox.paypal.com/v2/checkout/orders',
+      `${PAYPAL_API_BASE}/v2/checkout/orders`,
       {
         intent: 'CAPTURE',
         purchase_units: [
@@ -49,9 +53,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ orderID: orderResponse.data.id });
   } catch (error) {
-  const err = error as AxiosError;
+    const err = error as AxiosError;
 
-  console.error('Error in create-order:', err.response?.data || err.message);
-  return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
-}
+    console.error('Error in create-order:', err.response?.data || err.message);
+    return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
+  }
 }
