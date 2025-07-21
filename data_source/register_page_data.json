@@ -1,0 +1,125 @@
+{
+    "accommodation_prices": [
+        {
+            "id": "14",
+            "single": "250",
+            "doubl": "270",
+            "tri": "0",
+            "accompanying": "200",
+            "created_dt": "2024-07-15 15:05:58",
+            "updated_dt": "2024-05-10 12:45:31",
+            "status": "1",
+            "cid": "14"
+        }
+    ],
+    "checkdates_text": {
+        "1": [
+            "05-05-2026 (Tuesday)",
+            "06-05-2026 (Wednesday)",
+            "07-05-2026 (Thursday)",
+            "08-05-2026 (Friday)"
+        ],
+        "2": [
+            "07-05-2026 (Thursday)",
+            "08-05-2026 (Friday)",
+            "09-05-2026 (Saturday)",
+            "10-05-2026 (Sunday)"
+        ]
+    },
+    "checkdates": {
+        "1": [
+            "05-05-2026",
+            "06-05-2026",
+            "07-05-2026",
+            "08-05-2026"
+        ],
+        "2": [
+            "07-05-2026",
+            "08-05-2026",
+            "09-05-2026",
+            "10-05-2026"
+        ]
+    },
+    "conference_date": "March 17-19, 2025",
+    "registration_open_date": {
+        "register_dt": "15-03-2024",
+        "id": "14",
+        "conference_date": "March 17-19, 2025"
+    },
+    "RegDeadline": [
+        {
+            "id": "95",
+            "title": "Early Bird Registration",
+            "deadline_dt": "17-07-2024",
+            "page_url": "early-bird-registration"
+        },
+        {
+            "id": "99",
+            "title": "Mid Term Registration",
+            "deadline_dt": "15-10-2024",
+            "page_url": "mid-term-registration"
+        },
+        {
+            "id": "94",
+            "title": "On Spot Registration",
+            "deadline_dt": "17-03-2025",
+            "page_url": "on-spot-registration"
+        }
+    ],
+    "DiscountData": {
+        "Presenter (In-Person)": {
+            "Standard Registration Fee": "$1499",
+            "Discount %": "50%",
+            "Discounted Registration Fee": "$749"
+        },
+        "Presenter (Virtual)": {
+            "Standard Registration Fee": "$499",
+            "Discount %": "50%",
+            "Discounted Registration Fee": "$249"
+        },
+        "Listener (In Person)": {
+            "Standard Registration Fee": "$999",
+            "Discount %": "50%",
+            "Discounted Registration Fee": "$499"
+        },
+        "Listener (Virtual)": {
+            "Standard Registration Fee": "$399",
+            "Discount %": "50%",
+            "Discounted Registration Fee": "$199"
+        }
+    },
+    "increment_price": {
+        "Listener (In-Person)": {
+            "Standard Registration Fee": "$1299",
+            "total": "909",
+            "min": "30",
+            "conference_dt": "2025-09-21"
+        },
+        "Presenter (In-Person)": {
+            "Standard Registration Fee": "$1499",
+            "total": "749",
+            "min": "50",
+            "conference_dt": "2025-09-21"
+        },
+        "Listener (Virtual)": {
+            "Standard Registration Fee": "$359",
+            "total": "179",
+            "min": "50",
+            "conference_dt": "2025-09-21"
+        },
+        "Presenter (Virtual)": {
+            "Standard Registration Fee": "$299",
+            "total": "149",
+            "min": "50",
+            "conference_dt": "2025-09-21"
+        },
+        "Student/Young Researcher": {
+            "Standard Registration Fee": "$699",
+            "total": "349",
+            "min": "50",
+            "conference_dt": "2025-09-21"
+        }
+    },
+    "DealineCatPrices": [],
+    "days_difference": 0
+}

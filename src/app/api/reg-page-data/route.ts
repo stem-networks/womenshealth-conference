@@ -1,39 +1,18 @@
 import { NextResponse } from 'next/server';
+import { readFile } from 'fs/promises';
+import path from 'path';
 
 export async function POST() {
   try {
-    const apiUrl = process.env.API_URL;
-    const cid = process.env.CID;
+    const filePath = path.join(process.cwd(), 'data_source', 'register_page_data.json');
+    const fileData = await readFile(filePath, 'utf-8');
+    const jsonData = JSON.parse(fileData);
 
-    if (!apiUrl || !cid) {
-      return NextResponse.json(
-        { error: 'Server configuration error' },
-        { status: 500 }
-      );
-    }
-
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        module_name: "reg_page_data",
-        keys: { data: [] },
-        cid: cid,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`API responded with status ${response.status}`);
-    }
-
-    const data = await response.json();
-    return NextResponse.json(data);
+    return NextResponse.json(jsonData);
   } catch (error) {
-    console.error('Error fetching pricing data:', error);
+    console.error('Error reading register_page_data.json:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch pricing data' },
+      { error: 'Failed to load registration page data' },
       { status: 500 }
     );
   }

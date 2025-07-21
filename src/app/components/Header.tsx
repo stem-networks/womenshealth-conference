@@ -79,6 +79,8 @@ const Header: React.FC<HeaderProps> = ({ generalData, registerData }) => {
 
   const isActive = (path: string) => pathname === path;
 
+  console.log("general111111",general);
+
   return (
     <>
       <header className="main-header">

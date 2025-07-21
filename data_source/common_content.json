@@ -1,0 +1,110 @@
+{
+  "guidelines": {
+    "content": "<h2 class='abs_wrap5 wow fadeInUp animated' data-wow-delay='400ms' data-wow-duration='1000ms'\n    style='visibility: visible; animation-duration: 1000ms; animation-delay: 400ms; animation-name: fadeInUp;'>\n    Guidelines</h2>\n<div class='auto-container'>\n    <div class='row clearfix'>\n        <div class='col-lg-12 col-md-12 mar_center'>\n            <div class='row clearfix'>\n                <div class='col-lg-12 col-md-12  wow fadeInUp animated' data-wow-delay='400ms'\n                    data-wow-duration='1000ms'\n                    style='visibility: visible; animation-duration: 1000ms; animation-delay: 400ms; animation-name: fadeInUp;'>\n                    <div class='content1'>\n                        <div class='heading speaker-heading'>Speaker Guidelines</div>\n                        <ul>\n                            <li>Speakers are request to adhere to the allotted time for their presentation as indicated\n                                in the program schedule.</li>\n                            <li>Presentations should start with a title slide featuring the presentation title,\n                                speaker's name, and affiliation, followed by a brief self-introduction and clear,\n                                concise content relevant to the conference theme using bullet points and visuals\n                                effectively. </li>\n                            <li>Tables and graphs should be clear and easily understandable</li>\n                            <li>Speakers are requested to send their presentation slides to the program manager at least\n                                one month before the conference. Additionally, bring a flash drive or storage with your\n                                presentation as a back-up.</li>\n                            <li>Please submit your presentation in PPT format. Ensure that your visuals are clear and\n                                highly legible.</li>\n                            <li>Kindly be aware that slight program changes may occur. Please be present in the meeting\n                                room starting from the conference's beginning on your presentation day.</li>\n                            <li>Speakers should follow time cues from session chairs, maintain professionalism, and\n                                actively participate in Q&A sessions. </li>\n                            <li>Providing feedback and leveraging networking opportunities post-presentation are\n                                strongly encouraged. </li>\n                            <li>For additional support, speakers can reach out to the conference's speaker coordinator.\n                            </li>\n                        </ul>\n                        <div class='heading Poster-heading'> Poster Guidelines</div>\n                        <ul>\n                            <li>Preparing a poster presentation for a conference involves several critical\n                                considerations. Typically, posters should measure 36' x 48' (3 feet x 4 feet), though\n                                confirming dimensions with the conference organizers is crucial.</li>\n                            <li>Design strategies should focus on ensuring text is readable from 3-4 feet away, using\n                                appropriate font sizes (24 points for body text, 36-48 points for headings), and\n                                employing simple, sans-serif fonts like Arial or Helvetica.</li>\n                            <li>A contrasting colour scheme enhances clarity, and adequate spacing between sections\n                                improves readability.</li>\n                            <li>Use high-resolution images and relevant graphics, ensuring alignment and organization\n                                for a polished look.</li>\n                            <li>Printing on-site is not available; presenters must arrange printing in advance.</li>\n                            <li>Presenters are requested to remain at their posters throughout the entire poster session\n                                to engage with interested viewers.</li>\n                            <li>Please ensure you collect your poster by the end of the day; any posters left behind\n                                will be disposed of.</li>\n                        </ul>\n                        <div class='heading Participants-heading'> Participants Guidelines</div>\n                        <ul>\n                            <li>All participants must pre-register online. On-site registration will also be available\n                                at standard price, but early registration is recommended.</li>\n                            <li>Wear your conference badge at all times within the venue. This helps with security and\n                                networking.</li>\n                            <li>Delegates are requested to participate actively in sessions by asking questions and\n                                joining discussions. Respect the speaker and other participants by allowing everyone to\n                                contribute.</li>\n                            <li>Embrace diversity and promote an inclusive environment. Harassment or discrimination of\n                                any kind will not be tolerated.</li>\n                            <li>Engage with fellow participants, speakers, and attendees during breaks, meals, and\n                                networking sessions to exchange ideas and for professional relationships.</li>\n                            <li>In case of emergency, follow the instructions of venue staff and organizers. Familiarize\n                                yourself with the emergency exits.</li>\n                        </ul>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
+  },
+  "terms": {
+    "content": "<h2 class='abs_wrap5 wow fadeInUp animated' data-wow-delay='400ms' data-wow-duration='1000ms' style='visibility: visible; animation-duration: 1000ms; animation-delay: 400ms; animation-name: fadeInUp;'>Terms of Use</h2>\n<div class='auto-container'>\n    <div class='row clearfix'>\n      <div class='col-lg-12 col-md-12 mar_center'>\n        <div class='row clearfix'>\n          <div class='col-lg-12 col-md-12  wow fadeInUp animated' data-wow-delay='400ms' data-wow-duration='1000ms' style='visibility: visible; animation-duration: 1000ms; animation-delay: 400ms; animation-name: fadeInUp;'>\n            <div class='content1'>\n             \n                <p>By registering for STEM Network Conferences, you agree to comply with the following terms and conditions:</p>\n             \n                <ul>\n                    <li>The organization reserves the right to make changes to the program, date, or venue at any time without prior notice.</li>\n                   \n                    <li>While we strive to adhere to the published schedule, unforeseen circumstances may necessitate alterations.</li>\n                   \n                    <li>At its sole discretion, the organization reserves the right to cancel any conference due to unavoidable and unforeseeable circumstances. In such cases, the Nursing Conference will have no further liability to the registrant.</li>\n                   \n                   \n                    <li>If a conference is postponed due to circumstances beyond the organizer/’s control, registrations will remain valid for the rescheduled event or future editions. In these instances, our refund policy does not apply.</li>\n                   \n                   \n                    <li>In the event of cancellation, the conference organizers will endeavour to inform attendees through reasonable means, such as posting the cancellation notice on the event website.</li>\n                   \n                   \n                    <li>It is the responsibility of the delegates to check for updates regarding the event.</li>\n                   \n                   \n                    <li>Delegates are advised to check the website for updates about the conference regularly.</li>\n                   \n                   \n                    <li>We will not accept liability for personal injuries or loss or damage to personal property occurring during or as a result of the conference.</li>\n                   \n                    </ul>\n             \n             \n                    <p>By attending our events, you acknowledge and agree to these terms.</p>\n            </div>\n \n          </div>\n        </div>\n      </div>\n    </div>\n  </div>"
+  },
+  "faq": [
+    {
+      "faq_id": "1",
+      "faq_question": "Who should attend this conference?",
+      "faq_ans": "This conference is ideal for academicians, researchers, industry professionals, government officials, entrepreneurs, and students who are interested in the latest advancements and trends.",
+      "priority": "1",
+      "status": "1",
+      "created_by": "admin",
+      "created_date": "2024-07-25 11:42:31",
+      "cid": "0"
+    },
+    {
+      "faq_id": "5",
+      "faq_question": "How can I register for the conference?",
+      "faq_ans": "You can register for the conference by visiting our official website, navigating to the registration section, and following the instructions provided. Early bird registration discounts are available, so be sure to register soon to take advantage of these offers.",
+      "priority": "2",
+      "status": "1",
+      "created_by": "admin",
+      "created_date": "2024-07-25 11:42:31",
+      "cid": "0"
+    },
+    {
+      "faq_id": "3",
+      "faq_question": "Does the registration fee include the hotel accommodation?",
+      "faq_ans": "Please note that the registration fee does not include the hotel accommodation. Participants are responsible for their own accommodations",
+      "priority": "3",
+      "status": "1",
+      "created_by": "admin",
+      "created_date": "2024-07-25 11:42:31",
+      "cid": "0"
+    },
+    {
+      "faq_id": "4",
+      "faq_question": "Are there group discounts available if we have more than one person who wants to register for an event?",
+      "faq_ans": "We offer group discounts for 3 or more attendees. To avail the special discount price please writes to us.",
+      "priority": "4",
+      "status": "1",
+      "created_by": "admin",
+      "created_date": "2024-07-25 11:42:31",
+      "cid": "0"
+    },
+    {
+      "faq_id": "2",
+      "faq_question": "Will there be any funding for registration, air ticket, accommodation?",
+      "faq_ans": "We are sorry, but there is no funding available for attendance, travel, food or accommodations, or other expenses. However, there will be good discounts from our side to encourage and support you for participation. Please write us for more information",
+      "priority": "5",
+      "status": "1",
+      "created_by": "admin",
+      "created_date": "2024-07-25 11:42:31",
+      "cid": "0"
+    },
+    {
+      "faq_id": "9",
+      "faq_question": "Can I get a letter of invitation for my visa purpose?",
+      "faq_ans": "We will be able to provide letter of invitations only to the registered participants. If you are yet to register for the conference please confirm your participation by registering. For more information please write to us.",
+      "priority": "6",
+      "status": "1",
+      "created_by": "admin",
+      "created_date": "2024-07-25 11:42:31",
+      "cid": "0"
+    },
+    {
+      "faq_id": "8",
+      "faq_question": "How many abstracts can I submit?",
+      "faq_ans": "You can submit maximum of two abstracts. For submitting your abstracts please visit our abstract submission page or write to us.",
+      "priority": "7",
+      "status": "1",
+      "created_by": "admin",
+      "created_date": "2024-07-25 11:42:31",
+      "cid": "0"
+    },
+    {
+      "faq_id": "6",
+      "faq_question": "What if I’m unable to attend the event after registering ?",
+      "faq_ans": "You can transfer the registration to your colleague or friend (i.e., someone can substitute you) or your registration will be transferred for a future event.",
+      "priority": "8",
+      "status": "1",
+      "created_by": "admin",
+      "created_date": "2024-07-25 11:42:31",
+      "cid": "0"
+    },
+    {
+      "faq_id": "7",
+      "faq_question": "For young researchers who want to present their research as a group will it be possible to give the presentation?",
+      "faq_ans": "Yes, young researchers with 3 or 4 member group will be able to present their work at the conference. However only one can be registered as speaker and the remaining should register in delegate category.",
+      "priority": "9",
+      "status": "1",
+      "created_by": "admin",
+      "created_date": "2024-07-25 11:42:31",
+      "cid": "0"
+    },
+    {
+      "faq_id": "10",
+      "faq_question": "How shall I be informed about conference announcements and the modification of the program?",
+      "faq_ans": "You are requested to please keep visiting our webpage from time-to-time regarding information on any sort of conference announcements and program updates. You can also find us on social media if you want to update in real time.",
+      "priority": "10",
+      "status": "1",
+      "created_by": "admin",
+      "created_date": "2024-07-25 11:42:31",
+      "cid": "0"
+    }
+  ]
+}
