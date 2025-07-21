@@ -48,6 +48,7 @@ async function fetchRegisterPageData(): Promise<RegistrationInfo> {
 
 export async function generateMetadata(): Promise<Metadata> {
   const data = await fetchGeneralData();
+  console.log("general test 33333",data);
   const general = data?.data || ({} as GeneralData);
   const pageData = data?.pages || ({} as PagesData);
   const eventName = `${general?.clname || "Annual Tech Conference"} ${general?.year || ""
