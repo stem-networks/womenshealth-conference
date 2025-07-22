@@ -83,6 +83,12 @@ export async function generateMetadata(): Promise<Metadata> {
     const baseUrl = process.env.BASE_URL || "";
     const canonicalURL = `${baseUrl}/`;
 
+    console.log("Loaded ENV Vars", {
+      API_URL: process.env.API_URL,
+      SESSION_SECRET: process.env.SESSION_SECRET,
+      BASE_URL: process.env.BASE_URL,
+    });
+
     return {
       title: meta.title,
       description: meta.content,
