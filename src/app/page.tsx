@@ -21,16 +21,18 @@ import {
   RegistrationInfo,
 } from "@/types";
 
+import { getBaseUrl } from "@/lib/getBaseUrl";
+
 // Fetch functions
 async function fetchGeneralData(): Promise<ApiResponse> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/general`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch general data");
   return res.json();
 }
 
 async function fetchIndexPageData(): Promise<IndexPageData> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/index-page`, {
     method: "POST",
     cache: "no-store",
@@ -40,7 +42,7 @@ async function fetchIndexPageData(): Promise<IndexPageData> {
 }
 
 async function fetchRegPageData(): Promise<RegistrationInfo> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/reg-page-data`, {
     method: "POST",
     cache: "no-store",
@@ -50,7 +52,7 @@ async function fetchRegPageData(): Promise<RegistrationInfo> {
 }
 
 async function fetchCommonData(): Promise<CommonContent> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/common-content`, {
     method: "POST",
     cache: "no-store",
@@ -60,7 +62,7 @@ async function fetchCommonData(): Promise<CommonContent> {
 }
 
 async function fetchGeneralDataStatic(): Promise<ApiResponse> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/general`, {
     next: { revalidate: 3600 }, // Cache for 1 hour
   });
@@ -80,13 +82,13 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 
     // Canonical
-    const baseUrl = process.env.BASE_URL || "";
+    const baseUrl = getBaseUrl() || "";
     const canonicalURL = `${baseUrl}/`;
 
     console.log("Loaded ENV Vars", {
       API_URL: process.env.API_URL,
       SESSION_SECRET: process.env.SESSION_SECRET,
-      BASE_URL: process.env.BASE_URL,
+      BASE_URL: getBaseUrl(),
     });
 
     return {

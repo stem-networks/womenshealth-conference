@@ -18,15 +18,17 @@ import PartneredContent from "./components/PartneredContent";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import { getBaseUrl } from "@/lib/getBaseUrl";
+
 async function fetchGeneralData(): Promise<ApiResponse> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/general`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch general data");
   return res.json();
 }
 
 async function fetchIndexPageData(): Promise<IndexPageData> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/index-page`, {
     method: "POST",
     cache: "no-store",
@@ -35,7 +37,7 @@ async function fetchIndexPageData(): Promise<IndexPageData> {
   return res.json();
 }
 async function fetchRegisterPageData(): Promise<RegistrationInfo> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/reg-page-data`, {
     method: "POST",
     cache: "no-store",
@@ -50,8 +52,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const data = await fetchGeneralData();
   const general = data?.data || ({} as GeneralData);
   const pageData = data?.pages || ({} as PagesData);
-  const eventName = `${general?.clname || "Annual Tech Conference"} ${general?.year || ""
-    }`.trim();
+  const eventName = `${general?.clname || "Annual Tech Conference"} ${
+    general?.year || ""
+  }`.trim();
 
   return {
     title: eventName,
@@ -112,8 +115,9 @@ export default async function RootLayout({
   const general: GeneralData = generaldata?.data || ({} as GeneralData);
   const pageData: PagesData = generaldata?.pages || ({} as PagesData);
 
-  const eventName = `${general?.clname || "Annual Tech Conference"} ${general?.year || ""
-    }`.trim();
+  const eventName = `${general?.clname || "Annual Tech Conference"} ${
+    general?.year || ""
+  }`.trim();
   const register = pageData?.register || [];
 
   // Format dates
@@ -174,7 +178,6 @@ export default async function RootLayout({
           `}
         </Script>
 
-
         {/* Structured Data */}
         <script
           type="application/ld+json"
@@ -182,7 +185,6 @@ export default async function RootLayout({
         />
       </head>
       <body>
-
         {/* Toast container - only one instance needed */}
         <ToastContainer
           position="top-right"
@@ -196,8 +198,6 @@ export default async function RootLayout({
         {/* <MediaCollaborators /> */}
         <PartneredContent />
         <Footer indexPageData={indexPageData} generalData={generaldata} />
-
-
       </body>
     </html>
   );
