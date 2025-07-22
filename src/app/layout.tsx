@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-// import "./globals.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {
@@ -10,15 +9,26 @@ import {
   IndexPageData,
   RegistrationInfo,
 } from "@/types";
-// import Header from "./components/Header/Header";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-// import MediaCollaborators from "./components/MediaCollaborators";
 import PartneredContent from "./components/PartneredContent";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import { getBaseUrl } from "@/lib/getBaseUrl";
+import {
+  emptyApiResponse,
+  emptyIndexPageData,
+  emptyRegisterInfo,
+} from "@/lib/fallbacks";
+
+async function safeFetch<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await fn();
+  } catch (e) {
+    console.error("SSR fetch failed:", e);
+    return fallback;
+  }
+}
 
 async function fetchGeneralData(): Promise<ApiResponse> {
   const baseUrl = getBaseUrl();
@@ -42,31 +52,39 @@ async function fetchRegisterPageData(): Promise<RegistrationInfo> {
     method: "POST",
     cache: "no-store",
   });
-  if (!res.ok) throw new Error("Failed to fetch index page data");
+  if (!res.ok) throw new Error("Failed to fetch registration page data");
   return res.json();
 }
 
-// const inter = Inter({ subsets: ["latin"] });
-
 export async function generateMetadata(): Promise<Metadata> {
-  const data = await fetchGeneralData();
-  const general = data?.data || ({} as GeneralData);
-  const pageData = data?.pages || ({} as PagesData);
-  const eventName = `${general?.clname || "Annual Tech Conference"} ${
-    general?.year || ""
-  }`.trim();
+  try {
+    const data = await fetchGeneralData();
+    const general = data?.data || emptyApiResponse.data;
+    const pageData = data?.pages || emptyApiResponse.pages;
+    const eventName = `${general?.clname || "Annual Tech Conference"} ${
+      general?.year || ""
+    }`.trim();
 
-  return {
-    title: eventName,
-    description: pageData?.register?.[0]?.content || "",
-    keywords: pageData?.register?.[0]?.meta_keywords || "",
-    icons: {
-      icon: `${general?.site_url || ""}/images/images/favicon.png`,
-    },
-    openGraph: {
-      images: `${general?.site_url || ""}/images/images/opengraph_image.jpg`,
-    },
-  };
+    return {
+      title: eventName,
+      description: pageData?.register?.[0]?.content || "",
+      keywords: pageData?.register?.[0]?.meta_keywords || "",
+      icons: {
+        icon: `${general?.site_url || ""}/images/images/favicon.png`,
+      },
+      openGraph: {
+        images: `${general?.site_url || ""}/images/images/opengraph_image.jpg`,
+      },
+    };
+  } catch (error) {
+    console.error("Metadata generation error in layout:", error);
+    return {
+      title: "Annual Tech Conference",
+      description: "",
+      keywords: "",
+      icons: { icon: "/favicon.ico" },
+    };
+  }
 }
 
 function formatDate(
@@ -74,7 +92,6 @@ function formatDate(
   defaultTime: string
 ): string {
   if (!dateString) return "";
-
   try {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return "";
@@ -105,15 +122,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const [generaldata, indexPageData, registerData] = await Promise.all([
-    fetchGeneralData(),
-    fetchIndexPageData(),
-    fetchRegisterPageData(),
+    safeFetch<ApiResponse>(fetchGeneralData, emptyApiResponse),
+    safeFetch<IndexPageData>(fetchIndexPageData, emptyIndexPageData),
+    safeFetch<RegistrationInfo>(fetchRegisterPageData, emptyRegisterInfo),
   ]);
 
-  // const data = await fetchDataServer();
-  // const general: GeneralData = data?.data || ({} as GeneralData);
-  const general: GeneralData = generaldata?.data || ({} as GeneralData);
-  const pageData: PagesData = generaldata?.pages || ({} as PagesData);
+  const general: GeneralData = generaldata?.data || emptyApiResponse.data;
+  const pageData: PagesData = generaldata?.pages || emptyApiResponse.pages;
 
   const eventName = `${general?.clname || "Annual Tech Conference"} ${
     general?.year || ""
@@ -177,7 +192,6 @@ export default async function RootLayout({
           gtag('config', '${GA_ID}');
           `}
         </Script>
-
         {/* Structured Data */}
         <script
           type="application/ld+json"
@@ -195,7 +209,6 @@ export default async function RootLayout({
         />
         <Header generalData={generaldata} registerData={registerData} />
         {children}
-        {/* <MediaCollaborators /> */}
         <PartneredContent />
         <Footer indexPageData={indexPageData} generalData={generaldata} />
       </body>
