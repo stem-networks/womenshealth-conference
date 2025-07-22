@@ -82,7 +82,13 @@ const BannerSection: React.FC<BannerSectionProps> = ({
   if (!bannerItems || bannerItems.length === 0) return null;
 
   // Safe destructure with default empty object
-  const firstBanner: any =
+  type BannerContentItem = {
+    headding?: string;
+    tag_line?: string;
+    content?: string;
+  };
+
+  const firstBanner: BannerContentItem =
     bannerItems && bannerItems.length ? bannerItems[0] : {};
   const headding = firstBanner.headding || "";
   const tag_line = firstBanner.tag_line || "";
