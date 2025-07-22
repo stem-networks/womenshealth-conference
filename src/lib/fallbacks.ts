@@ -5,7 +5,6 @@ import {
   IndexPageData,
   RegistrationInfo,
   CommonContent,
-  SocialLinks,
 } from "@/types";
 
 // Fallbacks for all your types – ensure every required property is present!
