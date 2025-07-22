@@ -247,9 +247,389 @@ const BannerSection: React.FC<BannerSectionProps> = ({
 
   return (
     <div>
-      {/* ... rest of your component remains unchanged ... */}
-      {/* (paste in your full modal/component JSX as you already have) */}
-      {/* No code change required below here except as shown above */}
+      {/* Body Start */}
+      <div className="brand_wrap">
+        <div className="auto-container">
+          <div className="row">
+            <div
+              className="col-lg-1 col-md-2 col-sm-2"
+              style={{ textAlign: "start" }}
+            >
+              <Link href="/" title="Home">
+                Home
+              </Link>{" "}
+              <i className="fa fa-angle-right"></i> <span></span>
+            </div>
+            <div className="col-lg-11 col-md-10 col-sm-10">
+              <div className="marquee-wrapper">
+                <div className="marquee-content">
+                  {/* Your marquee items */}
+                  <div className="marquee-item">
+                    <i className="fa fa-hourglass-half" aria-hidden="true"></i>
+                    <span>
+                      Early Bird Registration closes on{" "}
+                      {formattedEarlyBirdDate ? (
+                        <span
+                          className="marquee-date"
+                          dangerouslySetInnerHTML={{
+                            __html: formattedEarlyBirdDate,
+                          }}
+                        />
+                      ) : (
+                        <strong>To be announced</strong>
+                      )}
+                    </span>
+                  </div>
+                  <div className="marquee-item">
+                    <i className="fa fa-bell bell-icon" aria-hidden="true"></i>
+                    <span className="me-2">For discount queries contact </span>
+                    <i className="bx bxs-phone-call box-phone"></i>
+                    <b>
+                      <a
+                        href={`tel:${general?.phone || ""}`}
+                        title={`${general?.phone || ""}`}
+                      >
+                        {general?.phone || ""}
+                      </a>
+                    </b>
+                  </div>
+                  <div className="marquee-item">
+                    <i
+                      className="fa fa-bell bell-icon bell-anim"
+                      aria-hidden="true"
+                    ></i>
+                    <span>Limited speaker slots available</span>
+                  </div>
+                  <div className="marquee-item">
+                    <i className="fa fa-hourglass-half" aria-hidden="true"></i>
+                    <span>
+                      Early Bird Registration closes on{" "}
+                      {formattedEarlyBirdDate ? (
+                        <span
+                          className="marquee-date"
+                          dangerouslySetInnerHTML={{
+                            __html: formattedEarlyBirdDate,
+                          }}
+                        />
+                      ) : (
+                        <strong>To be announced</strong>
+                      )}
+                    </span>
+                  </div>
+                  <div className="marquee-item">
+                    <i className="fa fa-bell bell-icon" aria-hidden="true"></i>
+                    <span>Avail special discounts for students and groups</span>
+                  </div>
+                  <div className="marquee-item">
+                    <i className="fa fa-bell bell-icon" aria-hidden="true"></i>
+                    <span className="me-2">For discount queries contact </span>
+                    <i className="bx bxs-phone-call box-phone"></i>
+                    <b>
+                      <a
+                        href={`tel:${general?.phone || ""}`}
+                        title={`${general?.phone || ""}`}
+                      >
+                        {general?.phone || ""}
+                      </a>
+                    </b>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="banner_wrap test-banner">
+        <div className="auto-container clearfix">
+          <div className="row clearfix">
+            <div
+              className="col-md-7 wow fadeInUp"
+              data-wow-delay="400ms"
+              data-wow-duration="1000ms"
+            >
+              <hr />
+              <h3
+                className="banner-heading-content"
+                dangerouslySetInnerHTML={{ __html: headding || "" }}
+              />
+              <h2 className="banner-heading-tagline">{tag_line || ""}</h2>
+              <p>{content || ""}</p>
+              <button
+                type="button"
+                title={`${general?.clogotext}_Brochure`}
+                onClick={openBrochureModal}
+              >
+                Download Brochure
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {showModal9 && (
+        <div className="modal2 brochure-form-modal" id="myModal" role="dialog">
+          <div className="modal-dialog2 modal-confirm fade-in" role="document">
+            <div className="modal-content2">
+              <div className="modal-header">
+                <div className="icon-box">
+                  <i
+                    className="bx bx-file"
+                    style={{ marginBottom: "35px" }}
+                  ></i>
+                </div>
+                <h4 className="modal-title w-100">Download Brochure</h4>
+                <button
+                  type="button"
+                  className="close"
+                  onClick={closeBrochureModal}
+                  style={{ fontSize: "30px" }}
+                >
+                  &times;
+                </button>
+              </div>
+              <div className="modal-body">
+                <form onSubmit={handleSubmitBrochure}>
+                  <div className="row">
+                    <div className="d-flex name-info">
+                      <div className="col-6 test">
+                        <label>Name:*</label>
+                        <input
+                          type="text"
+                          name="first_name"
+                          ref={nameRef}
+                          placeholder="Enter name"
+                          value={brochureFormData.first_name}
+                          onChange={(e) =>
+                            setBrochureFormData({
+                              ...brochureFormData,
+                              first_name: e.target.value,
+                            })
+                          }
+                          disabled={isSubmitting} // Disable field during submission
+                        />
+                        {brochureFormErrors.first_name && (
+                          <p style={{ color: "red", textAlign: "left" }}>
+                            {brochureFormErrors.first_name}
+                          </p>
+                        )}
+                      </div>
+                      <div className="col-6 test2">
+                        <label>Email Address:*</label>
+                        <input
+                          type="text"
+                          name="email"
+                          ref={emailRef}
+                          placeholder="Enter email"
+                          value={brochureFormData.email}
+                          onChange={(e) =>
+                            setBrochureFormData({
+                              ...brochureFormData,
+                              email: e.target.value,
+                            })
+                          }
+                          disabled={isSubmitting} // Disable field during submission
+                        />
+                        {brochureFormErrors.email && (
+                          <p style={{ color: "red", textAlign: "left" }}>
+                            {brochureFormErrors.email}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="d-flex name-info">
+                      <div className="col-6 test">
+                        <label>Phone Number:*</label>
+                        <input
+                          type="text"
+                          name="phone"
+                          ref={phoneRef}
+                          placeholder="Enter phone number"
+                          value={brochureFormData.phone}
+                          onChange={(e) =>
+                            setBrochureFormData({
+                              ...brochureFormData,
+                              phone: e.target.value,
+                            })
+                          }
+                          disabled={isSubmitting} // Disable field during submission
+                        />
+                        {brochureFormErrors.phone && (
+                          <p style={{ color: "red", textAlign: "left" }}>
+                            {brochureFormErrors.phone}
+                          </p>
+                        )}
+                      </div>
+                      <div className="col-6 test2 country-drop">
+                        <label>Country:*</label>
+                        <div className="country-drop-block">
+                          <select
+                            className="set156"
+                            name="country"
+                            ref={countryRef}
+                            value={brochureFormData.country}
+                            onChange={(e) =>
+                              setBrochureFormData({
+                                ...brochureFormData,
+                                country: e.target.value,
+                              })
+                            }
+                            disabled={isSubmitting} // Disable field during submission
+                          >
+                            <option value="">Select Country</option>
+                            {countries.map((country: string) => (
+                              <option key={country} value={country}>
+                                {country}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        {brochureFormErrors.country && (
+                          <p style={{ color: "red", textAlign: "left" }}>
+                            {brochureFormErrors.country}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="d-flex name-info">
+                      <div className="col-6 test country-drop">
+                        <label>Interested In:*</label>
+                        <div className="country-drop-block">
+                          <select
+                            className="set156"
+                            name="interested_in"
+                            ref={interestedInRef}
+                            value={brochureFormData.interested_in}
+                            onChange={(e) =>
+                              setBrochureFormData({
+                                ...brochureFormData,
+                                interested_in: e.target.value,
+                              })
+                            }
+                            disabled={isSubmitting} // Disable field during submission
+                          >
+                            <option value="Oral Presentation">
+                              Oral Presentation
+                            </option>
+                            <option value="Poster Presentation">
+                              Poster Presentation
+                            </option>
+                            <option value="Delegate (Participation)">
+                              Delegate (Participation)
+                            </option>
+                            <option value="Volunteer">Volunteer</option>
+                            <option value="Other">Other</option>
+                          </select>
+                        </div>
+                        {brochureFormErrors.interested_in && (
+                          <p style={{ color: "red", textAlign: "left" }}>
+                            {brochureFormErrors.interested_in}
+                          </p>
+                        )}
+                      </div>
+                      <div className="col-6 test2">
+                        <label>Query (Optional):</label>
+
+                        <textarea
+                          placeholder="Enter Your Query"
+                          value={brochureFormData.message}
+                          onChange={(e) =>
+                            setBrochureFormData({
+                              ...brochureFormData,
+                              message: e.target.value,
+                            })
+                          }
+                          disabled={isSubmitting} // Disable field during submission
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="submit"
+                      title={isSubmitting ? "Please wait" : "Proceed"}
+                      className="btn btn-success btn-block"
+                      disabled={isSubmitting} // Disable button during submission
+                    >
+                      {isSubmitting ? "Please wait" : "Proceed"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showModal4 && (
+        <div className="modal" id="myModal" role="dialog">
+          <div
+            className="modal-dialog modal-confirm fade-in"
+            role="document"
+            ref={modalRef}
+          >
+            <div className="modal-content">
+              <div className="modal-header">
+                <div className="icon-box">
+                  <i
+                    className="material-icons"
+                    style={{ marginBottom: "35px" }}
+                  >
+                    &#10003;
+                  </i>
+                </div>
+                <h4 className="modal-title w-100">Brochure downloading..!</h4>
+                <p>
+                  Thank you for your interest. If you have any questions, feel
+                  free to reach out to us.{" "}
+                </p>
+              </div>
+
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-success btn-block"
+                  onClick={handleSuccess}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showModal5 && (
+        <div className="modal" id="myModal2" role="dialog">
+          <div
+            className="modal-dialog modal-confirm fade-in"
+            role="document"
+            ref={modalRef}
+          >
+            <div className="modal-content">
+              <div className="modal-header">
+                <div className="icon-box">
+                  <i className="bx bx-x" style={{ marginBottom: "35px" }}></i>
+                </div>
+                <h4 className="modal-title w-100">Failed to Download</h4>
+                <p>
+                  An error occurred while downloading. Please try again later.
+                </p>
+              </div>
+
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-success btn-block"
+                  onClick={handleSuccess}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
