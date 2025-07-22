@@ -82,10 +82,11 @@ const BannerSection: React.FC<BannerSectionProps> = ({
   if (!bannerItems || bannerItems.length === 0) return null;
 
   // Safe destructure with default empty object
-  const firstBanner = bannerItems[0] || {};
-  const headding = bannerItems[0]?.headding || "";
-  const tag_line = bannerItems[0]?.tag_line || "";
-  const content = bannerItems[0]?.content || "";
+  const firstBanner: any =
+    bannerItems && bannerItems.length ? bannerItems[0] : {};
+  const headding = firstBanner.headding || "";
+  const tag_line = firstBanner.tag_line || "";
+  const content = firstBanner.content || "";
 
   const earlyBirdDateRaw = importantDates?.[1]?.date || "";
 
