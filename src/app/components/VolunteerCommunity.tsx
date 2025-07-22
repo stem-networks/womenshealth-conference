@@ -79,7 +79,7 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
   const [correctAnswer, setCorrectAnswer] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<FormErrorType>({});
   const [userAnswer, setUserAnswer] = useState("");
-  const [error, setError] = useState(""); // For general errors
+  // const [error, setError] = useState(""); // For general errors
   const [showModal3, setShowModal3] = useState(false); // For success modal
   const [submittingVolunteer, setSubmittingVolunteer] = useState(false);
 
@@ -89,7 +89,7 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
     email: "",
     category: "volunteer",
   });
-  console.log("Errror", error);
+  // console.log("Errror", error);
 
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
@@ -249,7 +249,7 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
         category: formData.category,
       });
 
-      toast.success("Form submitted successfully!");
+      // toast.success("Form submitted successfully!"); 
       setShowModal(false);
       setShowModal3(true);
 
@@ -262,7 +262,7 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
       });
       setUserAnswer("");
       setFormErrors({});
-      setError("");
+      // setError("");
     } catch (err) {
       toast.error("Something went wrong. Please try again later.");
       console.error(err);
@@ -276,7 +276,7 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
     setShowModal2(false);
     setShowModal3(false);
     // setShowModal5(false);
-    setError("");
+    // setError("");
   };
 
   const toggleModal = () => {

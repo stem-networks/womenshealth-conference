@@ -34,7 +34,7 @@ export async function POST(req: Request) {
         })));
 
 
-        const apiRes = await fetch('https://api.stem-cms.com', {
+        const apiRes = await fetch(`${process.env.CMS_URL}`, {
             method: 'POST',
             body: formData,
             headers: {

@@ -5,7 +5,7 @@ import axios from "axios";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { enquiryname, enquiryemail, category } = body;
+    const { enquiryname, enquiryemail,enquiryquery, category } = body;
 
     // Basic validation
     // if (!enquiryname) {
@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
           {
             name: enquiryname,
             email: enquiryemail,
+            query:enquiryquery,
             category,
           },
         ],
