@@ -87,7 +87,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
     console.log("Loaded ENV Vars", {
       API_URL: process.env.API_URL,
-      SESSION_SECRET: process.env.SESSION_SECRET,
       BASE_URL: getBaseUrl(),
     });
 
