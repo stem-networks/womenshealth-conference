@@ -8,24 +8,20 @@ Intructions:
 3) If there is a need to do any new block for any conference website in specific, ensure to add and save the file in the style.css
  */
 :root {
-	--primary-color: #009281;
-	--secondary-color: #4ab4a5;
-	--third-color: #939393;
-	--fourth-color: #123a30;
-	--fifth-color: #4ab4a5;
-	--light-color: #eff9f8;
+	--primary-color: #d86422;
+	--secondary-color: #008dc9;
+	--third-color: #46413dbf;
+	--light-color: #f3d2bf75;
 	--preloader-color: #f9fbfe;
 	--white-color: #fff;
 	--black-color: #000;
-	--abstractfilebg-color: #4ab4a5;
-	--offerbg-color: #123a31;
+	--abstractfilebg-color: #f6a170;
+	--offerbg-color: #7e4524;
 	--contentbg-color: #737373;
 	--iconbg-color: #adadad;
 	--bannerhover-color: #029bb4;
 	--registerbg-color: #87dae7;
 	--modalred-color: #ef513a;
-	--members-color: #009281;
-
 }
 
 .error {
@@ -74,7 +70,7 @@ a {
 
 /* header button Colors Code */
 .regs_wrap a {
-	color: var(--secondary-color) !important;
+	color: var(--primary-color) !important;
 }
 
 .june_wrap55 span {
@@ -100,7 +96,7 @@ a {
 .sticky-header .logo .sti-logo {
 	width: 100%;
 	height: auto;
-	margin: 5px 0px 0px;
+	margin: -5px 0px 0px;
 }
 
 .banner_wrap {
@@ -262,7 +258,7 @@ a {
 }
 
 .book_wrap .index-contact:hover {
-	background-color: var(--secondary-color);
+	background-color: var(--primary-color);
 	color: var(--white-color);
 }
 
@@ -521,12 +517,12 @@ a {
 }
 
 .fot_add1 h4 {
-	color: var(--secondary-color);
+	color: var(--primary-color);
 	font-size: 18px;
 }
 
 .menu_footer h4 {
-	color: var(--secondary-color);
+	color: var(--primary-color);
 }
 
 .menu_footer ul li a:hover {
@@ -534,7 +530,7 @@ a {
 }
 
 .menu_footer2 h4 {
-	color: var(--secondary-color);
+	color: var(--primary-color);
 }
 
 .footer_last_wrap {
@@ -762,7 +758,7 @@ a {
 
 	.main-menu .navbar-header .navbar-toggle {
 		background: var(--primary-color);
-		/* margin-top: 15px !important; */
+		margin-top: 15px !important;
 	}
 
 	.main-menu .navbar-header .navbar-toggle .icon-bar {
@@ -1776,7 +1772,7 @@ a {
 .captcha-container img {
 	border: 1px dashed var(--primary-color);
 	border-radius: 10px;
-	padding: 8px;
+	padding: 10px;
 	margin-bottom: 20px;
 }
 
