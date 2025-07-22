@@ -83,9 +83,9 @@ const BannerSection: React.FC<BannerSectionProps> = ({
 
   // Safe destructure with default empty object
   const firstBanner = bannerItems[0] || {};
-  const headding = firstBanner.headding || "";
-  const tag_line = firstBanner.tag_line || "";
-  const content = firstBanner.content || "";
+  const headding = bannerItems[0]?.headding || "";
+  const tag_line = bannerItems[0]?.tag_line || "";
+  const content = bannerItems[0]?.content || "";
 
   const earlyBirdDateRaw = importantDates?.[1]?.date || "";
 
