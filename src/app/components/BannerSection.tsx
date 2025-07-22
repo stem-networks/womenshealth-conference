@@ -30,6 +30,15 @@ interface BannerSectionProps {
   onelinerBannerInfo: IndexPageData;
 }
 
+type BannerContentItem = {
+  headding?: string;
+  tag_line?: string;
+  content?: string;
+};
+
+type ImportantDate = { date?: string };
+
+// ——— Main Component
 const BannerSection: React.FC<BannerSectionProps> = ({
   generalbannerInfo,
   onelinerBannerInfo,
@@ -70,44 +79,44 @@ const BannerSection: React.FC<BannerSectionProps> = ({
   const interestedInRef = useRef<HTMLSelectElement>(null);
 
   const general = generalbannerInfo?.data || {};
-  const importantDates = onelinerBannerInfo?.importantDates || [];
-  const bannerContent = onelinerBannerInfo?.bannerContent || {};
 
-  // SAFE: always ensures array (Object.values on {} is [])
-  const bannerItems = Array.isArray(bannerContent)
-    ? bannerContent
-    : Object.values(bannerContent || {});
+  // ✦ Defensive typing for importantDates
+  const importantDates: ImportantDate[] = Array.isArray(
+    onelinerBannerInfo?.importantDates
+  )
+    ? (onelinerBannerInfo.importantDates as ImportantDate[])
+    : [];
 
-  // Prevent crash: if no items, return null early
-  if (!bannerItems || bannerItems.length === 0) return null;
+  // ✦ bannerContent: array or object, handle both
+  const bannerContentRaw = onelinerBannerInfo?.bannerContent ?? {};
+  let bannerItems: BannerContentItem[] = [];
+  if (Array.isArray(bannerContentRaw)) {
+    bannerItems = bannerContentRaw as BannerContentItem[];
+  } else if (bannerContentRaw && typeof bannerContentRaw === "object") {
+    bannerItems = Object.values(bannerContentRaw) as BannerContentItem[];
+  }
 
-  // Safe destructure with default empty object
-  type BannerContentItem = {
-    headding?: string;
-    tag_line?: string;
-    content?: string;
-  };
+  if (!bannerItems.length) return null;
 
-  const firstBanner: BannerContentItem =
-    bannerItems && bannerItems.length ? bannerItems[0] : {};
-  const headding = firstBanner.headding || "";
-  const tag_line = firstBanner.tag_line || "";
-  const content = firstBanner.content || "";
+  const firstBanner: BannerContentItem = bannerItems[0] || {};
+  const headding = firstBanner.headding ?? "";
+  const tag_line = firstBanner.tag_line ?? "";
+  const content = firstBanner.content ?? "";
 
-  const earlyBirdDateRaw = importantDates?.[1]?.date || "";
+  const earlyBirdDateRaw: string =
+    (importantDates[1] && importantDates[1].date) || "";
 
   const formattedEarlyBirdDate = earlyBirdDateRaw
-    .replace(/<sub>/g, "<sup>")
-    .replace(/<\/sub>/g, "</sup>")
-    .replace(/<br\s*\/?>/g, " ");
+    ? earlyBirdDateRaw
+        .replace(/<sub>/g, "<sup>")
+        .replace(/<\/sub>/g, "</sup>")
+        .replace(/<br\s*\/?>/g, " ")
+    : "";
 
-  const openBrochureModal = () => {
-    setShowModal9(true);
-  };
+  const openBrochureModal = () => setShowModal9(true);
 
   const closeBrochureModal = () => {
     setShowModal9(false);
-    // Store the close time in localStorage
     if (typeof window !== "undefined") {
       localStorage.setItem("brochureFormClosed", Date.now().toString());
     }
@@ -155,7 +164,6 @@ const BannerSection: React.FC<BannerSectionProps> = ({
       if (typeof window !== "undefined")
         localStorage.setItem("brochureFormSubmitted", Date.now().toString());
 
-      // Encode payload values using btoa
       const payload = {
         first_name: btoa(brochureFormData.first_name.trim()),
         email: btoa(brochureFormData.email.trim()),
@@ -174,7 +182,6 @@ const BannerSection: React.FC<BannerSectionProps> = ({
       if (response.ok) {
         handleDownload();
         closeBrochureModal();
-
         setBrochureFormData({
           first_name: "",
           email: "",
@@ -183,7 +190,6 @@ const BannerSection: React.FC<BannerSectionProps> = ({
           message: "",
           interested_in: "",
         });
-
         setBrochureFormErrors({});
       } else {
         toast.error("Failed to submit form. Please try again.");
