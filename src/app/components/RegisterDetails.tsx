@@ -8,12 +8,12 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 // import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import {
-  CreateOrderData,
-  CreateOrderActions,
-  OnApproveData,
-  OnApproveActions,
-} from "@paypal/paypal-js";
+// import {
+//   CreateOrderData,
+//   CreateOrderActions,
+//   OnApproveData,
+//   OnApproveActions,
+// } from "@paypal/paypal-js";
 
 interface RegistrationData {
   name?: string;
@@ -52,14 +52,14 @@ const RegisterDetails = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [details, setDetails] = useState<RegistrationData | null>(null);
-  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState<boolean>(false);
   const [discountDetails, setDiscountDetails] =
     useState<DiscountDetails | null>(null);
   const [actualAmount, setActualAmount] = useState<ActualAmount | null>(null);
   const [localError, setLocalError] = useState("");
   const [checkEmail, setCheckEmail] = useState("");
 
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
   const [couponCodeToCheck, setCouponCodeToCheck] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const [showCoupon, setShowCoupon] = useState(false);
@@ -69,29 +69,19 @@ const RegisterDetails = () => {
   //   const adjustedPriceRef = useRef<number>(adjustedPrice);
   const adjustedPriceRef = useRef<number>(0); // Initialize with 0
   const actualAmountRef = useRef<ActualAmount | null>(null);
-const [clientId, setClientId] = useState<string | null>(null);
+  const [clientId, setClientId] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
+  // const [isClientReady, setIsClientReady] =  useState<string | null>(null);
 
+  console.log(isPending);
   console.log("adjust price", adjustedPrice);
 
-//   useEffect(() => {
-//     async function fetchClientId() {
-//       try {
-//         const res = await fetch("/api/paypal-client-id");
-//         const data = await res.json();
-//         setClientId(data.clientId);
-//       } catch (error) {
-//         console.error("Failed to fetch PayPal Client ID:", error);
-//       }
-//     }
- useEffect(() => {
+  useEffect(() => {
     fetch("/api/paypal-client-id")
       .then((res) => res.json())
       .then((data) => setClientId(data.clientId))
       .catch((err) => console.error("Failed to fetch PayPal clientId", err));
   }, []);
-
-//     fetchClientId();
-//   }, []);
 
   useEffect(() => {
     if (searchParams?.has("discount")) {
@@ -101,101 +91,127 @@ const [clientId, setClientId] = useState<string | null>(null);
     }
   }, [searchParams]);
 
-  const CancelModal: React.FC = () => {
-    return (
-      <div className="modal-backdrop">
-        <div className="modal">
-          <p>You clicked cancel. Do you want to try again?</p>
-          <div className="modal-footer">
-            <button onClick={() => setShowCancelModal(false)} className="btn">
-              OK
-            </button>
-          </div>
-        </div>
-        <style jsx>{`
-          .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-          }
-          .modal {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            width: 400px;
-            height: 200px;
-            max-width: 90%;
-            display: flex;
-            flex-direction: column;
-          }
-          .modal p {
-            margin-bottom: 5px;
-            line-height: 28px;
-            font-size: 18px;
-            text-align: center;
-          }
-          .modal-backdrop .modal-footer {
-            width: 100%;
-          }
-          .btn {
-            padding: 10px 20px;
-            font-size: 16px;
-            background: var(--primary-color);
-            color: #fff;
-            border-radius: 4px;
-            text-decoration: none;
-            transition: all 0.4s;
-            line-height: normal;
-            border: none;
-            transition: background-color 0.2s ease;
-            width: 100%;
-          }
-          .btn:hover {
-            background: var(--primary-color);
-          }
-        `}</style>
-      </div>
-    );
-  };
+  // const CancelModal: React.FC = () => {
+  //   return (
+  //     <div className="modal-backdrop">
+  //       <div className="modal">
+  //         <p>You clicked cancel. Do you want to try again?</p>
+  //         <div className="modal-footer">
+  //           <button onClick={() => setShowCancelModal(false)} className="btn">
+  //             OK
+  //           </button>
+  //         </div>
+  //       </div>
+  //       <style jsx>{`
+  //         .modal-backdrop {
+  //           position: fixed;
+  //           top: 0;
+  //           left: 0;
+  //           width: 100vw;
+  //           height: 100vh;
+  //           background: rgba(0, 0, 0, 0.5);
+  //           display: flex;
+  //           align-items: center;
+  //           justify-content: center;
+  //           z-index: 1000;
+  //         }
+  //         .modal {
+  //           background: white;
+  //           padding: 30px;
+  //           border-radius: 10px;
+  //           box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  //           width: 400px;
+  //           height: 200px;
+  //           max-width: 90%;
+  //           display: flex;
+  //           flex-direction: column;
+  //         }
+  //         .modal p {
+  //           margin-bottom: 5px;
+  //           line-height: 28px;
+  //           font-size: 18px;
+  //           text-align: center;
+  //         }
+  //         .modal-backdrop .modal-footer {
+  //           width: 100%;
+  //         }
+  //         .btn {
+  //           padding: 10px 20px;
+  //           font-size: 16px;
+  //           background: var(--primary-color);
+  //           color: #fff;
+  //           border-radius: 4px;
+  //           text-decoration: none;
+  //           transition: all 0.4s;
+  //           line-height: normal;
+  //           border: none;
+  //           transition: background-color 0.2s ease;
+  //           width: 100%;
+  //         }
+  //         .btn:hover {
+  //           background: var(--primary-color);
+  //         }
+  //       `}</style>
+  //     </div>
+  //   );
+  // };
+
+  // useEffect(() => {
+  //   const fetchDetails = async () => {
+  //     const web_token = searchParams?.get("web_token");
+  //     if (!web_token) return;
+
+  //     try {
+  //       const response = await axios.post("/api/registration-details", {
+  //         web_token,
+  //       });
+
+  //       setTimeout(() => {
+  //         if (response.status === 200 && response.data) {
+  //           if (response.data.data?.transaction_id !== null) {
+  //             router.push(`/payment_success?web_token=${web_token}`);
+  //           }
+  //           setDetails(response.data.data);
+  //         } else {
+  //           setDetails(null);
+  //         }
+  //       }, 1000);
+  //     } catch (error) {
+  //       console.error("Client error:", error);
+  //       setDetails(null);
+  //     }
+  //   };
+
+  //   fetchDetails();
+  // }, [searchParams, router]);
 
   useEffect(() => {
     const fetchDetails = async () => {
       const web_token = searchParams?.get("web_token");
+      if (!web_token) return;
 
       try {
-        const postData = {
-          module_name: "registration_details",
-          keys: {
-            data: [{ web_token }],
-          },
-          cid: process.env.NEXT_PUBLIC_CID,
-        };
+        const response = await axios.post("/api/registration-details", {
+          web_token,
+        });
 
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}`,
-          postData
-        );
-        setTimeout(() => {
-          if (response.status === 200 && response.data) {
-            if (response.data.data.transaction_id !== null) {
-              router.push(`/payment-success?web_token=${web_token}`);
-            }
-            setDetails(response.data.data);
-          } else {
-            setDetails(null);
+        if (response.status === 200 && response.data) {
+          const data = response.data.data;
+          setDetails(data);
+
+          // Prevent double redirect if already on payment_success page
+          if (
+            data?.transaction_id !== null &&
+            !window.location.pathname.includes("payment_success")
+          ) {
+            router.replace(`/payment_success?web_token=${web_token}`);
           }
-        }, 1000);
+        } else {
+          setDetails(null);
+        }
       } catch (error) {
+        console.error("Client error:", error);
         setDetails(null);
-        console.warn(error);
       }
     };
 
@@ -267,23 +283,23 @@ const [clientId, setClientId] = useState<string | null>(null);
     if (!checkEmail) return;
     if (actualAmountRef.current !== null) return;
 
+    console.log("email coupon", checkEmail);
     const fetchDiscountDetails = async () => {
       try {
         const payload = {
           email: checkEmail || "",
           coupon_code: "",
-          cid: process.env.NEXT_PUBLIC_CID,
         };
 
         const response = await fetch("/api/register_details", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
 
         const data = await response.json();
+
+        console.log("data details", data);
 
         if (data.success) {
           setDiscountDetails({
@@ -362,11 +378,9 @@ const [clientId, setClientId] = useState<string | null>(null);
 
     try {
       const payload: {
-        cid: string | undefined;
         coupon_code: string;
         email?: string;
       } = {
-        cid: process.env.NEXT_PUBLIC_CID,
         coupon_code: couponCodeToCheck,
       };
 
@@ -381,6 +395,8 @@ const [clientId, setClientId] = useState<string | null>(null);
       });
 
       const data = await response.json();
+
+      console.log("data apply coupon", data);
 
       if (data.success) {
         setDiscountDetails({
@@ -477,25 +493,36 @@ const [clientId, setClientId] = useState<string | null>(null);
     totalAccommodationPrice,
   ]);
 
-  const logError = async (message: string) => {
+  async function sendErrorToCMS({
+    name,
+    email,
+    errorMessage,
+    formBased = "PayPal Payment",
+  }: {
+    name: string;
+    email: string;
+    errorMessage: string;
+    formBased?: string;
+  }) {
     try {
-      if (!dataToShow) return;
+      const payload = new FormData();
+      payload.append("name", name);
+      payload.append("email", email);
+      payload.append("error_message", errorMessage);
+      payload.append("form_based", formBased);
 
-      await fetch("/api/log-error", {
+      const res = await fetch("/api/send-to-telegram", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          error_message: message,
-          name: dataToShow?.name || "N/A",
-          email: dataToShow?.email || "N/A",
-        }),
+        body: payload,
       });
+
+      if (!res.ok) {
+        console.error("Failed to send error to CMS");
+      }
     } catch (err) {
-      console.error("Client error while calling logError:", err);
+      console.error("Error sending to CMS:", err);
     }
-  };
+  }
 
   return (
     <div>
@@ -799,151 +826,170 @@ const [clientId, setClientId] = useState<string | null>(null);
           <div className="col-md-3">
             <div className="pg-head">Payment Gateway</div>
             <div className="payment-section">
-              {adjustedPrice ? (
+              {clientId && adjustedPrice ? (
                 <PayPalScriptProvider
                   options={{
-                   clientId: clientId ?? "",
+                    clientId: clientId,
                     currency: "USD",
                     intent: "capture",
-                    debug: false,
+                    // debug: true,
                   }}
                 >
                   <PayPalButtons
                     style={{ layout: "vertical" }}
-                    // Triggered when the button is clicked
                     onClick={(data, actions) => {
-                      console.log("[PayPal] onClick triggered");
-                      console.log("Button Click Payload:", { data, actions });
+                      console.log("🔵 [PayPal] onClick Triggered");
+                      console.log("🟡 Click Payload:", { data, actions });
                     }}
-                    // Create the PayPal order
-                    createOrder={async (
-                      data: CreateOrderData,
-                      actions: CreateOrderActions
-                    ) => {
+                    createOrder={async () => {
+                      console.log("🟢 [PayPal] createOrder Triggered");
+                      setIsPending(true);
+
                       try {
-                        console.log("[PayPal] createOrder called");
-                        console.log("createOrder - Payload:", { data });
-
-                        const amount = Number(
-                          adjustedPriceRef.current ||
-                            dataToShow?.total_price ||
-                            0
+                        const payload = {
+                          totalAmount: adjustedPriceRef.current,
+                          description: `Registration for ${dataToShow?.name}`,
+                        };
+                        console.log(
+                          "📦 Sending to /api/paypal/create-order:",
+                          payload
                         );
-                        const safeAmount = Math.max(0.01, amount).toFixed(2);
 
-                        const order = await actions.order.create({
-                          intent: "CAPTURE",
-                          purchase_units: [
-                            {
-                              amount: {
-                                currency_code: "USD",
-                                value: safeAmount,
-                              },
-                              description: `Registration Payment for ${encodeURIComponent(
-                                dataToShow?.name || "Unknown"
-                              )}`,
-                            },
-                          ],
-                          application_context: {
-                            return_url: `${origin}/payment-status?status=success&web_token=${dataToShow?.web_token}`,
-                            cancel_url: `${origin}/register_details?web_token=${
-                              dataToShow?.web_token ||
-                              searchParams?.get("web_token") ||
-                              ""
-                            }`,
+                        const res = await fetch("/api/paypal/create-order", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
                           },
+                          body: JSON.stringify(payload),
                         });
 
-                        console.log("Order Created - ID:", order);
-                        return order;
-                      } catch (err) {
-                        console.error("[PayPal] Error creating order:", err);
-                        await logError(
-                          `Error creating PayPal order: ${
-                            (err as Error).message
-                          }`
-                        );
-                        throw err;
+                        const data = await res.json();
+                        console.log("✅ create-order Response:", data);
+
+                        if (!res.ok)
+                          throw new Error(
+                            data?.message || "Failed to create order"
+                          );
+
+                        return data.orderID;
+                      } catch (error) {
+                        console.error("❌ Error in createOrder:", error);
+                        await sendErrorToCMS({
+                          name: dataToShow?.name || "Unknown User",
+                          email: dataToShow?.email || "Unknown Email",
+                          errorMessage:
+                            (error as Error).message ||
+                            "Unknown error in createOrder",
+                        });
+                        setIsPending(false);
                       }
                     }}
-                    // Triggered when the user approves the payment
-                    onApprove={async (
-                      data: OnApproveData,
-                      actions: OnApproveActions
-                    ) => {
+                    onApprove={async (data) => {
+                      console.log("🟣 [PayPal] onApprove Triggered");
+                      console.log("🧾 Approval Data:", data);
+
                       try {
-                        console.log("[PayPal] onApprove triggered");
-                        console.log("Approval Payload:", { data });
-
-                        const captureResult = await actions.order?.capture();
-                        console.log("Payment Captured:", captureResult);
-
-                        const encryptedData = btoa(
-                          JSON.stringify({
-                            total_price: adjustedPriceRef.current,
-                            other_info: actualAmountRef.current,
-                            discount_amt: 0,
-                          })
+                        const capturePayload = { orderID: data.orderID };
+                        console.log(
+                          "📤 Sending to /api/paypal/capture-order:",
+                          capturePayload
                         );
 
-                        const paymentData = {
-                          module_name: "payment",
-                          keys: {
-                            data: [
-                              {
-                                payment_ref_id: data.orderID,
-                                web_token: dataToShow?.web_token,
-                                payment_method: "PayPal",
-                                status: "success",
-                                total_price: adjustedPriceRef.current,
-                                other_info: actualAmountRef.current,
-                                discount_amt: 0,
-                              },
-                            ],
+                        const res = await fetch("/api/paypal/capture-order", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
                           },
-                          cid: process.env.NEXT_PUBLIC_CID,
-                        };
-
-                        console.log("Payment Data to API:", paymentData);
-
-                        await axios.post(
-                          `${process.env.NEXT_PUBLIC_API_URL}`,
-                          paymentData
-                        );
-
-                        const params = new URLSearchParams({
-                          status: "success",
-                          web_token: dataToShow?.web_token || "",
-                          orderID: data.orderID,
-                          other_info: encryptedData,
+                          body: JSON.stringify(capturePayload),
                         });
 
-                        router.push(`/payment_success?${params.toString()}`);
+                        const captureData = await res.json();
+                        console.log("✅ capture-order Response:", captureData);
+
+                        if (!res.ok) throw new Error("Failed to capture order");
+
+                        const savePaymentPayload = {
+                          payment_ref_id: captureData.id,
+                          web_token: dataToShow?.web_token,
+                          total_price: adjustedPriceRef.current,
+                          other_info: actualAmountRef.current,
+                          payment_method: "PayPal",
+                          status: "success",
+                          discount_amt: 0,
+                        };
+
+                        console.log(
+                          "📤 Sending to /api/paypal/save-payment:",
+                          savePaymentPayload
+                        );
+
+                        const saveRes = await fetch(
+                          "/api/paypal/save-payment",
+                          {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(savePaymentPayload),
+                          }
+                        );
+
+                        const saveResult = await saveRes.json();
+                        console.log("✅ save-payment Response:", saveResult);
+
+                        const encryptedData = btoa(
+                          JSON.stringify(savePaymentPayload)
+                        );
+                        const query = new URLSearchParams({
+                          status: "success",
+                          web_token: dataToShow?.web_token || "",
+                          orderID: data.orderID || "",
+                          other_info: encryptedData || "",
+                        }).toString();
+
+                        router.push(`/payment_success?${query}`);
                       } catch (error) {
-                        console.error(
-                          "[PayPal] Payment processing error:",
-                          error
-                        );
-                        await logError(
-                          `Payment processing error: ${
-                            (error as Error).message
-                          }`
-                        );
+                        console.error("❌ Error in onApprove:", error);
+                        await sendErrorToCMS({
+                          name: dataToShow?.name || "Unknown User",
+                          email: dataToShow?.email || "Unknown Email",
+                          errorMessage:
+                            (error as Error).message ||
+                            "Unknown error in onApprove",
+                        });
                         router.push(
                           `/register_details?status=failure&web_token=${dataToShow?.web_token}`
                         );
+                      } finally {
+                        setIsPending(false);
                       }
                     }}
-                    // Triggered when the user cancels the payment
-                    onCancel={(data) => {
-                      console.warn("[PayPal] onCancel triggered");
-                      console.log("Cancel Payload:", data);
+                    onCancel={async (data) => {
+                      console.warn("🟠 [PayPal] onCancel Triggered");
+                      console.log("❗ Cancel Payload:", data);
+
+                      // Construct a readable cancel message
+                      const cancelMessage = `User canceled the PayPal payment. Order ID: ${
+                        data?.orderID || "N/A"
+                      }`;
+
+                      await sendErrorToCMS({
+                        name: dataToShow?.name || "Unknown User",
+                        email: dataToShow?.email || "Unknown Email",
+                        errorMessage: cancelMessage,
+                      });
+
                       setShowCancelModal(true);
                     }}
-                    // Triggered if there's an error in the PayPal process
-                    onError={(err) => {
-                      console.error("[PayPal] onError triggered");
-                      console.error("Error Payload:", err);
+                    onError={async (err) => {
+                      console.error("🔴 [PayPal] onError Triggered");
+                      console.error("💥 Error Payload:", err);
+                      await sendErrorToCMS({
+                        name: dataToShow?.name || "Unknown User",
+                        email: dataToShow?.email || "Unknown Email",
+                        errorMessage:
+                          JSON.stringify(err) || "Unknown PayPal onError",
+                      });
                       router.push(
                         `/register_details?status=failure&web_token=${dataToShow?.web_token}`
                       );
@@ -958,7 +1004,7 @@ const [clientId, setClientId] = useState<string | null>(null);
         </div>
       </div>
 
-      {showCancelModal && <CancelModal />}
+      {/* {showCancelModal && <CancelModal />} */}
 
       {showModal && (
         <div
@@ -1022,6 +1068,28 @@ const [clientId, setClientId] = useState<string | null>(null);
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showCancelModal && (
+        <div className="modal" id="myModal" tabIndex={-1} role="dialog">
+          <div className="modal-dialog modal-confirm fade-in" role="document">
+            <div className="modal-content">
+              <p className="" style={{ fontSize: "18px" }}>
+                You clicked cancel. Do you want to try again?
+              </p>
+
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-success btn-block"
+                  onClick={() => setShowCancelModal(false)}
+                >
+                  OK
+                </button>
               </div>
             </div>
           </div>

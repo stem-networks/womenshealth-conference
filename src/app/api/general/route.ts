@@ -1,28 +1,21 @@
 import { NextResponse } from "next/server";
+import { readFile } from "fs/promises";
+import path from "path";
 
 export async function GET() {
   try {
-    const apiUrl = process.env.API_URL_WITH_PARAMS;
-    if (!apiUrl) {
-      throw new Error("API_URL_WITH_PARAMS not configured");
-    }
-  
-    
+    // Absolute path to your JSON file at root/data_source/skeleton.json
+    const filePath = path.join(process.cwd(), "data_source", "skeleton.json");
 
-    const res = await fetch(apiUrl, {
-      next: { revalidate: 3600 }, // Revalidate every hour
-    });
+    // Read and parse the file
+    const fileData = await readFile(filePath, "utf-8");
+    const jsonData = JSON.parse(fileData);
 
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
-    }
-
-    const data = await res.json();
-    return NextResponse.json(data);
+    return NextResponse.json(jsonData);
   } catch (error) {
-    console.error("Failed to fetch data:", error);
+    console.error("Failed to read skeleton.json:", error);
     return NextResponse.json(
-      { error: "Failed to fetch data" },
+      { error: "Failed to load local JSON data" },
       { status: 500 }
     );
   }

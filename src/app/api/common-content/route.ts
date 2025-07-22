@@ -1,32 +1,23 @@
 import { NextResponse } from 'next/server';
-import axios from 'axios';
+import { readFile } from 'fs/promises';
+import path from 'path';
 
 export async function POST() {
   try {
-    const apiUrl = process.env.API_URL;
-    const cid = process.env.CID;
+    // Define the path to your local common_content.json file
+    const filePath = path.join(process.cwd(), 'data_source', 'common_content.json');
 
-    if (!apiUrl || !cid) {
-      return NextResponse.json(
-        { error: 'API configuration error' },
-        { status: 500 }
-      );
-    }
-
-    const response = await axios.post(apiUrl, {
-      module_name: 'common_content',
-      keys: { data: [] },
-      cid: cid,
-    });
+    // Read the file
+    const fileData = await readFile(filePath, 'utf-8');
+    const jsonData = JSON.parse(fileData);
 
     return NextResponse.json({
-      faqs: response.data.data?.faq || [],
-      // Add other common content fields as needed
+      data: jsonData, // returns { guidelines, terms, faq }
     });
   } catch (error) {
-    console.error('Error fetching common content:', error);
+    console.error('Error reading common content JSON:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch common content' },
+      { error: 'Failed to load common content' },
       { status: 500 }
     );
   }

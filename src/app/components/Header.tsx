@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useAppData } from "@/context/AppDataContext";
 import "../styles/bootstrap.css";
 import "../styles/animate.css";
 import "../styles/common.css";
@@ -16,21 +15,25 @@ import "../styles/boxicons.min.css";
 import "../styles/responsive.css";
 import "../styles/revolution-slider.css";
 import "../styles/owl.css";
+import { ApiResponse, RegistrationInfo } from "@/types";
 
 interface SubItem {
   title: string;
   link: string;
 }
+interface HeaderProps {
+  generalData: ApiResponse;
+  registerData : RegistrationInfo
+}
 
-export default function Header() {
-  //   const { general, navItems } = useAppData();
-  const {
-    general,
-    navItems,
-    registrationInfo,
-    fetchRegistrationInfo,
-    loading,
-  } = useAppData();
+const Header: React.FC<HeaderProps> = ({ generalData, registerData }) => {
+
+  const general = generalData?.data || {};
+  const navItems = generalData?.display_features || {}
+
+   
+  const presenterFee =    registerData?.increment_price["Presenter (In-Person)"]?.total || "0";
+    
   const [isNavbarCollapsed, setIsNavbarCollapsed] = useState(true);
   const [dropdownStates, setDropdownStates] = useState<Record<string, boolean>>(
     {}
@@ -38,15 +41,7 @@ export default function Header() {
 
   const pathname = usePathname();
 
-  const presenterFee =
-    registrationInfo?.increment_price["Presenter (In-Person)"]?.total || "0";
-
-  useEffect(() => {
-    // Fetch registration info when component mounts
-    if (!registrationInfo && !loading) {
-      fetchRegistrationInfo();
-    }
-  }, [registrationInfo, loading, fetchRegistrationInfo]);
+ 
 
   useEffect(() => {
     const handleScroll = () => {
@@ -84,6 +79,8 @@ export default function Header() {
 
   const isActive = (path: string) => pathname === path;
 
+  // console.log("general111111",general); 
+
   return (
     <>
       <header className="main-header">
@@ -116,7 +113,7 @@ export default function Header() {
                   >
                     Register Now
                   </Link>
-                  {!loading && <span> For Only ${presenterFee}</span>}
+                  <span> For Only ${presenterFee}</span>
                 </li>
                 <li className="text-right">{general.venue_p1 || ""}</li>
               </ul>
@@ -400,3 +397,6 @@ export default function Header() {
     </>
   );
 }
+
+
+export default Header;

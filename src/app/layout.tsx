@@ -1,27 +1,53 @@
 import type { Metadata } from "next";
-// import { Inter } from "next/font/google";
-import { NavProvider } from "@/context/NavContext";
-import { fetchDataServer } from "@/lib/api";
 import Script from "next/script";
 // import "./globals.css";
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import { GeneralData, PagesData, NavItem, SocialLinks } from "@/types";
-import { AppDataProvider } from "@/context/AppDataContext";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import {
+  GeneralData,
+  PagesData,
+  ApiResponse,
+  IndexPageData,
+  RegistrationInfo,
+} from "@/types";
 // import Header from "./components/Header/Header";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import MediaCollaborators from "./components/MediaCollaborators";
+// import MediaCollaborators from "./components/MediaCollaborators";
 import PartneredContent from "./components/PartneredContent";
-// import { useAppData } from "../context/AppDataContext";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
+async function fetchGeneralData(): Promise<ApiResponse> {
+  const baseUrl = process.env.BASE_URL;
+  const res = await fetch(`${baseUrl}/api/general`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch general data");
+  return res.json();
+}
+
+async function fetchIndexPageData(): Promise<IndexPageData> {
+  const baseUrl = process.env.BASE_URL;
+  const res = await fetch(`${baseUrl}/api/index-page`, {
+    method: "POST",
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Failed to fetch index page data");
+  return res.json();
+}
+async function fetchRegisterPageData(): Promise<RegistrationInfo> {
+  const baseUrl = process.env.BASE_URL;
+  const res = await fetch(`${baseUrl}/api/reg-page-data`, {
+    method: "POST",
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Failed to fetch index page data");
+  return res.json();
+}
 
 // const inter = Inter({ subsets: ["latin"] });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const data = await fetchDataServer();
+  const data = await fetchGeneralData();
   const general = data?.data || ({} as GeneralData);
   const pageData = data?.pages || ({} as PagesData);
   const eventName = `${general?.clname || "Annual Tech Conference"} ${general?.year || ""
@@ -30,8 +56,9 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: eventName,
     description: pageData?.register?.[0]?.content || "",
+    keywords: pageData?.register?.[0]?.meta_keywords || "",
     icons: {
-      icon: `${general?.site_url || ""}/favicon.png`,
+      icon: `${general?.site_url || ""}/images/images/favicon.png`,
     },
     openGraph: {
       images: `${general?.site_url || ""}/images/images/opengraph_image.jpg`,
@@ -74,15 +101,16 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const data = await fetchDataServer();
-  const general: GeneralData = data?.data || ({} as GeneralData);
-  const pageData: PagesData = data?.pages || ({} as PagesData);
-  const navItems: NavItem[] = data?.display_features || [];
-  const socialLinks: SocialLinks = data?.social_links || {
-    facebook: { link: "", title: "" },
-    linkedin: { link: "", title: "" },
-    instagram: { link: "", title: "" }
-  };
+  const [generaldata, indexPageData, registerData] = await Promise.all([
+    fetchGeneralData(),
+    fetchIndexPageData(),
+    fetchRegisterPageData(),
+  ]);
+
+  // const data = await fetchDataServer();
+  // const general: GeneralData = data?.data || ({} as GeneralData);
+  const general: GeneralData = generaldata?.data || ({} as GeneralData);
+  const pageData: PagesData = generaldata?.pages || ({} as PagesData);
 
   const eventName = `${general?.clname || "Annual Tech Conference"} ${general?.year || ""
     }`.trim();
@@ -126,24 +154,26 @@ export default async function RootLayout({
     },
   };
 
-  // console.log("layout data",data, "ooooooooooo");
+  const GA_ID = process.env.GOOGLE_ANALYTICS_ID;
 
   return (
     <html lang="en">
       <head>
+        <link rel="icon" href="/images/images/favicon.png" />
         {/* Google Tag Manager */}
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-S9QFE3JLKN"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
           strategy="afterInteractive"
         />
         <Script id="google-tag-manager-config" strategy="afterInteractive">
           {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-S9QFE3JLKN');
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${GA_ID}');
           `}
         </Script>
+
 
         {/* Structured Data */}
         <script
@@ -152,22 +182,22 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        <AppDataProvider
-          general={general}
-          pages={pageData}
-          navItems={navItems}
-          socialLinks={socialLinks}
-        >
-          <NavProvider initialData={data}>
-            {/* Toast container - only one instance needed */}
-            <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick />
-            <Header />
-            {children}
-            <MediaCollaborators />
-            <PartneredContent />
-            <Footer socialLinks={socialLinks} />
-          </NavProvider>
-        </AppDataProvider>
+
+        {/* Toast container - only one instance needed */}
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+        />
+        <Header generalData={generaldata} registerData={registerData} />
+        {children}
+        {/* <MediaCollaborators /> */}
+        <PartneredContent />
+        <Footer indexPageData={indexPageData} generalData={generaldata} />
+
+
       </body>
     </html>
   );

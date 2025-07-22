@@ -1,60 +1,82 @@
-// 'use client';
+import Guidelines from "../components/Guidelines";
+import { Metadata } from "next";
+import { ApiResponse, CommonContent } from "@/types";
 
-// import React from 'react'
-// import Head from 'next/head'
-// import Guidelines from '../components/Guidelines'
-// import { useAppData } from '@/context/AppDataContext'
-
-// const page = ({ guidelinesContent }) => {
-
-//     const { pages } = useAppData();
-
-//     // Using the correct key: 'index'
-//     const guidelinePage = pages?.guidlines?.[0];
-
-//     console.log("pages page", guidelinePage?.title);
-//     return (
-//         <div>
-//             <Head>
-//                 <title>{guidelinePage?.title || ''}</title>
-//                 <meta name="description" content={guidelinePage?.content || ''} />
-//                 <meta name="keywords" content={guidelinePage?.meta_keywords || ''} />
-//                 {/* <link rel="canonical" href={canonicalUrl ? canonicalUrl : ""} />  */}
-//             </Head>
-//             <Guidelines guidelinesContent={guidelinesContent} />
-//         </div>
-//     )
+// Fetch general data for SEO metadata
+// async function fetchGeneralData(): Promise<ApiResponse> {
+//   const baseUrl = process.env.BASE_URL;
+//   const res = await fetch(`${baseUrl}/api/general`, { cache: "no-store" });
+//   if (!res.ok) throw new Error("Failed to fetch general data");
+//   return res.json();
 // }
 
-// export default page
-
-'use client'
-
-import React from 'react'
-import Guidelines from '../components/Guidelines'
-import { useAppData } from '../../context/AppDataContext'
-import Head from 'next/head'
-
-const GuidelinesPage = () => {
-    const { pages, commonContent } = useAppData();
-
-    // Fix typo if needed
-    const guidelinePage = pages?.guidlines?.[0]; // <-- 'guidelines' not 'guidlines'
-
-    const guidelinesContent = commonContent?.guidelines?.content || '';
-
-    return (
-        <>
-            {/* Use Next.js <Head> component */}
-            <Head>
-                <title>{guidelinePage?.title || 'Guidelines'}</title>
-                <meta name="description" content={guidelinePage?.content || ''} />
-                <meta name="keywords" content={guidelinePage?.meta_keywords || ''} />
-            </Head>
-
-            <Guidelines guidelinesContent={guidelinesContent} />
-        </>
-    );
+// Fetch common content (includes guidelines)
+async function fetchCommonData(): Promise<CommonContent> {
+  const baseUrl = process.env.BASE_URL;
+  const res = await fetch(`${baseUrl}/api/common-content`, {
+    method: "POST",
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Failed to fetch common content");
+  return res.json();
 }
+
+async function fetchGeneralDataStatic(): Promise<ApiResponse> {
+  const baseUrl = process.env.BASE_URL;
+  const res = await fetch(`${baseUrl}/api/general`, {
+    next: { revalidate: 3600 }, // Cache for 1 hour
+  });
+  if (!res.ok) throw new Error("Failed to fetch general data statically");
+  return res.json();
+}
+
+// SEO Metadata
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const generalData = await fetchGeneralDataStatic();
+    const meta = generalData?.pages?.guidlines?.[0] || {
+      title: "Guidelines",
+      content: "Explore the Guidelines of the conference.",
+      meta_keywords: "",
+    };
+
+    // Canonical 
+    const baseUrl = process.env.BASE_URL || '';
+    const canonicalPath = '/guidelines'; // hardcode since we know this is sessions page
+    const canonicalURL = `${baseUrl}${canonicalPath}`;
+
+    return {
+      title: meta.title,
+      description: meta.content,
+      keywords: meta.meta_keywords,
+      metadataBase: new URL(baseUrl),
+      alternates: {
+        canonical: canonicalURL,
+      },
+    };
+  } catch (error) {
+    console.error("Metadata generation error guidelines:", error);
+    return {
+      title: "Guidelines",
+      description: "Explore the Guidelines of the conference.",
+      keywords: "",
+    };
+  }
+}
+
+// ✅ Server Component
+const GuidelinesPage = async () => {
+  const commonContent = await fetchCommonData();
+
+  // ✅ Access guidelines directly — no .data
+  const guidelinesContentMain = commonContent?.data?.guidelines;
+  const guidelinesContent = guidelinesContentMain?.content ?? "";
+
+  return (
+    <>
+      <Guidelines guidelinesContent={guidelinesContent} />
+    </>
+  );
+};
 
 export default GuidelinesPage;
