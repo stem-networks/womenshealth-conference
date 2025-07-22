@@ -3,14 +3,16 @@ import AbstractSubmission from "../components/AbstractSubmission";
 import { Metadata } from "next";
 import { ApiResponse } from "@/types";
 
+import { getBaseUrl } from "@/lib/getBaseUrl";
+
 async function fetchGeneralData(): Promise<ApiResponse> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/general`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch general data");
   return res.json();
 }
 async function fetchGeneralDataStatic(): Promise<ApiResponse> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/general`, {
     next: { revalidate: 3600 }, // Cache for 1 hour
   });
