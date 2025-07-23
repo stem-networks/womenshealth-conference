@@ -42,15 +42,15 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 
     // Canonical
-    const baseUrl = process.env.BASE_URL || "";
+    // const baseUrl = process.env.BASE_URL || "";
     const canonicalPath = "/register"; // hardcode since we know this is sessions page
-    const canonicalURL = `${baseUrl}${canonicalPath}`;
+    const canonicalURL = `${getBaseUrl()}${canonicalPath}`;
 
     return {
       title: meta.title,
       description: meta.content,
       keywords: meta.meta_keywords,
-      metadataBase: new URL(baseUrl),
+      metadataBase: new URL(getBaseUrl()),
       alternates: {
         canonical: canonicalURL,
       },
