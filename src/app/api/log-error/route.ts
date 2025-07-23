@@ -13,7 +13,7 @@
 //     formData.append("error_message", error_message);
 //     formData.append("name", name);
 //     formData.append("email", email);
-//     const baseUrl = process.env.BASE_URL;
+//     const baseUrl = getBaseUrl();
 
 //     const response = await fetch(`${baseUrl}/api/register`, {
 //       method: "POST",
@@ -32,8 +32,8 @@
 //   }
 // }
 
-
 import { NextResponse } from "next/server";
+import { getBaseUrl } from "@/lib/getBaseUrl";
 
 export async function POST(req: Request) {
   try {
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     const cid = process.env.CID || ""; // Secure server-side environment variable
     incomingFormData.append("cid", cid);
 
-    const baseUrl = process.env.BASE_URL; // Ensure this ends WITHOUT trailing slash
+    const baseUrl = getBaseUrl(); // Ensure this ends WITHOUT trailing slash
     const response = await fetch(`${baseUrl}/api/register`, {
       method: "POST",
       body: incomingFormData,
@@ -51,7 +51,10 @@ export async function POST(req: Request) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Forwarding to /api/register failed:", errorText);
-      return NextResponse.json({ error: "Failed to forward data" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Failed to forward data" },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({ status: "logged" });

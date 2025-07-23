@@ -1,7 +1,3 @@
-// Components
-// import WelcomeMessage from "./components/WelcomeMessage";
-// import Members from "./components/Members";
-// import Speakers from "./components/Speakers";
 import BannerSection from "./components/BannerSection";
 import SessionsComponent from "./components/SessionContent";
 import MainSlider from "./components/MainSlider";
@@ -11,8 +7,6 @@ import AbstractNetwork from "./components/AbstractNetwork";
 import Downloads from "./components/Downloads";
 import VolunteerCommunity from "./components/VolunteerCommunity";
 import Venue from "./components/Venue";
-
-// Types
 import { Metadata } from "next";
 import {
   IndexPageData,
@@ -20,17 +14,32 @@ import {
   CommonContent,
   RegistrationInfo,
 } from "@/types";
+import { getBaseUrl } from "@/lib/getBaseUrl";
+import {
+  emptyApiResponse,
+  emptyIndexPageData,
+  emptyCommonContent,
+  emptyRegisterInfo,
+} from "@/lib/fallbacks";
 
-// Fetch functions
+async function safeFetch<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await fn();
+  } catch (e) {
+    console.error("SSR fetch failed:", e);
+    return fallback;
+  }
+}
+
 async function fetchGeneralData(): Promise<ApiResponse> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/general`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch general data");
   return res.json();
 }
 
 async function fetchIndexPageData(): Promise<IndexPageData> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/index-page`, {
     method: "POST",
     cache: "no-store",
@@ -40,7 +49,7 @@ async function fetchIndexPageData(): Promise<IndexPageData> {
 }
 
 async function fetchRegPageData(): Promise<RegistrationInfo> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/reg-page-data`, {
     method: "POST",
     cache: "no-store",
@@ -50,7 +59,7 @@ async function fetchRegPageData(): Promise<RegistrationInfo> {
 }
 
 async function fetchCommonData(): Promise<CommonContent> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/common-content`, {
     method: "POST",
     cache: "no-store",
@@ -60,7 +69,7 @@ async function fetchCommonData(): Promise<CommonContent> {
 }
 
 async function fetchGeneralDataStatic(): Promise<ApiResponse> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/general`, {
     next: { revalidate: 3600 }, // Cache for 1 hour
   });
@@ -80,8 +89,13 @@ export async function generateMetadata(): Promise<Metadata> {
     };
 
     // Canonical
-    const baseUrl = process.env.BASE_URL || "";
+    const baseUrl = getBaseUrl() || "";
     const canonicalURL = `${baseUrl}/`;
+
+    console.log("Loaded ENV Vars", {
+      API_URL: process.env.API_URL,
+      BASE_URL: baseUrl,
+    });
 
     return {
       title: meta.title,
@@ -103,20 +117,17 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-// Main page component
 const Home = async () => {
   const [general, indexPageData, commonContent, registerData] =
     await Promise.all([
-      fetchGeneralData(),
-      fetchIndexPageData(),
-      fetchCommonData(),
-      fetchRegPageData(),
+      safeFetch<ApiResponse>(fetchGeneralData, emptyApiResponse),
+      safeFetch<IndexPageData>(fetchIndexPageData, emptyIndexPageData),
+      safeFetch<CommonContent>(fetchCommonData, emptyCommonContent),
+      safeFetch<RegistrationInfo>(fetchRegPageData, emptyRegisterInfo),
     ]);
-  // console.log('Sessions',indexPageData)
 
-  const general_info = general?.data || {};
-  const sessions = indexPageData.sessions || [];
-
+  const general_info = general?.data || emptyApiResponse.data;
+  const sessions = indexPageData?.sessions || [];
   const sessionContent =
     indexPageData?.oneliner?.sessions?.content ||
     "Session content will be updated soon.";
@@ -127,15 +138,11 @@ const Home = async () => {
         generalbannerInfo={general}
         onelinerBannerInfo={indexPageData}
       />
-      {/* <WelcomeMessage />
-      <Members /> */}
-      {/* Uncomment when sessions are ready */}
       <SessionsComponent
         generalInfo={general_info}
         sessions={sessions}
         sessionContent={sessionContent}
       />
-      {/* <Speakers /> */}
       <MainSlider generalInfo={general} registerInfo={registerData} />
       <ImportantDates onelinerInfo={indexPageData} />
       <FaqsMain commonInfo={commonContent} />

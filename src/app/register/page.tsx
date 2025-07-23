@@ -3,15 +3,17 @@ import { Metadata } from "next";
 import { ApiResponse, RegistrationInfo } from "@/types";
 import Registration from "../components/Registration";
 
+import { getBaseUrl } from "@/lib/getBaseUrl";
+
 async function fetchGeneralData(): Promise<ApiResponse> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/general`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch general data");
   return res.json();
 }
 
 async function fetchRegisterData(): Promise<RegistrationInfo> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/reg-page-data`, {
     method: "POST",
     cache: "no-store",
@@ -21,7 +23,7 @@ async function fetchRegisterData(): Promise<RegistrationInfo> {
 }
 
 async function fetchGeneralDataStatic(): Promise<ApiResponse> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/general`, {
     next: { revalidate: 3600 }, // Cache for 1 hour
   });
@@ -39,9 +41,9 @@ export async function generateMetadata(): Promise<Metadata> {
       meta_keywords: "",
     };
 
-    // Canonical 
-    const baseUrl = process.env.BASE_URL || '';
-    const canonicalPath = '/register'; // hardcode since we know this is sessions page
+    // Canonical
+    const baseUrl = process.env.BASE_URL || "";
+    const canonicalPath = "/register"; // hardcode since we know this is sessions page
     const canonicalURL = `${baseUrl}${canonicalPath}`;
 
     return {

@@ -2890,7 +2890,7 @@ li {
 	margin-bottom: 0px;
 	cursor: pointer;
 	background: none;
-	line-height: 30px;
+	/* line-height: 30px; */
 	padding: 10px 50px 10px 48px;
 	overflow: hidden;
 	font-weight: 400;
@@ -3004,7 +3004,7 @@ li {
 .accordion-box .block .content p {
 	margin-bottom: 12px;
 	line-height: 23px;
-	padding-left: 28px;
+	/* padding-left: 28px; */
 	font-size: 16px;
 	margin-top: -2px;
 }
@@ -7574,6 +7574,12 @@ li {
 }
 
 @media screen and (max-width: 991px) {
+
+	.captcha-text-block {
+		display: flex;
+		width: 100%;
+	}
+
 	.tabl_wrap155 table {
 		width: 750px;
 	}
@@ -8154,6 +8160,16 @@ li {
 
 @media only screen and (min-width: 576px) and (max-width: 767px) {
 
+	.captcha-text-block {
+		display: flex;
+		width: 100%;
+	}
+
+	.accomodation-block {
+		width: 100%;
+		margin: 0 auto !important;
+	}
+
 	/* .box_st1 {
 		margin: 0px auto 30px !important;
 		width: 50%;
@@ -8221,6 +8237,29 @@ li {
 }
 
 @media only screen and (min-width: 320px) and (max-width: 575px) {
+
+	.upload_wrat55 {
+		justify-content: start;
+		margin: 0 0 20px;
+		font-size: 20px;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.captcha-text-block {
+		display: flex;
+		width: 100%;
+	}
+
+	.captcha-container img {
+		margin-bottom: 0px;
+		height: 50px;
+	}
+
+	.accomodation-block {
+		width: 100%;
+		margin: 0 auto !important;
+	}
 
 	/* sessions */
 	.session-img {
@@ -8335,7 +8374,18 @@ li {
 	}
 }
 
+@media only screen and (max-width: 382px) {
+	.container15 {
+		font-size: 18px;
+	}
+}
+
 @media only screen and (max-width: 350px) {
+
+	.container15 {
+		font-size: 16px;
+	}
+
 	.sq_mainbox {
 		padding: 75px 30px 50px 1px;
 	}
@@ -8354,6 +8404,22 @@ li {
 
 	.speakers-section .test-imp-row+.auto-container {
 		padding: 0px;
+	}
+
+	.nur_wrap33 {
+		font-size: 26px !important;
+	}
+
+	.nur_wrap22 {
+		font-size: 34px !important;
+	}
+
+	.back_wrapblue {
+		padding: 30px 14px 29px;
+	}
+
+	.back_wrapblue b {
+		padding: 10px 20px;
 	}
 }
 
@@ -9349,11 +9415,19 @@ input[type="radio"]:checked::before {
 
 /* Captcha Styles in Abstract Submission  */
 .captcha-container img {
-	border: 1px solid var(--primary-color);
+	width: 100px;
+	height: 60px;
+	border: 1px dashed var(--primary-color);
 	border-radius: 10px;
 }
 
-.refresh-icon {
+.captcha-container button {
+	border: 1px solid;
+	background: transparent;
+	margin-left: 20px;
+}
+
+.captcha-container button i {
 	font-size: 25px;
 	vertical-align: middle;
 	color: var(--black-color);
@@ -9365,9 +9439,31 @@ input[type="radio"]:checked::before {
 	margin-left: 20px;
 }
 
-.captcha-container .set157 {
-	margin-top: 20px;
+.captcha-container #captchaInput {
+	width: 100%;
+	display: block;
+	background-color: #dfe7e9;
+	height: 48px;
+	color: #000;
+	font-size: 18px;
+	font-weight: 500;
+	padding: 0 18px;
+	appearance: none;
+	-webkit-appearance: none;
+	background-position: 97%;
+	border: none;
+	border-radius: 7px;
+	margin-top: 10px;
 	/* width: 50%; */
+}
+
+.captcha-container #captchaInput:focus {
+	box-shadow: none;
+	border: 1px solid var(--primary-color);
+}
+
+input[text]:focus {
+	border: 1px solid var(--primary-color);
 }
 
 /* Marquee Scrolling  */
@@ -9539,11 +9635,11 @@ input[type="radio"]:checked::before {
 }
 
 /* ERROR toast */
-.Toastify__toast--error {
+/* .Toastify__toast--error {
 	background-color: #cf0000;
 	color: var(--white-color);
 	border-left: 5px solid #cf0000;
-}
+} */
 
 /* INFO toast */
 /* .Toastify__toast--info {

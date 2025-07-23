@@ -2,9 +2,11 @@ import Guidelines from "../components/Guidelines";
 import { Metadata } from "next";
 import { ApiResponse, CommonContent } from "@/types";
 
+import { getBaseUrl } from "@/lib/getBaseUrl";
+
 // Fetch general data for SEO metadata
 // async function fetchGeneralData(): Promise<ApiResponse> {
-//   const baseUrl = process.env.BASE_URL;
+//   const baseUrl = getBaseUrl();
 //   const res = await fetch(`${baseUrl}/api/general`, { cache: "no-store" });
 //   if (!res.ok) throw new Error("Failed to fetch general data");
 //   return res.json();
@@ -12,7 +14,7 @@ import { ApiResponse, CommonContent } from "@/types";
 
 // Fetch common content (includes guidelines)
 async function fetchCommonData(): Promise<CommonContent> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/common-content`, {
     method: "POST",
     cache: "no-store",
@@ -22,7 +24,7 @@ async function fetchCommonData(): Promise<CommonContent> {
 }
 
 async function fetchGeneralDataStatic(): Promise<ApiResponse> {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = getBaseUrl();
   const res = await fetch(`${baseUrl}/api/general`, {
     next: { revalidate: 3600 }, // Cache for 1 hour
   });
@@ -40,9 +42,9 @@ export async function generateMetadata(): Promise<Metadata> {
       meta_keywords: "",
     };
 
-    // Canonical 
-    const baseUrl = process.env.BASE_URL || '';
-    const canonicalPath = '/guidelines'; // hardcode since we know this is sessions page
+    // Canonical
+    const baseUrl = process.env.BASE_URL || "";
+    const canonicalPath = "/guidelines"; // hardcode since we know this is sessions page
     const canonicalURL = `${baseUrl}${canonicalPath}`;
 
     return {
