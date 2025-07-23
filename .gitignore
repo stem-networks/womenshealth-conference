@@ -47,8 +47,7 @@ auto-merge.sh
 # cPanel specific
 tmp/
 app.js
-# public/logs
-# src/app/api/git-webhook
-# /public/**/*.mp4
-
+public/logs
+src/app/api/git-webhook
+/public/**/*.mp4
 
