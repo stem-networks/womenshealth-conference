@@ -60,6 +60,17 @@ const BannerSection: React.FC<BannerSectionProps> = ({
   const [showModal5, setShowModal5] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
 
+  const shouldShowModal = (): boolean => {
+    if (typeof window === "undefined") return true;
+    const lastInteraction = localStorage.getItem("brochureFormClosed");
+    if (!lastInteraction) return true;
+
+    const lastInteractionTime = parseInt(lastInteraction, 10);
+    const currentTime = Date.now();
+    const timeElapsed = currentTime - lastInteractionTime;
+    return timeElapsed >= 24 * 60 * 60 * 1000;
+  };
+
   useEffect(() => {
     if (typeof window === "undefined") return; // Ensure client-side
 
@@ -245,17 +256,6 @@ const BannerSection: React.FC<BannerSectionProps> = ({
       console.error("Error downloading the file:", error);
       setShowModal5(true);
     }
-  };
-
-  const shouldShowModal = (): boolean => {
-    if (typeof window === "undefined") return true;
-    const lastInteraction = localStorage.getItem("brochureFormClosed");
-    if (!lastInteraction) return true;
-
-    const lastInteractionTime = parseInt(lastInteraction, 10);
-    const currentTime = Date.now();
-    const timeElapsed = currentTime - lastInteractionTime;
-    return timeElapsed >= 24 * 60 * 60 * 1000;
   };
 
   return (
