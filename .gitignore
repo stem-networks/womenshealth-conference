@@ -31,7 +31,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-# .env*
+.env*
 
 # vercel
 .vercel
@@ -47,8 +47,8 @@ auto-merge.sh
 # cPanel specific
 tmp/
 app.js
-public/logs
-src/app/api/git-webhook
-/public/**/*.mp4
+# public/logs
+# src/app/api/git-webhook
+# /public/**/*.mp4
 
 
