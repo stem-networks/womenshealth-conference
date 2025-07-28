@@ -53,6 +53,7 @@ export const emptyPagesData: PagesData = {
   scientific_program: [],
   register_details: [],
   privacy_policy: [],
+  venue:[],
 };
 
 export const emptyRegisterInfo: RegistrationInfo = {

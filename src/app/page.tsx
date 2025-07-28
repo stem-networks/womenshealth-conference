@@ -21,6 +21,8 @@ import {
   emptyCommonContent,
   emptyRegisterInfo,
 } from "@/lib/fallbacks";
+import Members from "./components/Members";
+import WelcomeMessage from "./components/WelcomeMessage";
 
 async function safeFetch<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
   try {
@@ -138,6 +140,8 @@ const Home = async () => {
         generalbannerInfo={general}
         onelinerBannerInfo={indexPageData}
       />
+      <WelcomeMessage />
+      <Members />
       <SessionsComponent
         generalInfo={general_info}
         sessions={sessions}

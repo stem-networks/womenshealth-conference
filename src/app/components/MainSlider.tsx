@@ -264,9 +264,9 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
                                 <h3>Listener @ ${listenerTotal.inPerson} | Presenter @ ${presenterTotal.inPerson}</h3>
                                 {/* )} */}
 
-                                <a href="/register" title="Register" tabIndex={0}>
+                                <Link href="/register" title="Register" tabIndex={0}>
                                     Register now
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>

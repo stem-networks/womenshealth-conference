@@ -1,2 +1,4 @@
 User-agent: *
 Disallow: 
+
+Sitemap: https://nursing-meetings.com/sitemap.xml
