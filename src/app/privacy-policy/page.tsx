@@ -17,12 +17,12 @@ async function fetchGeneralData(): Promise<ApiResponse> {
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
-    // const generalData = await fetchGeneralData();
-    // const meta = generalData?.pages?.sessions_meta?.[0] || {
-    //     title: "Sessions",
-    //     content: "Explore the sessions of the conference.",
-    //     meta_keywords: "",
-    // };
+    const generalData = await fetchGeneralData();
+    const meta = generalData?.pages?.privacy_policy?.[0] || {
+        title: "Privacy Policy",
+        content: "Explore the Privacy Policy of the conference.",
+        meta_keywords: "",
+    };
 
     // Canonical
     // const baseUrl = process.env.BASE_URL || "";
@@ -30,19 +30,19 @@ export async function generateMetadata(): Promise<Metadata> {
     const canonicalURL = `${getBaseUrl()}${canonicalPath}`;
 
     return {
-      // title: meta.title,
-      // description: meta.content,
-      // keywords: meta.meta_keywords,
+      title: meta.title,
+      description: meta.content,
+      keywords: meta.meta_keywords,
       metadataBase: new URL(getBaseUrl()),
       alternates: {
         canonical: canonicalURL,
       },
     };
   } catch (error) {
-    console.error("Metadata generation error sessions:", error);
+    console.error("Metadata generation error Privacy Policy:", error);
     return {
-      title: "Sessions",
-      description: "Explore the sessions of the conference.",
+      title: "Privacy Policy",
+      description: "Explore the Privacy Policy of the conference.",
       keywords: "",
     };
   }
