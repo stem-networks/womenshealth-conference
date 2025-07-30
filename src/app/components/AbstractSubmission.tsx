@@ -722,7 +722,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
         formData.append("submit_status", submitStatus);
       }
 
-      const response = await axios.post("/api/send-to-cmss", formData, {
+      const response = await axios.post("/api/send-to-cms", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
