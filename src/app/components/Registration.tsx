@@ -1369,7 +1369,7 @@ const Registration: React.FC<RegisterProps> = ({
                               </th>
                               <th className="sty_m1-2">Discount %</th>
                               <th className="sty_m1-3">
-                                Early Bird Registration Fee
+                                Final Registration Fee
                               </th>
                             </tr>
                           </thead>
@@ -1437,7 +1437,7 @@ const Registration: React.FC<RegisterProps> = ({
                               </th>
                               <th className="sty_m1-2">Discount %</th>
                               <th className="sty_m1-3">
-                                Discounted Registration Fee
+                                Final Registration Fee
                               </th>
                             </tr>
                           </thead>
@@ -1464,9 +1464,9 @@ const Registration: React.FC<RegisterProps> = ({
                                       {item.type}
                                     </td>
                                     <td className="mak1">
-                                      <s>{item.standard_price}</s>
+                                      <>{item.standard_price}</>
                                     </td>
-                                    <td className="mak1">{item.min}%</td>
+                                    <td className="mak1">-</td>
                                     <td className="mak1 active">
                                       ${item.total}{" "}
                                       <span className="tick-mark">✓</span>
