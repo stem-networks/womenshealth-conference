@@ -23,7 +23,7 @@ interface SubItem {
 }
 interface HeaderProps {
   generalData: ApiResponse;
-  registerData : RegistrationInfo
+  registerData: RegistrationInfo
 }
 
 const Header: React.FC<HeaderProps> = ({ generalData, registerData }) => {
@@ -31,9 +31,9 @@ const Header: React.FC<HeaderProps> = ({ generalData, registerData }) => {
   const general = generalData?.data || {};
   const navItems = generalData?.display_features || {}
 
-   
-  const presenterFee =    registerData?.increment_price["Presenter (In-Person)"]?.total || "0";
-    
+
+  const presenterFee = registerData?.increment_price["Presenter (In-Person)"]?.total || "0";
+
   const [isNavbarCollapsed, setIsNavbarCollapsed] = useState(true);
   const [dropdownStates, setDropdownStates] = useState<Record<string, boolean>>(
     {}
@@ -41,7 +41,7 @@ const Header: React.FC<HeaderProps> = ({ generalData, registerData }) => {
 
   const pathname = usePathname();
 
- 
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -115,7 +115,7 @@ const Header: React.FC<HeaderProps> = ({ generalData, registerData }) => {
                   </Link>
                   <span> For Only ${presenterFee}</span>
                 </li>
-                <li className="text-right">{general.venue_p1 || ""}</li>
+                {/* <li className="text-right">{general.venue_p1 || ""}</li> */}
               </ul>
             </div>
           </div>
@@ -142,7 +142,7 @@ const Header: React.FC<HeaderProps> = ({ generalData, registerData }) => {
                 </Link>
               </div>
 
-              <div className="venue-header-block">
+              {/* <div className="venue-header-block">
                 {general.venue_p1 && general.venue_p2 && (
                   <div className="map_wrap156" style={{ textAlign: "start" }}>
                     <Image
@@ -164,6 +164,38 @@ const Header: React.FC<HeaderProps> = ({ generalData, registerData }) => {
                     {general.venue_p2 || ""}
                   </div>
                 )}
+              </div> */}
+
+              <div className="venue-header-block">
+                {general.venue_p1 ? (
+                  <div className="map_wrap156" style={{ textAlign: 'start' }}>
+                    <Image
+                      src="/images/images/map.jpg"
+                      alt={general.clname || ""}
+                      width={100}
+                      height={70}
+                      className="map"
+                      title={general.clname || ""}
+                    />
+
+                    {(() => {
+                      const addressParts = [
+                        general.location_name,
+                        general.loc_address,
+                        general.v2,
+                        general.v1,
+                      ].filter(Boolean) as string[];
+
+                      return addressParts.length > 0 ? (
+                        <span
+                          dangerouslySetInnerHTML={{
+                            __html: addressParts.join("<br />"),
+                          }}
+                        />
+                      ) : null;
+                    })()}
+                  </div>
+                ) : null}
               </div>
 
               <div className="img_text5">
@@ -209,9 +241,8 @@ const Header: React.FC<HeaderProps> = ({ generalData, registerData }) => {
                   </button>
                 </div>
                 <div
-                  className={`navbar-collapse collapse clearfix ${
-                    isNavbarCollapsed ? "" : "in"
-                  }`}
+                  className={`navbar-collapse collapse clearfix ${isNavbarCollapsed ? "" : "in"
+                    }`}
                 >
                   <ul className="navigation clearfix">
                     {navItems.map((item, index) => (
@@ -242,13 +273,12 @@ const Header: React.FC<HeaderProps> = ({ generalData, registerData }) => {
                               )}
                             </Link>
                             <ul
-                              className={`dropdown-menu ${
-                                dropdownStates[
-                                  item.title.toLowerCase().replace(" ", "")
-                                ]
-                                  ? "show"
-                                  : ""
-                              }`}
+                              className={`dropdown-menu ${dropdownStates[
+                                item.title.toLowerCase().replace(" ", "")
+                              ]
+                                ? "show"
+                                : ""
+                                }`}
                             >
                               {item.subItems.map(
                                 (subItem: SubItem, subIndex: number) => (
@@ -318,9 +348,8 @@ const Header: React.FC<HeaderProps> = ({ generalData, registerData }) => {
                   </button>
                 </div>
                 <div
-                  className={`navbar-collapse collapse clearfix ${
-                    isNavbarCollapsed ? "" : "in"
-                  }`}
+                  className={`navbar-collapse collapse clearfix ${isNavbarCollapsed ? "" : "in"
+                    }`}
                 >
                   <ul className="navigation clearfix">
                     {navItems.map((item, index) => (
@@ -351,13 +380,12 @@ const Header: React.FC<HeaderProps> = ({ generalData, registerData }) => {
                               )}
                             </Link>
                             <ul
-                              className={`dropdown-menu ${
-                                dropdownStates[
-                                  item.title.toLowerCase().replace(" ", "")
-                                ]
-                                  ? "show"
-                                  : ""
-                              }`}
+                              className={`dropdown-menu ${dropdownStates[
+                                item.title.toLowerCase().replace(" ", "")
+                              ]
+                                ? "show"
+                                : ""
+                                }`}
                             >
                               {item.subItems.map(
                                 (subItem: SubItem, subIndex: number) => (

@@ -63,6 +63,7 @@ export interface PagesData {
   scientific_program: PageContent[];
   register_details: PageContent[];
   privacy_policy: PageContent[];
+  venue: PageContent[];
 }
 
 // Navigation item interface

@@ -1,99 +1,101 @@
 {
   "data": {
-    "cid": "14",
-    "site_url": "https://diabetes-conference.com",
-    "clname": "Diabetes Global Conference",
-    "csname": "DGC",
-    "clogotext": "DGC-2026",
-    "sdate": "07",
-    "edate": "08",
-    "month": "May",
-    "year": "2026",
-    "venue_p1": "London, UK",
-    "location_name": "",
-    "loc_address": "",
-    "v1": "London",
-    "v2": "UK",
+    "cid": "10029",
+    "site_url": "https://nursing-meetings.com",
+    "clname": "Nursing, Womens Health and Gynecology Conference",
+    "csname": "NWGC",
+    "clogotext": "NWGC-2025",
+    "sdate": "02",
+    "edate": "03",
+    "month": "October",
+    "year": "2025",
+    "venue_p1": "Geneva, Switzerland",
+    "location_name": "Intercity Hotel",
+    "loc_address": "Rte de Meyrin 127",
+    "postal_code": "",
+    "v1": "Switzerland",
+    "v2": "1219 Geneve",
     "venue_p2": "",
-    "cemail": "diabetes@stemnetwork.info",
+    "cemail": "nwgc@stemnetwork.net",
     "phone": "+1 (872) 2138-777",
     "whatsapp": "+1 (872) 2138-777",
-    "full_length_dates": "May 07-08, 2026",
+    "full_length_dates": "October 02-03, 2025",
     "full_length_venue": "Hybrid Event ",
-    "startDate": "2026-05-07",
-    "endDate": "2026-05-08",
-    "main_keyword": "Diabetes",
-    "confkeyword": "Diabetes"
+    "startDate": "2025-10-02",
+    "endDate": "2025-10-03",
+    "main_keyword": "Nursing",
+    "confkeyword": "Nursing"
   },
+  "status": "200",
   "pages": {
     "index": [
       {
-        "title": "Diabetes Conference | Meetings | Events | UK | 2026",
-        "content": "Discover the rearmost in diabetes exploration and treatment at our comprehensive Diabetes Global Conference during May 07-08, 2026 in London, UK. Join experts in exploring slice- edge curatives, technological advancements, and holistic approaches to managing diabetes effectively. Register now to secure your place at the van of diabetes invention.",
-        "meta_keywords": "Diabetes Global Conference 2026, Diabetes conference London, Diabetes research advancements, Global diabetes summit, Diabetes treatment innovations, Diabetes prevention strategies, International diabetes event, Diabetes care and management 2026, Diabetes healthcare conference, Diabetes experts summit UK 2026"
+        "title": "Nursing, Women’s Health, Midwifery, and Gynecology Conference 2025 | Switzerland | October 2025",
+        "content": "Welcome to the Nursing, Women’s Health, Midwifery, and Gynecology Conference in Switzerland, October 2–3, 2025. Join healthcare professionals and researchers to explore advancements in clinical practice, maternal care, women's health, and reproductive medicine.",
+        "meta_keywords": "nursing conference 2025, women’s health conference 2025, midwifery conference 2025, gynecology conference 2025, Switzerland nursing and women’s health event, international gynecology and midwifery conference, October 2–3 2025 healthcare conference"
       }
     ],
     "sessions_meta": [
       {
-        "title": "Diabetes Conference Sessions | Meetings | Events | UK | 2026",
-        "content": "Join the 2026 Diabetes Conference in the UK, featuring sessions on diabetes management, innovative treatments, prevention strategies, and clinical research. Connect with healthcare professionals and researchers to explore the latest advancements in diabetes care and technology.",
-        "meta_keywords": "diabetes conference, 2026 diabetes events, diabetes management sessions, diabetes treatment innovations, diabetes prevention strategies, clinical research in diabetes, diabetes care advancements, diabetes technology, UK diabetes conference, diabetes healthcare professionals"
+        "title": "Conference Sessions on Nursing, Women’s Health, Midwifery, and Gynecology | Switzerland 2025 | October 2025",
+        "content": "Explore detailed sessions at the Nursing, Women’s Health, Midwifery, and Gynecology Conference in Switzerland, October 2–3, 2025. Learn about focused topics in patient care, maternal health, reproductive medicine, and nursing practices.",
+        "meta_keywords": "nursing sessions 2025, women’s health session topics, midwifery conference sessions, gynecology conference program, Switzerland healthcare sessions, October 2–3 2025 sessions, reproductive health discussions, maternal care conference sessions"
       }
     ],
     "planning_committee": [
       {
-        "title": "Planning Committee | Diabetes",
-        "content": "Be a part of uniquely enriching experience at our Diabetes Conference! Engage with pioneering healthcare strategies, connect with top professionals, and elevate your expertise through dynamic workshops and discussions. Secure your place today for unrivaled insights into the future of Diabetes.",
-        "meta_keywords": "Diabetes conferences 2024,\r\nInternational diabetes congress,\r\nGlobal diabetes summit,\r\nDiabetes research conference,\r\nDiabetes and endocrinology conferences,\r\nDiabetes care and management symposium,\r\nType 1 diabetes conference,\r\nType 2 diabetes summit,\r\nPediatric diabetes conference 2024,\r\nDiabetes and obesity congress,\r\nDiabetes and metabolic disorders meetings,\r\nDiabetes prevention and treatment conferences,\r\nDiabetes and insulin therapy conference,\r\nEndocrinology and diabetes events,\r\nClinical diabetes research conferences"
+        "title": "Planning Committee | Nursing, Women’s Health, Midwifery, and Gynecology Conference 2025 | Switzerland | October 2025",
+        "content": "Meet the planning committee behind the Nursing, Women’s Health, Midwifery, and Gynecology Conference in Switzerland, October 02–03, 2025. Learn about the experts and professionals who are organizing this international healthcare event.",
+        "meta_keywords": "planning committee nursing conference, women’s health event organizers, midwifery conference planning team, gynecology conference 2025 committee, healthcare event organizers, Switzerland nursing conference team, conference planning committee members"
       }
     ],
     "organizing_committee": [
       {
-        "title": "Organizing Committee | Diabetes",
-        "content": "Be a part of uniquely enriching experience at our Diabetes Conference! Engage with pioneering healthcare strategies, connect with top professionals, and elevate your expertise through dynamic workshops and discussions. Secure your place today for unrivaled insights into the future of Diabetes.",
-        "meta_keywords": "Diabetes conferences 2024,\r\nInternational diabetes congress,\r\nGlobal diabetes summit,\r\nDiabetes research conference,\r\nDiabetes and endocrinology conferences,\r\nDiabetes care and management symposium,\r\nType 1 diabetes conference,\r\nType 2 diabetes summit,\r\nPediatric diabetes conference 2024,\r\nDiabetes and obesity congress,\r\nDiabetes and metabolic disorders meetings,\r\nDiabetes prevention and treatment conferences,\r\nDiabetes and insulin therapy conference,\r\nEndocrinology and diabetes events,\r\nClinical diabetes research conferences"
+        "title": "Organizing Committee |Nursing Conferences | Nursing Global Conference 2025 | Nursing Conferences 2025 | Nursing Conferences USA | Nursing Conferences Spain",
+        "content": "Be a part of uniquely enriching experience at our Nursing Global Conference (NGC-2025)! Engage with pioneering healthcare strategies, connect with top nursing professionals, and elevate your expertise through dynamic workshops and discussions. Secure your place today for unrivalled insights into the future of nursing",
+        "meta_keywords": "nursing conference speakers, women’s health event speakers, midwifery conference speakers, gynecology conference 2025 experts, healthcare conference speakers, international medical speakers, October 2–3 2025 speakers, nursing and gynecology keynote speakers"
       }
     ],
     "speakers": [
       {
-        "title": "Speakers | Diabetes",
-        "content": "Be a part of uniquely enriching experience at our Diabetes Conference! Engage with pioneering healthcare strategies, connect with top professionals, and elevate your expertise through dynamic workshops and discussions. Secure your place today for unrivaled insights into the future of Diabetes.",
-        "meta_keywords": "Diabetes conferences 2024,\r\nInternational diabetes congress,\r\nGlobal diabetes summit,\r\nDiabetes research conference,\r\nDiabetes and endocrinology conferences,\r\nDiabetes care and management symposium,\r\nType 1 diabetes conference,\r\nType 2 diabetes summit,\r\nPediatric diabetes conference 2024,\r\nDiabetes and obesity congress,\r\nDiabetes and metabolic disorders meetings,\r\nDiabetes prevention and treatment conferences,\r\nDiabetes and insulin therapy conference,\r\nEndocrinology and diabetes events,\r\nClinical diabetes research conferences"
+        "title": "Speakers | Nursing, Women’s Health, Midwifery, and Gynecology Conference 2025 | Switzerland | October 2025",
+        "content": "Meet the distinguished speakers at the Nursing, Women’s Health, Midwifery, and Gynecology Conference in Switzerland, October 2–3, 2025. Learn from global experts in nursing, women’s health, midwifery, and reproductive medicine.",
+        "meta_keywords": "nursing conference speakers, women’s health event speakers, midwifery conference speakers, gynecology conference 2025 experts, healthcare conference speakers, international medical speakers, October 2–3 2025 speakers, nursing and gynecology keynote speakers"
       }
     ],
     "down_brochure": [
       {
-        "title": "Download Brochure | Diabetes",
-        "content": "Be a part of uniquely enriching experience at our Diabetes Conference! Engage with pioneering healthcare strategies, connect with top professionals, and elevate your expertise through dynamic workshops and discussions. Secure your place today for unrivaled insights into the future of Diabetes.",
-        "meta_keywords": "Diabetes conferences 2024,\r\nInternational diabetes congress,\r\nGlobal diabetes summit,\r\nDiabetes research conference,\r\nDiabetes and endocrinology conferences,\r\nDiabetes care and management symposium,\r\nType 1 diabetes conference,\r\nType 2 diabetes summit,\r\nPediatric diabetes conference 2024,\r\nDiabetes and obesity congress,\r\nDiabetes and metabolic disorders meetings,\r\nDiabetes prevention and treatment conferences,\r\nDiabetes and insulin therapy conference,\r\nEndocrinology and diabetes events,\r\nClinical diabetes research conferences"
+        "title": "Download Brochure | Nursing Conferences | Nursing Global Conference 2025 | Nursing Conferences 2025 | Nursing Conferences USA | Nursing Conferences Spain",
+        "content": "Be a part of uniquely enriching experience at our Nursing Global Conference (NGC-2025)! Engage with pioneering healthcare strategies, connect with top nursing professionals, and elevate your expertise through dynamic workshops and discussions. Secure your place today for unrivalled insights into the future of nursing",
+        "meta_keywords": "Nursing Global Conference 2024,International Nursing Conference,Global Nursing Summit,Nursing Research and Education Conference,Advanced Nursing Practice Global Congress,Nursing Leadership Conference,Global Trends in Nursing,Nursing and Healthcare Congress,Global Nursing and Midwifery Summit,Nursing Conference keynote speakers,Global Nursing and Patient Care Conference,Nursing Innovations and Technology Conference,Global Nursing Workforce Summit,Nursing in Public Health Conference,Pediatric Nursing Global Conference,Nursing Clinical Practice Congress,Nursing Ethics and Leadership Summit,Nursing Education and Training Global Conference,Global Nursing Research Forum,Nursing and Healthcare Policy Summit"
       }
     ],
     "FAQ": [
       {
-        "title": "Diabetes Conference FAQs | Meetings | Events | UK | 2026",
-        "content": "scrutinized frequently asked questions about the 2026 Diabetes Conference in the UK. Learn about key meetings, events, and the latest innovations in diabetes research, treatment, and care",
-        "meta_keywords": " Diabetes Conference 2026, diabetes events UK, Diabetes FAQs, UK diabetes conferences, diabetes research meetings, diabetes care advancements, diabetes treatment guidelines, UK health conference 2026"
+        "title": "FAQs | Nursing, Women’s Health, Midwifery, and Gynecology Conference 2025 | Switzerland | October 2025",
+        "content": "Find answers to frequently asked questions about the Nursing, Women’s Health, Midwifery, and Gynecology Conference in Switzerland, October 2–3, 2025. Learn about registration, abstract submission, travel, accommodation, and more.",
+        "meta_keywords": "nursing conference FAQs, women’s health event questions, midwifery conference help, gynecology event information, Switzerland healthcare conference FAQ, October 2–3 2025 event support, international medical conference questions"
       }
     ],
     "submit_abstract": [
       {
-        "title": "Diabetes Conference Call for Abstracts | Meetings | Events | UK | 2026",
-        "content": "Submit your abstract for the Diabetes Conference 2026 in the UK. Join researchers, clinicians, and healthcare professionals to present your studies on diabetes management, treatment innovations, and prevention strategies at this premier global diabetes event.",
-        "meta_keywords": "diabetes conference 2026, call for abstracts, diabetes management, treatment innovations, diabetes prevention, submit abstract diabetes, UK conferences 2026, diabetes research, clinical diabetes, endocrinology, global diabetes meetings, healthcare professionals, diabetes care"
+        "title": "Submit Abstract | Nursing, Women’s Health, Midwifery, and Gynecology Conference 2025 | Switzerland |Conference 2025 | October 2025",
+        "content": "Submit your research abstract for the Nursing, Women’s Health, Midwifery, and Gynecology Conference in Switzerland, October 2–3, 2025. Share your work with global experts and contribute to the advancement of healthcare, women’s wellness, and clinical innovation.",
+        "meta_keywords": "submit abstract nursing conference, women’s health abstract submission, midwifery research abstracts, gynecology conference call for papers, healthcare conference Switzerland, October 2–3 2025 abstract guidelines, medical conference submissions"
       }
     ],
     "register": [
       {
-        "title": "Diabetes Conference Registration | Meetings | Events | UK | 2026",
-        "content": "Subscribe to the Diabetes Global Summit 2026 in the UK, an event for endocrinologists, researchers, and healthcare professionals to connect and explore innovations in diabetes care and management. Don’t miss this important opportunity.",
-        "meta_keywords": "Diabetes Global Summit 2026, diabetes care, diabetes research, endocrinology conference, diabetes prevention, treatment strategies, healthcare professionals, diabetes summit, UK medical conference, diabetes innovations, UK 2026"
+        "title": "Register Now | Nursing, Women’s Health, Midwifery, and Gynecology Conference 2025 | Switzerland | October 2025",
+        "content": "Register for the Nursing, Women’s Health, Midwifery, and Gynecology Conference in Switzerland, October 2–3, 2025. Secure your spot at this international healthcare event and join leading professionals in women’s health, nursing, and reproductive medicine.",
+        "meta_keywords": "register nursing conference, women’s health event registration, midwifery conference sign up, gynecology conference 2025 registration, healthcare conference registration, Switzerland nursing event registration, October 2–3 2025 conference sign up"
       }
     ],
     "guidlines": [
       {
-        "title": "Diabetes Conference Guidelines | Meetings | Events | UK | 2026",
-        "content": "Discover essential guidelines for the Diabetes Conference 2026 in the UK. Learn about event protocols, registration details, and speaker requirements for successful participation in the upcoming diabetes-focused conference.",
-        "meta_keywords": "Diabetes Conference 2026, UK Diabetes conference guidelines, event guidelines for diabetes meetings, diabetes events UK, 2026 diabetes conference, conference participation guidelines, diabetes conference registration, diabetes research events UK, speaker requirements diabetes conference, medical conference UK 2026"
+        "title": "Conference Guidelines | Nursing, Women’s Health, Midwifery, and Gynecology 2025 | Switzerland | October 2025",
+        "content": "Review the official guidelines for the Nursing, Women’s Health, Midwifery, and Gynecology Conference in Switzerland, October 2–3, 2025. Find essential information on abstract submission, registration, presentation formats, and participation rules.",
+        "meta_keywords": "conference guidelines nursing, women’s health participation rules, midwifery abstract guidelines, gynecology paper submission instructions, Switzerland conference policies, October 2–3 2025 event guidelines, speaker and attendee rules"
       }
     ],
     "terms": [
@@ -101,6 +103,34 @@
         "title": "Terms of use",
         "content": "",
         "meta_keywords": ""
+      }
+    ],
+    "scientific_program": [
+      {
+        "title": "Scientific Program | Nursing, Women’s Health, Midwifery, and Gynecology Conference 2025 | Switzerland | October 2025",
+        "content": "Discover the scientific program for the Nursing, Women’s Health, Midwifery, and Gynecology Conference in Switzerland, October 2–3, 2025. Explore expert presentations, research findings, and educational sessions across key areas of healthcare and women’s wellness.",
+        "meta_keywords": "scientific program nursing conference, women’s health program 2025, midwifery conference schedule, gynecology scientific agenda, Switzerland healthcare program, October 2–3 2025 conference sessions, nursing and gynecology presentations, research program women’s health"
+      }
+    ],
+    "venue": [
+      {
+        "title": "Venue Details | Nursing, Women’s Health, Midwifery, and Gynecology Conference 2025 | Switzerland | October 2025",
+        "content": "Find venue details for the Nursing, Women’s Health, Midwifery, and Gynecology Conference in Switzerland, October 2–3, 2025. Plan your trip and explore the conference location, nearby attractions, and travel information.",
+        "meta_keywords": "conference venue nursing, women’s health event location, midwifery conference Switzerland, gynecology conference 2025 venue, healthcare conference Switzerland, October 2–3 event venue details, medical conference location information"
+      }
+    ],
+    "register_details": [
+      {
+        "title": "Register Details | Nursing, Women’s Health, Midwifery, and Gynecology Conference 2025 | Switzerland | October 2025",
+        "content": "Register for the Nursing, Women’s Health, Midwifery, and Gynecology Conference in Switzerland, October 2–3, 2025. Secure your spot at this international healthcare event and join leading professionals in women’s health, nursing, and reproductive medicine.",
+        "meta_keywords": "register nursing conference, women’s health event registration, midwifery conference sign up, gynecology conference 2025 registration, healthcare conference registration, Switzerland nursing event registration, October 2–3 2025 conference sign up"
+      }
+    ],
+    "privacy_policy": [
+      {
+        "title": "Privacy Policy | Nursing, Women’s Health, Midwifery, and Gynecology Conference 2025 | Switzerland",
+        "content": "This Privacy Policy outlines how the Nursing, Women’s Health, Midwifery, and Gynecology Conference 2025, taking place in Switzerland on October 2–3, collects, uses, and protects your personal information. We are committed to safeguarding the privacy of all participants, including nurses, midwives, gynecologists, healthcare professionals, and researchers. \n\nWhen you register for the conference or visit our official website, we may collect personal data such as your name, contact details, professional affiliation, and payment information. This data is used solely for conference-related communication, registration management, and logistical purposes.\n\nWe do not sell or share your information with third parties unless it is essential for delivering conference services or required by law. All personal data is handled in compliance with applicable data protection laws and GDPR regulations.\n\nBy accessing our website or registering for the Nursing, Women’s Health, and Gynecology Conference 2025, you agree to this privacy policy. For any questions regarding your data or to request data removal, please contact our organizing team.",
+        "meta_keywords": "Privacy Policy, data protection, GDPR compliance, Nursing Conference 2025 privacy, Women’s Health Conference data usage, Gynecology and Midwifery event Switzerland, healthcare conference data policy, October 2025 medical conference privacy"
       }
     ]
   },
@@ -118,6 +148,10 @@
       "link": "/faqs"
     },
     {
+      "title": "Venue",
+      "link": "venue"
+    },
+    {
       "title": "Submit Abstract",
       "link": "/call-for-abstract-submission"
     },
@@ -129,15 +163,15 @@
   "social_links": {
     "facebook": {
       "link": "https://www.facebook.com/profile.php?id=61563649766977",
-      "title": "Diabetes Global Conference 2026 facebook"
+      "title": "Nursing, Womens Health and Gynecology Conference 2025 facebook"
     },
     "linkedin": {
       "link": "https://linkedin.com/company/stem-network-com",
-      "title": "Diabetes Global Conference 2026 linkedin"
+      "title": "Nursing, Womens Health and Gynecology Conference 2025 linkedin"
     },
     "instagram": {
       "link": "https://www.instagram.com/stemnetwork_com",
-      "title": "Diabetes Global Conference 2026 instagram"
+      "title": "Nursing, Womens Health and Gynecology Conference 2025 instagram"
     }
   }
 }

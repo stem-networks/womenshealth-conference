@@ -2,7 +2,7 @@
 
 "use client";
 
-// import Link from "next/link";
+import Link from "next/link";
 
 interface Session {
   text?: string;
@@ -11,7 +11,7 @@ interface Session {
 interface GeneralInfo {
   clogotext?: string;
   full_length_dates?: string;
-  venue_p2?: string;
+  venue_p1?: string;
   confkeyword?: string;
 }
 
@@ -56,7 +56,7 @@ const SessionsComponent = ({
               <span className="nur_wrap3">
                 {generalInfo?.full_length_dates || ""}
               </span>
-              <span className="nur_wrap4">{generalInfo?.venue_p2 || ""}</span>
+              <span className="nur_wrap4">{generalInfo?.venue_p1 || ""}</span>
             </div>
           </div>
 
@@ -86,7 +86,7 @@ const SessionsComponent = ({
               </div>
             </div>
 
-            {/* <div className="list-of-topics-navigation-block">
+            <div className="list-of-topics-navigation-block">
               <p>
                 Explore{" "}
                 <Link href="/list-of-topics" title="List Of Topics">
@@ -94,7 +94,7 @@ const SessionsComponent = ({
                 </Link>{" "}
                 Submit your abstract to present at the conference.
               </p>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>

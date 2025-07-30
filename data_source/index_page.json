@@ -2,147 +2,172 @@
     "oneliner": {
         "download_brochure": {
             "category": "download_brochure",
-            "content": "",
+            "content": "Join us for an unparalleled networking experience – register now to connect with industry professionals and leaders!",
             "headding": "Download Brochure"
         },
         "important_dates": {
             "category": "important_dates",
-            "content": "Stay ahead by marking your calendars with these crucial deadlines for the upcoming Diabetes Global Conference. Timely registration and submissions will ensure you make the most of this premier event.",
-            "headding": "Important Dates"
+            "content": "Stay ahead by marking your calendars with these crucial deadlines for the upcoming NWGC 2025. Timely registration and submissions will ensure you make the most of this premier event.",
+            "headding": "Important dates"
         },
         "Explore_Our_Comprehensive_Networking_Services": {
             "category": "Explore_Our_Comprehensive_Networking_Services",
-            "content": "Unlock new opportunities and build valuable connections with our comprehensive networking services, tailored to enhance your conference experience.",
-            "headding": "Unleash Your Growth: Benefits of Participating in Conferences"
+            "content": "Participating in conferences opens doors to invaluable networking opportunities, allowing you to connect with industry leaders and like-minded peers. Additionally, our events provide access to cutting-edge insights and workshops that can enhance your skills and inspire your creative journey.",
+            "headding": "Explore Our comprehensive Networking Services"
         },
         "Be_A_Volunteer": {
             "category": "Be_A_Volunteer",
-            "content": "Get ready to become a part of our event - Diabetes Global Conference 2026! Volunteer with us to help operate the event, and learn, and network with leaders of diabetes care and research. ",
+            "content": "Become one of the most valued volunteers at the Nursing, Womens Health and Gynecology Conference 2025, while creating memorable experiences. Network, discuss and meet the key professionals in the health care industry while bringing great adding value to your life with the global nursing community. Seize this volunteering opportunity now.",
             "headding": "Be A Volunteer"
         },
         "Submit_Your_Abstract": {
             "category": "Submit_Your_Abstract",
-            "content": "Submit your abstract to the Diabetes Global Conference 2026 and take your science forward on insulin therapy, prevention methods, and digital health. Collaborate with worldwide as they help shape the future of diabetes care.",
+            "content": "Be a voice of progress in nursing! Share your expertise and help shape the future of healthcare. Submit your abstract and inspire change.",
             "headding": "Submit Your Abstract"
         },
         "sessions": {
             "category": "sessions",
-            "content": "The Diabetes Global Conference will bring together some of the brightest minds around the world for the best innovative treatments and precision medicine in diabetes care, and digital health. Experts will deliver actionable insights to advance better patient outcomes while dealing with the session global challenges in preventing and managing diabetes.",
+            "content": "Experience a tailored journey of discovery at our sessions at global nursing conference, where knowledge meets innovation forge meaningful connections that drive progress in nursing industry.",
             "headding": "Sessions"
         },
         "footer_content": {
             "category": "footer_content",
-            "content": "Welcome to our Diabetes Global Conference 2026, a venue where dedicated professionals will get together to share cutting-edge innovations and best practices in diabetes care and management.",
-            "headding": "Footer Content"
+            "content": "Connect with us at our Nursing, Womens Health and Gynecology Conference for insightful sessions, interactive workshops, and networking opportunities that empower you to make a meaningful impact in the field of nursing.",
+            "headding": "Footer content"
         },
         "offers_content": {
             "1": {
                 "category": "offers_content",
-                "content": "<div class=\"col-md-12 wow fadeInUp animated\" data-wow-delay=\"200ms\" data-wow-duration=\"1000ms\" style=\"visibility: visible; animation-duration: 1000ms; animation-delay: 200ms; animation-name: fadeInUp;\">\r\n          <h2>Book by Sep. 2024 &amp; Save $1651!</h2>\r\n          <h3>BRING A COLLEAGUE SAVE $200 TOTAL, BRING MORE, SAVE MORE</h3>\r\n          <a href=\"/register\">Register now</a>\r\n        </div>",
+                "content": "<div class=\"col-md-12 wow fadeInUp animated\" data-wow-delay=\"200ms\" data-wow-duration=\"1000ms\" style=\"visibility: visible; animation-duration: 1000ms; animation-delay: 200ms; animation-name: fadeInUp;\">\n          <h2>Book by Nov 2024 &amp; Save huge!</h2>\n          <h3>BRING A COLLEAGUE SAVE $200 TOTAL, BRING MORE, SAVE MORE</h3>\n          <a href=\"/register\" title=\"Register\">Register now</a>\n        </div>",
                 "headding": "Offers Content"
             },
             "2": {
                 "category": "offers_content",
-                "content": "<div class=\"col-md-12 wow fadeInUp animated\" data-wow-delay=\"200ms\" data-wow-duration=\"1000ms\" style=\"visibility: visible; animation-duration: 1000ms; animation-delay: 200ms; animation-name: fadeInUp;\">\r\n          <h2>Collaborate with colleagues and enjoy cost savings</h2>\r\n          <h3>Seize the opportunity to attend as a group and save</h3>\r\n          <a href=\"/register\">Register now</a>\r\n        </div>",
+                "content": "<div class=\"col-md-12 wow fadeInUp animated\" data-wow-delay=\"200ms\" data-wow-duration=\"1000ms\" style=\"visibility: visible; animation-duration: 1000ms; animation-delay: 200ms; animation-name: fadeInUp;\">\n          <h2>Collaborate with colleagues and enjoy cost savings</h2>\n          <h3>Seize the opportunity to attend as a group and save</h3>\n          <a href=\"/register\" title=\"Register\">Register now</a>\n        </div>",
                 "headding": "Offers Content"
             },
             "3": {
                 "category": "offers_content",
-                "content": "<div class=\"col-md-12 wow fadeInUp animated\" data-wow-delay=\"200ms\" data-wow-duration=\"1000ms\" style=\"visibility: visible; animation-duration: 1000ms; animation-delay: 200ms; animation-name: fadeInUp;\">\r\n <h2>The More, the Merrier! Register as a group of 3 or more</h2>\r\n <h3>and unlock a 20% discount for everyone!</h3>\r\n <a href=\"/register\">Register now</a>\r\n </div>",
+                "content": "<div class=\"col-md-12 wow fadeInUp animated\" data-wow-delay=\"200ms\" data-wow-duration=\"1000ms\" style=\"visibility: visible; animation-duration: 1000ms; animation-delay: 200ms; animation-name: fadeInUp;\">\n          <h2>The More, the Merrier! Register as a group of 3 or more</h2>\n          <h3>and unlock a 20% discount for everyone!</h3>\n          <a href=\"/register\" title=\"Register\">Register now</a>\n        </div>",
                 "headding": "Offers Content"
+            },
+            "4": {
+                "category": "offers_content",
+                "content": "<div class=\"col-md-12 wow fadeInUp animated\" data-wow-delay=\"200ms\" data-wow-duration=\"1000ms\" style=\"visibility: visible; animation-duration: 1000ms; animation-delay: 200ms; animation-name: fadeInUp;\">\r\n          <h2>Book by Nov 2024 &amp; Save huge!</h2>\r\n          <h3>BRING A COLLEAGUE SAVE $200 TOTAL, BRING MORE, SAVE MORE</h3>\r\n          <a href=\"/register\" title=\"Register\">Register now</a>\r\n        </div>",
+                "headding": "Offers content"
+            },
+            "5": {
+                "category": "offers_content",
+                "content": "<div class=\"col-md-12 wow fadeInUp animated\" data-wow-delay=\"200ms\" data-wow-duration=\"1000ms\" style=\"visibility: visible; animation-duration: 1000ms; animation-delay: 200ms; animation-name: fadeInUp;\">\r\n          <h2>Book by Nov 2024 &amp; Save huge!</h2>\r\n          <h3>BRING A COLLEAGUE SAVE $200 TOTAL, BRING MORE, SAVE MORE</h3>\r\n          <a href=\"/register\" title=\"Register\">Register now</a>\r\n        </div>",
+                "headding": "Offers content"
+            },
+            "6": {
+                "category": "offers_content",
+                "content": "<div class=\"col-md-12 wow fadeInUp animated\" data-wow-delay=\"200ms\" data-wow-duration=\"1000ms\" style=\"visibility: visible; animation-duration: 1000ms; animation-delay: 200ms; animation-name: fadeInUp;\">\r\n          <h2>Book by Nov 2024 &amp; Save huge!</h2>\r\n          <h3>BRING A COLLEAGUE SAVE $200 TOTAL, BRING MORE, SAVE MORE</h3>\r\n          <a href=\"/register\" title=\"Register\">Register now</a>\r\n        </div>",
+                "headding": "Offers content"
             }
         }
     },
     "banner_conent": {
-        "17": {
-            "banner_conent_id": "17",
+        "3": {
+            "banner_conent_id": "3",
             "image": "images/banner.jpg",
-            "headding": "Global Perspectives in Diabetes and Endocrinology",
-            "tag_line": "Diabetes Global Conference - May 07-08, 2026 in London, UK",
-            "content": "The Diabetes Global Conference will bring the latest diabetes research, care, and technology. Download the brochure to learn the most important sessions, expert speakers, and networking opportunities that will shape the future of diabetes care.",
+            "headding": "Empowering Nurses: Innovations, Leadership, and Future Challenges in Healthcare",
+            "tag_line": "NWGC-October 02-03, 2025 in Geneva, Switzerland",
+            "content": "Engage with the experts of the profession at the Nursing, Womens Health and Gynecology Conference! Engage with powerful keynote sessions, expert panels, and innovative ideas in healthcare. Download our brochure here to learn more about this event this October and book your spot now!",
             "page": "index",
             "status": "1",
-            "cid": "14"
+            "cid": "10029"
+        },
+        "24": {
+            "banner_conent_id": "24",
+            "image": "images/banner.jpg",
+            "headding": "Welcome to Conferences",
+            "tag_line": "Join us for an unparalleled networking experience – register now to connect with industry professionals\r\n             and leaders!",
+            "content": "Be a part of a uniquely enriching experience at our Conferences! Engage with pioneering \r\n            strategies, connect with top professionals, and elevate your expertise through dynamic workshops and discussions.\r\n            Secure your  place today for unrivaled insights into the future.",
+            "page": "home",
+            "status": "1",
+            "cid": "10029"
         }
     },
     "sessions": [
         {
-            "text": "1. Diabetes Mellitus and Research",
-            "link": "diabetes-mellitus-and-research",
-            "session_short_name": "Diabetes Mellitus and Research"
+            "text": "1. Advanced Nursing Practice and Clinical Innovations",
+            "link": "advanced-nursing-practice-and-clinical-innovations",
+            "session_short_name": "Advanced Nursing Practice and Clinical Innovations"
         },
         {
-            "text": "2.\tDiabetic Retinopathy",
-            "link": "diabetic-retinopathy",
-            "session_short_name": "Diabetic Retinopathy"
+            "text": "2.\tNursing Education and Workforce Development",
+            "link": "nursing-education-and-workforce-development",
+            "session_short_name": "Nursing Education and Workforce Development"
         },
         {
-            "text": "3.\tClinical Endocrinology",
-            "link": "clinical-endocrinology",
-            "session_short_name": "Clinical Endocrinology"
+            "text": "3.\tPatient Safety and Quality Care",
+            "link": "patient-safety-and-quality-care",
+            "session_short_name": "Patient Safety and Quality Care"
         },
         {
-            "text": "4.\tDiabetic foot",
-            "link": "diabetic-foot",
-            "session_short_name": "Diabetic foot"
+            "text": "4.\tMental Health Nursing",
+            "link": "mental-health-nursing",
+            "session_short_name": "Mental Health Nursing"
         },
         {
-            "text": "5.\tEndocrine Gland and Disorders",
-            "link": "endocrine-gland-and-disorders",
-            "session_short_name": "Endocrine Gland and Disorders"
+            "text": "5.\tCommunity and Public Health Nursing",
+            "link": "community-and-public-health-nursing",
+            "session_short_name": "Community and Public Health Nursing"
         },
         {
-            "text": "6.\tDiabetic clinical care and Prevention",
-            "link": "diabetic-clinical-care-and-prevention",
-            "session_short_name": "Diabetic clinical care and Prevention"
+            "text": "6.\tPediatric and Geriatric Nursing",
+            "link": "pediatric-and-geriatric-nursing",
+            "session_short_name": "Pediatric and Geriatric Nursing"
         },
         {
-            "text": "7. Obesity and Metabolism for Diabetes",
-            "link": "obesity-and-metabolism-for-diabetes",
-            "session_short_name": "Obesity and Metabolism for Diabetes"
+            "text": "7. Nursing Informatics and Technology  Integration",
+            "link": "nursing-informatics-and-technology-integration",
+            "session_short_name": "Nursing Informatics and Technology  Integration"
         },
         {
-            "text": "8.Diabetic Retinopathy",
-            "link": "diabetic-retinopathy",
-            "session_short_name": "Diabetic Retinopathy"
+            "text": "8.Global Health and Nursing",
+            "link": "global-health-and-nursing",
+            "session_short_name": "Global Health and Nursing"
         },
         {
-            "text": "9.\tCardiovascular risk of diabetes",
-            "link": "cardiovascular-risk-of-diabetes",
-            "session_short_name": "Cardiovascular risk of diabetes"
+            "text": "9.\tNursing leadership and Management",
+            "link": "nursing-leadership-and-management",
+            "session_short_name": "Nursing leadership and Management"
         },
         {
-            "text": "10. Precision Medicine in Diabetes Care",
-            "link": "precision-medicine-in-diabetes-care",
-            "session_short_name": "Precision Medicine in Diabetes Care"
+            "text": "10. Leading diverse nursing force",
+            "link": "leading-diverse-nursing-force",
+            "session_short_name": "Leading diverse nursing force"
         }
     ],
     "important_dates": [
         {
-            "text": "Abstract Submission Deadline",
-            "date": "14<sub>th</sub> <span>March <br> 2025</span>"
+            "text": "First Round of Abstract Submission Deadline",
+            "date": "29<sub>th</sub> <span>August <br> 2025</span>"
         },
         {
-            "text": "Discounted Registration Fee",
-            "date": "30<sub>th</sub> <span>April <br> 2025</span>"
+            "text": "Early Bird Registration Deadline",
+            "date": "29<sub>th</sub> <span>August <br> 2025</span>"
         }
     ],
     "venue_images": {
-        "29": {
-            "image": "images/g1.webp",
-            "alt_text": "The Tate Modern"
-        },
-        "30": {
+        "2": {
             "image": "images/g2.webp",
-            "alt_text": "Buckingham-Palace"
+            "alt_text": "The land of cheese & chocolates"
         },
-        "31": {
-            "image": "images/g3.webp",
-            "alt_text": "The West End"
-        },
-        "32": {
+        "4": {
             "image": "images/g4.webp",
-            "alt_text": "Hyde Park"
+            "alt_text": "Lake Lucerne Switzerland"
+        },
+        "3": {
+            "image": "images/g3.webp",
+            "alt_text": "Trave live"
+        },
+        "1": {
+            "image": "images/g1.webp",
+            "alt_text": "Zermatt"
         }
     }
 }
