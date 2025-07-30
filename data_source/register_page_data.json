@@ -93,14 +93,14 @@
         },
         "Presenter (Virtual)": {
             "Standard Registration Fee": "$299",
-            "total": "149",
-            "min": "50",
+            "total": "299",
+            "min": "-",
             "conference_dt": "2025-09-21"
         },
         "Listener (Virtual)": {
-            "Standard Registration Fee": "$359",
-            "total": "179",
-            "min": "50",
+            "Standard Registration Fee": "$399",
+            "total": "399",
+            "min": "-",
             "conference_dt": "2025-09-21"
         },
         "Student/Young Researcher": {
