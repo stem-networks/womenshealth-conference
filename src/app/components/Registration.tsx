@@ -130,26 +130,6 @@ const Registration: React.FC<RegisterProps> = ({
   const checkInRef = useRef<HTMLSelectElement>(null);
   const checkOutRef = useRef<HTMLSelectElement>(null);
 
-  const logError = useCallback(
-    async (message: string) => {
-      try {
-        const payload = new FormData();
-        payload.append("form_based", "Registration Form");
-        payload.append("error_message", message);
-        payload.append("name", formData.name);
-        payload.append("email", formData.email);
-
-        await fetch("/api/send-to-telegram", {
-          method: "POST",
-          body: payload,
-        });
-      } catch (err) {
-        console.error("Error logging error:", err);
-      }
-    },
-    [formData.name, formData.email]
-  );
-
   const isValidEmail = (email: string): boolean => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
@@ -213,6 +193,14 @@ const Registration: React.FC<RegisterProps> = ({
       console.log("Form data sent successfully");
     } catch (err) {
       console.error("Error saving form data:", err);
+      await sendErrorToCMS({
+        name: String(data.name || "Unknown User"),
+        email: String(data.email || "Unknown Email"),
+        errorMessage:
+          "An unexpected error occurred while saving your registration: " +
+          (err instanceof Error ? err.message : "Unknown error"),
+        formBased: "CMS Registration Form Submission",
+      });
     }
   }, []);
 
@@ -851,12 +839,23 @@ const Registration: React.FC<RegisterProps> = ({
         router.push(`/register_details?web_token=${token}`);
       } else {
         console.error("Web token not found in response");
-        await logError("Web token is missing in the API response.");
+        await sendErrorToCMS({
+          name: formData?.name || "Unknown User",
+          email: formData?.email || "Unknown Email",
+          errorMessage: `Web token is missing in the API response.`,
+        });
+        // await logError("Web token is missing in the API response.");
       }
     } catch (error) {
       console.error("Error submitting registration:", error);
       toast.error("Something went wrong while submitting the form.");
-      await logError("Registration failed: something went wrong.");
+      await sendErrorToCMS({
+        name: formData?.name || "Unknown User",
+        email: formData?.email || "Unknown Email",
+        errorMessage: `Failed to submit registration form: ${(error as Error).message || "No error message"}`,
+      });
+
+      // await logError("Registration failed: something went wrong.");
     }
 
     setLoading(false);
@@ -1033,13 +1032,63 @@ const Registration: React.FC<RegisterProps> = ({
     return null;
   }
 
-  // const selectedAccommodationPrice =
-  //   formData.other_info["selected Accommodation Price"];
-  // const totalAccommodationPrice =
-  //   selectedAccommodationPrice * formData.other_info["Num of Nights"];
-  // const totalAccompanyingPersonsPrice =
-  //   formData.other_info["Price Per Accompanying Person"] *
-  //   formData.no_accompanying;
+  // const logError = useCallback(
+  //   async (message: string) => {
+  //     try {
+  //       const payload = new FormData();
+  //       payload.append("form_based", "Registration Form");
+  //       payload.append("error_message", message);
+  //       payload.append("name", formData.name);
+  //       payload.append("email", formData.email);
+
+  //       await fetch("/api/send-to-telegram", {
+  //         method: "POST",
+  //         body: payload,
+  //       });
+  //     } catch (err) {
+  //       console.error("Error logging error:", err);
+  //     }
+  //   },
+  //   [formData.name, formData.email]
+  // );
+
+
+
+  // sendError to Telegram 
+  async function sendErrorToCMS({
+    name,
+    email,
+    errorMessage,
+    formBased = "Registration Form",
+    siteName = `${general.clname || "N/A"} (${general.csname || "N/A"} - ${general.year || "N/A"})`,
+  }: {
+    name: string;
+    email: string;
+    errorMessage: string;
+    formBased?: string;
+    siteName?: string;
+  }) {
+    try {
+      const payload = new FormData();
+      payload.append("name", name);
+      payload.append("email", email);
+      payload.append("error_message", errorMessage);
+      payload.append("form_based", formBased);
+      payload.append("siteName", siteName); // added
+
+      const res = await fetch("/api/send-to-telegram", {
+        method: "POST",
+        body: payload,
+      });
+
+      if (!res.ok) {
+        console.error("❌ Failed to send error to Telegram API");
+      }
+    } catch (err) {
+      console.error("❌ Exception while sending error to Telegram:", err);
+    }
+  }
+
 
   return (
     <div>

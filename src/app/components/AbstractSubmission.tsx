@@ -363,18 +363,30 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
 
       else {
         toast.error(result.error || "Failed to submit the form");
-        await logError(
-          `Abstract Form Submission Error: ${result.error || "Unknown error"}`
-        );
+        await sendErrorToCMS({
+          name: formData?.name || "Unknown User",
+          email: formData?.email || "Unknown Email",
+          errorMessage: `Form submission failed with server response: ${result.error || "No specific error"
+            }`,
+        });
+        // await logError(
+        //   `Abstract Form Submission Error: ${result.error || "Unknown error"}`
+        // );
+
       }
     } catch (error) {
       console.error("Form submission failed:", error);
       toast.error("There was an error submitting the form. Please try again.");
-
-      await logError(
-        `Abstract Form Submission Error: ${error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
+      await sendErrorToCMS({
+        name: formData?.name || "Unknown User",
+        email: formData?.email || "Unknown Email",
+        errorMessage: `Failed to submit Abstract form: ${(error as Error)?.message || "No error message"
+          }`,
+      });
+      // await logError(
+      //   `Abstract Form Submission Error: ${error instanceof Error ? error.message : "Unknown error"
+      //   }`
+      // );
     } finally {
       setIsSubmitting(false);
     }
@@ -545,54 +557,6 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     document.body.removeChild(link);
   };
 
-  // const logError = async (message: string) => {
-  //   try {
-  //     const formData = new FormData();
-  //     formData.append("form_based", "Abstract Submission Form");
-  //     formData.append("cid", process.env.NEXT_PUBLIC_CID || "");
-  //     formData.append("error_message", message);
-
-  //     const name =
-  //       document.querySelector<HTMLInputElement>('input[name="name"]')?.value ||
-  //       "";
-  //     const email =
-  //       document.querySelector<HTMLInputElement>('input[name="email"]')
-  //         ?.value || "";
-  //     formData.append("name", name);
-  //     formData.append("email", email);
-
-  //     await fetch("/api/register", {
-  //       method: "POST",
-  //       body: formData,
-  //     });
-  //   } catch (err) {
-  //     console.error("Error Logging API Failure", err);
-  //   }
-  // };
-
-  const logError = async (message: string) => {
-    try {
-      const formErrorData = new FormData();
-      formErrorData.append("name", formData.name || "N/A");
-      formErrorData.append("email", formData.email || "N/A");
-      formErrorData.append("form_based", "Abstract Form");
-      formErrorData.append("error_message", message);
-
-      const response = await fetch("/api/send-to-telegram", {
-        method: "POST",
-        body: formErrorData,
-      });
-
-      const result = await response.json();
-
-      if (!result.success) {
-        console.error("Failed to log error to Telegram via telegram");
-      }
-    } catch (error) {
-      console.error("Failed to send error to /api/send-to-telegram:", error);
-    }
-  };
-
   // const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
 
   // const handleFieldUpdate = (fieldName: keyof FormAutoData, value: string) => {
@@ -758,16 +722,30 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
         formData.append("submit_status", submitStatus);
       }
 
-      const response = await axios.post("/api/send-to-cms", formData, {
+      const response = await axios.post("/api/send-to-cmss", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       // console.log("Response:", response.data);
       return response.data;
-    } catch (error) {
+    }
+    catch (error) {
       console.error("Error sending form data:", error);
+      await sendErrorToCMS({
+        name: String(updatedData.name || "Unknown User"),
+        email: String(updatedData.email || "Unknown Email"),
+        errorMessage:
+          "An unexpected error occurred while saving your Abstract: " +
+          (error instanceof Error
+            ? error.message
+            : typeof error === "string"
+              ? error
+              : JSON.stringify(error)),
+        formBased: "CMS Abstract Form Submission",
+      });
       return null;
     }
+
   };
 
   const isValidEmail = (email: string): boolean => {
@@ -814,6 +792,66 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     // The email is valid at this point, so we can send the data
     sendFullFormData(updatedData);
   };
+
+
+  // const logError = async (message: string) => {
+  //   try {
+  //     const formErrorData = new FormData();
+  //     formErrorData.append("name", formData.name || "N/A");
+  //     formErrorData.append("email", formData.email || "N/A");
+  //     formErrorData.append("form_based", "Abstract Form");
+  //     formErrorData.append("error_message", message);
+
+  //     const response = await fetch("/api/send-to-telegram", {
+  //       method: "POST",
+  //       body: formErrorData,
+  //     });
+
+  //     const result = await response.json();
+
+  //     if (!result.success) {
+  //       console.error("Failed to log error to Telegram via telegram");
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to send error to /api/send-to-telegram:", error);
+  //   }
+  // };
+
+
+  // sendError to Telegram 
+  async function sendErrorToCMS({
+    name,
+    email,
+    errorMessage,
+    formBased = "Abstract Form",
+    siteName = `${general.clname || "N/A"} (${general.csname || "N/A"} - ${general.year || "N/A"})`,
+  }: {
+    name: string;
+    email: string;
+    errorMessage: string;
+    formBased?: string;
+    siteName?: string;
+  }) {
+    try {
+      const payload = new FormData();
+      payload.append("name", name);
+      payload.append("email", email);
+      payload.append("error_message", errorMessage);
+      payload.append("form_based", formBased);
+      payload.append("siteName", siteName); // added
+
+      const res = await fetch("/api/send-to-telegram", {
+        method: "POST",
+        body: payload,
+      });
+
+      if (!res.ok) {
+        console.error("❌ Failed to send error to Telegram API");
+      }
+    } catch (err) {
+      console.error("❌ Exception while sending error to Telegram:", err);
+    }
+  }
 
   return (
     <div>

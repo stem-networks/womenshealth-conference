@@ -56,7 +56,7 @@ export async function generateMetadata(): Promise<Metadata> {
       },
     };
   } catch (error) {
-    console.error("Metadata generation error faq:", error);
+    console.error("Metadata generation error Register:", error);
     return {
       title: "Register",
       description: "Explore the Register of the conference.",

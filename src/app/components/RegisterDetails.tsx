@@ -48,7 +48,16 @@ interface ActualAmount {
   [key: string]: string | number;
 }
 
-const RegisterDetails = () => {
+interface GeneralInfo {
+  csname?: string;
+  year?: string;
+  clname?: string;
+}
+interface RegisterDetailsClientProps {
+  generalInfo: GeneralInfo; // Replace `any` with the correct type if available
+}
+
+const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [details, setDetails] = useState<RegistrationData | null>(null);
@@ -58,6 +67,8 @@ const RegisterDetails = () => {
   const [actualAmount, setActualAmount] = useState<ActualAmount | null>(null);
   const [localError, setLocalError] = useState("");
   const [checkEmail, setCheckEmail] = useState("");
+
+  // console.log('General info', generalInfo.clname, generalInfo.csname, generalInfo.year)
 
   const [showModal, setShowModal] = useState<boolean>(false);
   const [couponCodeToCheck, setCouponCodeToCheck] = useState("");
@@ -312,23 +323,23 @@ const RegisterDetails = () => {
 
           const newActualAmount = data.cust_amt
             ? {
-                "Discount Applied With": data.applied_with || "",
-                "Total Amount": payTotal || 0,
-                "Discount Amount": payTotal - (data.cust_amt || payTotal),
-                "Final Amount After Discount": data.cust_amt || 0,
-              }
+              "Discount Applied With": data.applied_with || "",
+              "Total Amount": payTotal || 0,
+              "Discount Amount": payTotal - (data.cust_amt || payTotal),
+              "Final Amount After Discount": data.cust_amt || 0,
+            }
             : {
-                "Discount Applied With": data.applied_with || "",
-                "Total Amount": payTotal || 0,
-                [`Registration Discount (${data?.reg_per || "0"}%) Applied:`]:
-                  (totalRegistrationPrice * (data?.reg_per || 0)) / 100 || 0,
-                [`Accommodation Discount (${data?.acc_per || "0"}%) Applied:`]:
-                  (totalAccommodationPrice * (data?.acc_per || 0)) / 100 || 0,
-                "Final Amount After Discount":
-                  payTotal -
-                    (totalRegistrationPrice * (data?.reg_per || 0)) / 100 -
-                    (totalAccommodationPrice * (data?.acc_per || 0)) / 100 || 0,
-              };
+              "Discount Applied With": data.applied_with || "",
+              "Total Amount": payTotal || 0,
+              [`Registration Discount (${data?.reg_per || "0"}%) Applied:`]:
+                (totalRegistrationPrice * (data?.reg_per || 0)) / 100 || 0,
+              [`Accommodation Discount (${data?.acc_per || "0"}%) Applied:`]:
+                (totalAccommodationPrice * (data?.acc_per || 0)) / 100 || 0,
+              "Final Amount After Discount":
+                payTotal -
+                (totalRegistrationPrice * (data?.reg_per || 0)) / 100 -
+                (totalAccommodationPrice * (data?.acc_per || 0)) / 100 || 0,
+            };
           setActualAmount(newActualAmount);
           actualAmountRef.current = newActualAmount;
         } else {
@@ -445,6 +456,7 @@ const RegisterDetails = () => {
     } catch (err) {
       setLocalError("Error applying coupon: " + (err as Error).message);
       console.error("Error applying coupon:", err);
+      
     }
   };
 
@@ -477,8 +489,8 @@ const RegisterDetails = () => {
         0,
         Math.round(
           (dataToShow?.total_price || 0) -
-            registrationDiscount -
-            accommodationDiscount
+          registrationDiscount -
+          accommodationDiscount
         )
       );
     }
@@ -493,16 +505,52 @@ const RegisterDetails = () => {
     totalAccommodationPrice,
   ]);
 
+  // async function sendErrorToCMS({
+  //   name,
+  //   email,
+  //   errorMessage,
+  //   formBased = "PayPal Payment",
+  // }: {
+  //   name: string;
+  //   email: string;
+  //   errorMessage: string;
+  //   formBased?: string;
+  // }) {
+  //   try {
+  //     const payload = new FormData();
+  //     payload.append("name", name);
+  //     payload.append("email", email);
+  //     payload.append("error_message", errorMessage);
+  //     payload.append("form_based", formBased);
+
+  //     const res = await fetch("/api/send-to-telegram", {
+  //       method: "POST",
+  //       body: payload,
+  //     });
+
+  //     if (!res.ok) {
+  //       console.error("Failed to send error to CMS");
+  //     }
+  //   } catch (err) {
+  //     console.error("Error sending to CMS:", err);
+  //   }
+  // }
+
+
+
+  // sendError to Telegram 
   async function sendErrorToCMS({
     name,
     email,
     errorMessage,
     formBased = "PayPal Payment",
+    siteName = `${generalInfo.clname || "N/A"} (${generalInfo.csname || "N/A"} - ${generalInfo.year || "N/A"})`,
   }: {
     name: string;
     email: string;
     errorMessage: string;
     formBased?: string;
+    siteName?: string;
   }) {
     try {
       const payload = new FormData();
@@ -510,6 +558,7 @@ const RegisterDetails = () => {
       payload.append("email", email);
       payload.append("error_message", errorMessage);
       payload.append("form_based", formBased);
+      payload.append("siteName", siteName); // added
 
       const res = await fetch("/api/send-to-telegram", {
         method: "POST",
@@ -517,12 +566,13 @@ const RegisterDetails = () => {
       });
 
       if (!res.ok) {
-        console.error("Failed to send error to CMS");
+        console.error("❌ Failed to send error to Telegram API");
       }
     } catch (err) {
-      console.error("Error sending to CMS:", err);
+      console.error("❌ Exception while sending error to Telegram:", err);
     }
   }
+
 
   return (
     <div>
@@ -675,16 +725,16 @@ const RegisterDetails = () => {
                     {(totalAccommodationPrice > 0 ||
                       ((dataToShow?.nights ?? 0) > 0 &&
                         dataToShow?.reg_type ===
-                          "customized-registration")) && (
-                      <tr>
-                        <td className="re_p3_main">
-                          Total Accommodation Price:
-                        </td>
-                        <td className="re_p3_main text-right fw-600">
-                          ${Math.round(totalAccommodationPrice)}
-                        </td>
-                      </tr>
-                    )}
+                        "customized-registration")) && (
+                        <tr>
+                          <td className="re_p3_main">
+                            Total Accommodation Price:
+                          </td>
+                          <td className="re_p3_main text-right fw-600">
+                            ${Math.round(totalAccommodationPrice)}
+                          </td>
+                        </tr>
+                      )}
 
                     {(dataToShow?.accompanying_price ?? 0) > 0 && (
                       <tr>
@@ -692,9 +742,9 @@ const RegisterDetails = () => {
                           No of Accompanying Persons ($
                           {(dataToShow?.accompanying ?? 0) > 0
                             ? `${Math.round(
-                                (dataToShow?.accompanying_price ?? 0) /
-                                  (dataToShow?.accompanying ?? 1)
-                              )}`
+                              (dataToShow?.accompanying_price ?? 0) /
+                              (dataToShow?.accompanying ?? 1)
+                            )}`
                             : "N/A"}{" "}
                           each Person):
                         </td>
@@ -759,7 +809,7 @@ const RegisterDetails = () => {
                             {Math.round(
                               (totalRegistrationPrice *
                                 discountDetails.reg_per) /
-                                100
+                              100
                             )}
                           </td>
                         </tr>
@@ -778,7 +828,7 @@ const RegisterDetails = () => {
                             {Math.round(
                               (totalAccommodationPrice *
                                 (discountDetails.acc_per || 0)) /
-                                100
+                              100
                             )}
                           </td>
                         </tr>
@@ -786,15 +836,15 @@ const RegisterDetails = () => {
 
                     {((discountDetails?.reg_per || 0) > 0 ||
                       (discountDetails?.acc_per || 0) > 0) && (
-                      <tr>
-                        <td className="re_p3_main">
-                          Final Amount After Discount:
-                        </td>
-                        <td className="re_p3_main text-right fw-600 re_p3_main_right">
-                          ${adjustedPrice}
-                        </td>
-                      </tr>
-                    )}
+                        <tr>
+                          <td className="re_p3_main">
+                            Final Amount After Discount:
+                          </td>
+                          <td className="re_p3_main text-right fw-600 re_p3_main_right">
+                            ${adjustedPrice}
+                          </td>
+                        </tr>
+                      )}
 
                     {(discountDetails?.cust_amt || 0) > 0 && (
                       <tr>
@@ -877,13 +927,12 @@ const RegisterDetails = () => {
                         await sendErrorToCMS({
                           name: dataToShow?.name || "Unknown User",
                           email: dataToShow?.email || "Unknown Email",
-                          errorMessage:
-                            (error as Error).message ||
-                            "Unknown error in createOrder",
+                          errorMessage: `Something went wrong while creating the PayPal order: ${(error as Error).message || "Unknown error in createOrder"}`,
                         });
                         setIsPending(false);
                       }
                     }}
+
                     onApprove={async (data) => {
                       console.log("🟣 [PayPal] onApprove Triggered");
                       console.log("🧾 Approval Data:", data);
@@ -953,9 +1002,7 @@ const RegisterDetails = () => {
                         await sendErrorToCMS({
                           name: dataToShow?.name || "Unknown User",
                           email: dataToShow?.email || "Unknown Email",
-                          errorMessage:
-                            (error as Error).message ||
-                            "Unknown error in onApprove",
+                          errorMessage: `Something went wrong while approving the PayPal transaction (capture/save step): ${(error as Error).message || "Unknown error in onApprove"}`,
                         });
                         router.push(
                           `/register_details?status=failure&web_token=${dataToShow?.web_token}`
@@ -964,14 +1011,14 @@ const RegisterDetails = () => {
                         setIsPending(false);
                       }
                     }}
+
                     onCancel={async (data) => {
                       console.warn("🟠 [PayPal] onCancel Triggered");
                       console.log("❗ Cancel Payload:", data);
 
                       // Construct a readable cancel message
-                      const cancelMessage = `User canceled the PayPal payment. Order ID: ${
-                        data?.orderID || "N/A"
-                      }`;
+                      const cancelMessage = `User canceled the PayPal payment. Order ID: ${data?.orderID || "N/A"
+                        }`;
 
                       await sendErrorToCMS({
                         name: dataToShow?.name || "Unknown User",
@@ -981,14 +1028,14 @@ const RegisterDetails = () => {
 
                       setShowCancelModal(true);
                     }}
+
                     onError={async (err) => {
                       console.error("🔴 [PayPal] onError Triggered");
                       console.error("💥 Error Payload:", err);
                       await sendErrorToCMS({
                         name: dataToShow?.name || "Unknown User",
                         email: dataToShow?.email || "Unknown Email",
-                        errorMessage:
-                          JSON.stringify(err) || "Unknown PayPal onError",
+                        errorMessage: `An unexpected error occurred during the PayPal flow: ${JSON.stringify(err) || "No error in PayPal error"}`,
                       });
                       router.push(
                         `/register_details?status=failure&web_token=${dataToShow?.web_token}`
