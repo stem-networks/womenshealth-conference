@@ -155,11 +155,11 @@ export default async function RootLayout({
       name: general?.venue_p1,
       address: {
         "@type": "PostalAddress",
-        streetAddress: `Location: ${general?.venue_p1 || ""}.`,
+        streetAddress: `Location: ${general?.location_name || ''}, ${general?.loc_address || ''}, ${general?.v2}, ${general?.v1}.`,
         addressLocality: general?.v1,
-        addressRegion: general?.v2,
+        addressRegion: general?.venue_p2,
         postalCode: ".",
-        addressCountry: general?.v2,
+        addressCountry: general?.venue_p2,
       },
     },
     offers: {
