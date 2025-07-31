@@ -21,6 +21,7 @@ import {
   emptyRegisterInfo,
 } from "@/lib/fallbacks";
 import MediaCollaborators from "./components/MediaCollaborators";
+import WhatsAppWidget from "./components/WhatsAppWidget";
 
 async function safeFetch<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
   try {
@@ -211,6 +212,7 @@ export default async function RootLayout({
         <MediaCollaborators />
         <PartneredContent />
         <Footer indexPageData={indexPageData} generalData={generaldata} />
+        <WhatsAppWidget />
       </body>
     </html>
   );

@@ -10123,6 +10123,27 @@ input[text]:focus {
 }
 
 /* Whatsapp Styles  */
+.whatsapp-box {
+	position: fixed;
+	bottom: 20px;
+	left: 30px;
+	width: 60px;
+	z-index: 1000;
+	border-radius: 50%;
+	overflow: hidden;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.16);
+}
+
+.whatsapp-box img {
+	width: 100%;
+	height: auto;
+}
+
+.whatsapp {
+	display: block;
+	background: #11b925;
+}
+
 @media only screen and (min-width: 320px) and (max-width: 575px) {
 	.whatsapp-box {
 		width: 50px;
