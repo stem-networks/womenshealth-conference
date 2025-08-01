@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     const paymentCheckData = {
       module_name: "payment_check",
       keys: { data: [{ web_token }] },
-      cid: process.env.CID, // ✅ Secure, not exposed to client
+      cid: process.env.CID, // Secure, not exposed to client
     };
 
     const apiRes = await axios.post(

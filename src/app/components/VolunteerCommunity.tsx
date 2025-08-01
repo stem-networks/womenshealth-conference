@@ -89,7 +89,6 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
     email: "",
     category: "volunteer",
   });
-  // console.log("Errror", error);
 
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
