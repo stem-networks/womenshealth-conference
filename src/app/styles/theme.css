@@ -41,8 +41,9 @@ div.error {
 	margin-bottom: -20px;
 }
 
-input:focus {
-	border: 1px solid var(--primary-color);
+input:focus,
+textarea:focus {
+	border: 1px solid var(--primary-color) !important;
 }
 
 select:focus {
