@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { OnelinerData, ApiResponse, IndexPageData } from "@/types";
-// import { useAppData } from "../../context/AppDataContext";
 import { toast } from "react-toastify";
 
 interface FooterProps {
@@ -148,28 +147,10 @@ const Footer: React.FC<FooterProps> = ({ generalData, indexPageData }) => {
   };
 
   // Tawk Script 
-  // useEffect(() => {
-  //   // Ensure script runs only in the browser
-  //   if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_TAWK_TO_SRC) {
-  //     window.Tawk_API = window.Tawk_API || {};
-  //     window.Tawk_LoadStart = new Date();
-
-  //     const script = document.createElement('script');
-  //     script.src = process.env.NEXT_PUBLIC_TAWK_TO_SRC;
-  //     script.async = true;
-  //     script.charset = 'UTF-8';
-  //     script.setAttribute('crossorigin', '*');
-
-  //     const firstScript = document.getElementsByTagName('script')[0];
-  //     if (firstScript?.parentNode) {
-  //       firstScript.parentNode.insertBefore(script, firstScript);
-  //     }
-  //   }
-  // }, []);
-
   useEffect(() => {
-    // Only run in the browser and if Tawk script URL is available
     if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_TAWK_TO_SRC) {
+      if (document.getElementById('tawk-script')) return;
+
       window.Tawk_API = window.Tawk_API || {};
       window.Tawk_LoadStart = new Date();
 
@@ -177,12 +158,10 @@ const Footer: React.FC<FooterProps> = ({ generalData, indexPageData }) => {
       script.src = process.env.NEXT_PUBLIC_TAWK_TO_SRC;
       script.async = true;
       script.charset = 'UTF-8';
+      script.id = 'tawk-script';
       script.setAttribute('crossorigin', '*');
 
-      const firstScript = document.getElementsByTagName('script')[0];
-      if (firstScript?.parentNode) {
-        firstScript.parentNode.insertBefore(script, firstScript);
-      }
+      document.head.appendChild(script);
     }
   }, []);
 
@@ -190,14 +169,16 @@ const Footer: React.FC<FooterProps> = ({ generalData, indexPageData }) => {
     <div>
       <div className="footer_wrap">
         <div className="footer_add_st1">
-          <Image
-            src="/images/images/logo-hd-1.svg"
-            alt={general ? general.clname : ""}
-            title={general ? general.clname : ""}
-            loading="lazy"
-            width={200}
-            height={80}
-          />
+          <Link href="/" title={general?.clname || ""}>
+            <Image
+              src="/images/images/logo-hd-1.svg"
+              alt={general ? general.clname : ""}
+              title={general ? general.clname : ""}
+              loading="lazy"
+              width={200}
+              height={80}
+            />
+          </Link>
           <hr />
           <p>{footerContent ? footerContent : ""}</p>
         </div>

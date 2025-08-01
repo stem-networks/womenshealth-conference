@@ -155,7 +155,6 @@ const Registration: React.FC<RegisterProps> = ({
   //       headers: { "Content-Type": "multipart/form-data" },
   //     });
 
-  //     console.log("Form data sent successfully");
   //   } catch (err) {
   //     console.error("Error saving form data:", err);
   //   }
@@ -190,7 +189,7 @@ const Registration: React.FC<RegisterProps> = ({
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      console.log("Form data sent successfully");
+      // console.log("Form data sent successfully");
     } catch (err) {
       console.error("Error saving form data:", err);
       await sendErrorToCMS({

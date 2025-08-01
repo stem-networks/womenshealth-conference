@@ -18,8 +18,6 @@ const Faqs: React.FC<Props> = ({  faqsContent }) => {
     setActiveIndex(index === activeIndex ? null : index);
   };
 
-  // console.log("faq data in comp",faqsContent);
-
   return (
     <div>
       <div className="brand_wrap">

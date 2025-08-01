@@ -63,12 +63,11 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-// ✅ SSR Page Component
+// SSR Page Component
 const FaqsPage = async () => {
   const [commonContent] = await Promise.all([fetchCommonData()]);
 
   const faqsContent = commonContent?.data?.faq || [];
-  // console.log("faq 1111", faqsContent);
 
   return (
     <Faqs

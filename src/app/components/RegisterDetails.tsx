@@ -68,8 +68,6 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
   const [localError, setLocalError] = useState("");
   const [checkEmail, setCheckEmail] = useState("");
 
-  // console.log('General info', generalInfo.clname, generalInfo.csname, generalInfo.year)
-
   const [showModal, setShowModal] = useState<boolean>(false);
   const [couponCodeToCheck, setCouponCodeToCheck] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -85,7 +83,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
   // const [isClientReady, setIsClientReady] =  useState<string | null>(null);
 
   console.log(isPending);
-  console.log("adjust price", adjustedPrice);
+  // console.log("adjust price", adjustedPrice);
 
   useEffect(() => {
     fetch("/api/paypal-client-id")
@@ -294,7 +292,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
     if (!checkEmail) return;
     if (actualAmountRef.current !== null) return;
 
-    console.log("email coupon", checkEmail);
+    // console.log("email coupon", checkEmail);
     const fetchDiscountDetails = async () => {
       try {
         const payload = {
@@ -310,7 +308,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
 
         const data = await response.json();
 
-        console.log("data details", data);
+        // console.log("data details", data);
 
         if (data.success) {
           setDiscountDetails({
@@ -407,7 +405,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
 
       const data = await response.json();
 
-      console.log("data apply coupon", data);
+      // console.log("data apply coupon", data);
 
       if (data.success) {
         setDiscountDetails({
@@ -888,11 +886,11 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                   <PayPalButtons
                     style={{ layout: "vertical" }}
                     onClick={(data, actions) => {
-                      console.log("🔵 [PayPal] onClick Triggered");
+                      // console.log("🔵 [PayPal] onClick Triggered");
                       console.log("🟡 Click Payload:", { data, actions });
                     }}
                     createOrder={async () => {
-                      console.log("🟢 [PayPal] createOrder Triggered");
+                      // console.log("🟢 [PayPal] createOrder Triggered");
                       setIsPending(true);
 
                       try {
@@ -900,10 +898,10 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                           totalAmount: adjustedPriceRef.current,
                           description: `Registration for ${dataToShow?.name}`,
                         };
-                        console.log(
-                          "📦 Sending to /api/paypal/create-order:",
-                          payload
-                        );
+                        // console.log(
+                        //   "📦 Sending to /api/paypal/create-order:",
+                        //   payload
+                        // );
 
                         const res = await fetch("/api/paypal/create-order", {
                           method: "POST",
@@ -914,7 +912,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                         });
 
                         const data = await res.json();
-                        console.log("✅ create-order Response:", data);
+                        // console.log("✅ create-order Response:", data);
 
                         if (!res.ok)
                           throw new Error(
@@ -934,15 +932,15 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                     }}
 
                     onApprove={async (data) => {
-                      console.log("🟣 [PayPal] onApprove Triggered");
-                      console.log("🧾 Approval Data:", data);
+                      // console.log("🟣 [PayPal] onApprove Triggered");
+                      // console.log("🧾 Approval Data:", data);
 
                       try {
                         const capturePayload = { orderID: data.orderID };
-                        console.log(
-                          "📤 Sending to /api/paypal/capture-order:",
-                          capturePayload
-                        );
+                        // console.log(
+                        //   "📤 Sending to /api/paypal/capture-order:",
+                        //   capturePayload
+                        // );
 
                         const res = await fetch("/api/paypal/capture-order", {
                           method: "POST",
@@ -953,7 +951,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                         });
 
                         const captureData = await res.json();
-                        console.log("✅ capture-order Response:", captureData);
+                        // console.log("✅ capture-order Response:", captureData);
 
                         if (!res.ok) throw new Error("Failed to capture order");
 
@@ -967,10 +965,10 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                           discount_amt: 0,
                         };
 
-                        console.log(
-                          "📤 Sending to /api/paypal/save-payment:",
-                          savePaymentPayload
-                        );
+                        // console.log(
+                        //   "📤 Sending to /api/paypal/save-payment:",
+                        //   savePaymentPayload
+                        // );
 
                         const saveRes = await fetch(
                           "/api/paypal/save-payment",
@@ -1014,7 +1012,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
 
                     onCancel={async (data) => {
                       console.warn("🟠 [PayPal] onCancel Triggered");
-                      console.log("❗ Cancel Payload:", data);
+                      // console.log("❗ Cancel Payload:", data);
 
                       // Construct a readable cancel message
                       const cancelMessage = `User canceled the PayPal payment. Order ID: ${data?.orderID || "N/A"

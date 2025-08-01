@@ -88,7 +88,6 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
     // const [error, setError] = useState(''); // For general errors
 
     const modalRef = useRef<HTMLDivElement | null>(null);
-    // console.log('Errors', error) 
 
     const sliderSettings = {
         dots: true,

@@ -5,7 +5,7 @@ import axios, { AxiosError } from 'axios';
 export async function POST(req: NextRequest) {
   try {
     const { orderID } = await req.json();
-    console.log('📥 Received orderID:', orderID);
+    // console.log('📥 Received orderID:', orderID);
 
     const PAYPAL_API_BASE = process.env.PAYPAL_ENV === 'live'
       ? 'https://api-m.paypal.com'
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     );
 
     const accessToken = authResponse.data.access_token;
-    console.log('🔐 PayPal Access Token:', accessToken);
+    // console.log('🔐 PayPal Access Token:', accessToken);
 
     // Step 2: Capture order
     const captureResponse = await axios.post(
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
       }
     );
 
-    console.log('✅ PayPal capture response:', captureResponse.data);
+    // console.log('✅ PayPal capture response:', captureResponse.data);
     return NextResponse.json(captureResponse.data);
   } catch (error) {
     const err = error as AxiosError;

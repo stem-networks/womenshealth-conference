@@ -1,5 +1,3 @@
-// "use client"
-
 import React from "react";
 import Link from "next/link";
 // import { useAppData } from '../../context/AppDataContext';
@@ -19,9 +17,9 @@ export async function generateMetadata(): Promise<Metadata> {
   try {
     const generalData = await fetchGeneralData();
     const meta = generalData?.pages?.privacy_policy?.[0] || {
-        title: "Privacy Policy",
-        content: "Explore the Privacy Policy of the conference.",
-        meta_keywords: "",
+      title: "Privacy Policy",
+      content: "Explore the Privacy Policy of the conference.",
+      meta_keywords: "",
     };
 
     // Canonical
