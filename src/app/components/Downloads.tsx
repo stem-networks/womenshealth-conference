@@ -53,6 +53,7 @@ const Downloads: React.FC<DownloadsProps> = ({ generalDownloadsInfo }) => {
     const [showModal9, setShowModal9] = useState(false);
     const [showModal4, setShowModal4] = useState(false);
     const [showModal5, setShowModal5] = useState(false);
+    const [modalType, setModalType] = useState('');
     const modalRef = useRef<HTMLDivElement | null>(null);
 
     const nameRef = useRef<HTMLInputElement>(null);
@@ -82,9 +83,10 @@ const Downloads: React.FC<DownloadsProps> = ({ generalDownloadsInfo }) => {
     };
 
     // Modal for Download Brochure 
-    const openBrochureModal = () => {
+    const openBrochureModal = (type: 'brochure' | 'tentative') => {
+        setModalType(type); // 'brochure' or 'tentative'
         setShowModal9(true);
-    };
+    }
 
     // Function to close the modal
     const closeBrochureModal = () => {
@@ -137,6 +139,7 @@ const Downloads: React.FC<DownloadsProps> = ({ generalDownloadsInfo }) => {
                 country: btoa(brochureFormData.country.trim()),
                 message: btoa(brochureFormData.message.trim()),
                 interested_in: btoa(brochureFormData.interested_in.trim()),
+                modalType,
             };
 
             const response = await fetch('/api/brochure', {
@@ -197,33 +200,38 @@ const Downloads: React.FC<DownloadsProps> = ({ generalDownloadsInfo }) => {
 
     const handleDownload = async () => {
         const conferenceName = `${general.clogotext}`;
-        const brochureFile = `${conferenceName}_Brochure.pdf`;
-        const brochureURL = `/${brochureFile}`;
+        // const brochureFile = `${conferenceName}_Brochure.pdf`;
+        // const brochureURL = `/${brochureFile}`;
+
+        let fileName = '';
+        let fileURL = '';
+
+        if (modalType === 'tentative') {
+            fileName = `${conferenceName} Scientific Program.pdf`;
+            fileURL = `${fileName}`;
+        } else {
+            fileName = `${conferenceName}_Brochure.pdf`;
+            fileURL = `/${fileName}`;
+        }
 
         try {
-            // Fetch the file first to check if it's available and downloading successfully
-            const response = await fetch(brochureURL);
-
-            // Check if the file exists and is downloadable (status code 200)
+            const response = await fetch(fileURL);
             if (response.ok) {
-                // Create a link to download the file
-                const link = document.createElement('a');
-                link.href = brochureURL;
-                link.setAttribute('download', brochureFile);
+                const link = document.createElement("a");
+                link.href = fileURL;
+                link.setAttribute("download", fileName);
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
 
-                // Show modal after download is initiated successfully
-                setShowModal4(true);  // Show success modal
+                setShowModal4(true);
             } else {
-                // Handle the case where the file does not exist or another error occurs
                 console.error("File not found or failed to download");
-                setShowModal5(true);  // Show error modal
+                setShowModal5(true);
             }
         } catch (error) {
             console.error("Error downloading the file:", error);
-            setShowModal5(true);  // Show error modal
+            setShowModal5(true);
         }
     };
 
@@ -260,7 +268,7 @@ const Downloads: React.FC<DownloadsProps> = ({ generalDownloadsInfo }) => {
                                             <Image src={edit} className="pol55" alt="Brochure" title="Brochure" loading="lazy" />
                                             <h3>Brochure</h3>
                                             <button type='button' title={`${general.clogotext}_Brochure`}
-                                                onClick={openBrochureModal}
+                                                onClick={() => openBrochureModal('brochure')}
                                             >Download <Image src={dow}
                                                 alt={`${general.clogotext}_Brochure`} title={`${general.clogotext}_Brochure`} loading="lazy" /></button>
                                         </div>
@@ -293,7 +301,7 @@ const Downloads: React.FC<DownloadsProps> = ({ generalDownloadsInfo }) => {
                                 <div className="icon-box">
                                     <i className="bx bx-file" style={{ marginBottom: "35px" }}></i>
                                 </div>
-                                <h4 className="modal-title w-100">Download Brochure</h4>
+                                <h4 className="modal-title w-100">{modalType === 'brochure' ? 'Download Brochure' : 'Download Scientific Program'}</h4>
                                 <button type="button" className="close" onClick={closeBrochureModal} style={{ fontSize: "30px" }}>
                                     &times;
                                 </button>
@@ -428,7 +436,7 @@ const Downloads: React.FC<DownloadsProps> = ({ generalDownloadsInfo }) => {
                                 <div className="icon-box">
                                     <i className="material-icons" style={{ marginBottom: "35px" }}>&#10003;</i>
                                 </div>
-                                <h4 className="modal-title w-100">Brochure downloading..!</h4>
+                                <h4 className="modal-title w-100">{modalType === 'brochure' ? 'Brochure downloading..!' : 'Scientific program downloading..!'}</h4>
                                 <p>Thank you for your interest. If you have any questions, feel free to reach out to us. </p>
                             </div>
 

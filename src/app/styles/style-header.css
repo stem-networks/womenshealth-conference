@@ -9577,7 +9577,13 @@ input[text]:focus {
 	margin-left: 3px;
 	font-size: 15px;
 	/* font-weight: 400; */
+	color: var(--primary-color);
+}
+
+.marquee-wrapper .marquee-item i {
+	font-size: 17px;
 	color: var(--secondary-color);
+	margin-right: 5px;
 }
 
 .marquee-wrapper .marquee-item .box-phone {
@@ -9586,12 +9592,6 @@ input[text]:focus {
 	margin-right: 5px;
 	vertical-align: text-bottom;
 	margin-left: 5px;
-}
-
-.marquee-wrapper .marquee-item i {
-	font-size: 17px;
-	color: var(--primary-color);
-	margin-right: 5px;
 }
 
 @keyframes marquee {
@@ -9711,6 +9711,70 @@ input[text]:focus {
 
 	100% {
 		transform: rotate(0);
+	}
+}
+
+.highlight-program button {
+	color: var(--primary-color);
+	font-size: 16px;
+	font-weight: 700;
+	padding: 0 10px;
+	border: none;
+	background-color: transparent;
+	cursor: pointer;
+	animation:
+		pulseGlow 2s ease-in-out infinite,
+		smoothFlicker 3s infinite ease-in-out;
+	transition: transform 0.3s ease-in-out, color 0.6s ease;
+}
+
+.highlight-program button:hover {
+	transform: scale(1.08);
+}
+
+/* Smooth pulsing glow */
+@keyframes pulseGlow {
+	0% {
+		transform: scale(1);
+		/* box-shadow: 0 0 8px #e91e63; */
+	}
+
+	50% {
+		transform: scale(1.06);
+		/* box-shadow: 0 0 20px #f06292; */
+	}
+
+	100% {
+		transform: scale(1);
+		/* box-shadow: 0 0 8px #e91e63; */
+	}
+}
+
+/* Text color flicker and glow */
+@keyframes smoothFlicker {
+	0% {
+		color: var(--primary-color);
+		text-shadow: 0 0 5px var(--primary-color);
+	}
+
+	25% {
+		color: var(--secondary-color);
+		text-shadow: 0 0 8px var(--secondary-color);
+	}
+
+	50% {
+		color: var(--primary-color);
+		text-shadow: 0 0 10px var(--primary-color);
+	}
+
+	75% {
+		color: #cf0000;
+		text-shadow: 0 0 12px #cf0000;
+	}
+
+	100% {
+		color: var(--secondary-color);
+		text-shadow: 0 0 10px var(--secondary-color);
 	}
 }
 

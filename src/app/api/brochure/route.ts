@@ -11,12 +11,17 @@ export async function POST(req: Request) {
             country,
             message,
             interested_in,
+            modalType
         } = data;
 
         const cid = process.env.CID || '';
 
+
+        const formType =
+            modalType === 'brochure' ? 'brochure_download' : 'scientific_program_download';
+
         const formData = new FormData();
-        formData.append('website_form', btoa('brochure_download'));
+        formData.append('website_form', btoa(formType));
         formData.append('cid', btoa(cid));
         formData.append('first_name', first_name);
         formData.append('last_name', btoa(''));
