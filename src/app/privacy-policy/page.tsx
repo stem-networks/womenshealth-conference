@@ -1,9 +1,7 @@
 import React from "react";
 import Link from "next/link";
-// import { useAppData } from '../../context/AppDataContext';
 import { ApiResponse } from "@/types";
 import { Metadata } from "next";
-
 import { getBaseUrl } from "@/lib/getBaseUrl";
 
 async function fetchGeneralData(): Promise<ApiResponse> {
