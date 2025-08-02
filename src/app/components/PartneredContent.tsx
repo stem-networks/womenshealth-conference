@@ -32,7 +32,7 @@ const PartneredContent = () => {
 
     const sliderRef = useRef<HTMLUListElement | null>(null);
     const animationFrameId = useRef<number | null>(null);
-    let scrollPosition = 0;
+    const scrollPosition = useRef(0);
 
     useEffect(() => {
         const slider = sliderRef.current;
@@ -48,13 +48,13 @@ const PartneredContent = () => {
 
         // Auto-slide functionality
         const autoSlide = () => {
-            scrollPosition -= 1;
+            scrollPosition.current -= 1;
 
-            if (Math.abs(scrollPosition) >= slider.scrollWidth / 2) {
-                scrollPosition = 0;
+            if (Math.abs(scrollPosition.current) >= slider.scrollWidth / 2) {
+                scrollPosition.current = 0;
             }
 
-            slider.style.transform = `translateX(${scrollPosition}px)`;
+            slider.style.transform = `translateX(${scrollPosition.current}px)`;
             animationFrameId.current = requestAnimationFrame(autoSlide);
         };
 
