@@ -9,7 +9,6 @@ export const NavBar = () => {
    
   if (isLoading) return <div>Loading navigation...</div>;
   if (error) return <div>Error: {error}</div>;
-  // console.log("nav items", navItems);
 
   return (
     <nav className="bg-gray-800 text-white p-4">

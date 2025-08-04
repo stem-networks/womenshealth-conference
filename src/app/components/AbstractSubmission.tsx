@@ -151,8 +151,6 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
   const [captchaValue, setCaptchaValue] = useState<CaptchaValue | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // console.log(captchaValue);
-
   const modalRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -723,7 +721,6 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // console.log("Response:", response.data);
       return response.data;
     }
     catch (error) {

@@ -94,11 +94,6 @@ export async function generateMetadata(): Promise<Metadata> {
     const baseUrl = getBaseUrl() || "";
     const canonicalURL = `${baseUrl}/`;
 
-    // console.log("Loaded ENV Vars", {
-    //   API_URL: process.env.API_URL,
-    //   BASE_URL: baseUrl,
-    // });
-
     return {
       title: meta.title,
       description: meta.content,
