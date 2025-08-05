@@ -85,7 +85,6 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
         query: ''
     });
     const [userAnswer, setUserAnswer] = useState('');
-    // const [error, setError] = useState(''); // For general errors
 
     const modalRef = useRef<HTMLDivElement | null>(null);
 
@@ -166,6 +165,81 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
         return errors;
     };
 
+    // const handleSubmitContact = async (event: React.FormEvent<HTMLFormElement>) => {
+    //     event.preventDefault();
+    //     setIsSubmitting(true);
+    //     const errors = validateFormContact();
+
+    //     if (Object.keys(errors).length === 0) {
+    //         if (parseFloat(userAnswer) !== parseFloat(correctAnswer || '0')) {
+    //             setContactFormErrors({ userAnswer: 'Incorrect answer. Please try again.' });
+    //             toast.error('Incorrect answer. Please try again.');
+    //             setIsSubmitting(false);
+    //             const answerInput = document.getElementById('userAnswer');
+    //             if (answerInput) answerInput.focus();
+
+    //             return;
+    //         }
+
+    //         try {
+    //             await axios.post('/api/contact', {
+    //                 formData: contactFormData,
+    //             });
+
+    //             setShowModal8(false);
+
+    //             // Set success modal based on category
+    //             setSuccessModalContent({
+    //                 heading: contactFormData.category === 'sponsor' ? 'Sponsorships' : 'Exhibitors',
+    //                 query: (
+    //                     <p>
+    //                         For {contactFormData.category} opportunities, please write to{' '}
+    //                         <Link href={`mailto:${general?.cemail}`} title={general?.cemail}>
+    //                             {general?.cemail}
+    //                         </Link>
+    //                     </p>
+    //                 )
+    //             });
+    //             setShowModal6(true);
+
+
+    //             // Reset the form
+    //             setContactFormData({
+    //                 name: '',
+    //                 email: '',
+    //                 phone: '',
+    //                 query: '',
+    //                 category: ''
+    //             });
+    //             setUserAnswer('');
+    //             setContactFormErrors({});
+    //             // setError('');
+
+    //         } catch (err) {
+    //             console.error('Submission error:', err); // <-- Use the error
+    //             // setError('Error submitting form. Please try again later.');
+    //             toast.error('Error submitting form. Please try again later.');
+    //         }
+    //         finally {
+    //             setIsSubmitting(false)
+    //         }
+
+    //     } else {
+    //         setContactFormErrors(errors);
+
+    //         const firstErrorField = Object.keys(errors)[0];
+    //         const firstErrorMessage = errors[firstErrorField as keyof ContactFormErrors];
+
+    //         toast.error(firstErrorMessage || 'Please fill the form correctly.');
+
+    //         // Focus the field with the first error
+    //         const errorInput = document.getElementById(firstErrorField);
+    //         if (errorInput) errorInput.focus();
+    //         setIsSubmitting(false);
+    //     }
+    // };
+
+
     const handleSubmitContact = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsSubmitting(true);
@@ -183,13 +257,18 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
             }
 
             try {
+
                 await axios.post('/api/contact', {
-                    formData: contactFormData,
+                    formData: {
+                        name: btoa(contactFormData.name.trim()),
+                        email: btoa(contactFormData.email.trim()),
+                        phone: btoa(contactFormData.phone.trim()),
+                        query: btoa(contactFormData.query.trim())
+                    }
                 });
 
+                // Close modal and show success
                 setShowModal8(false);
-
-                // Set success modal based on category
                 setSuccessModalContent({
                     heading: contactFormData.category === 'sponsor' ? 'Sponsorships' : 'Exhibitors',
                     query: (
@@ -343,7 +422,7 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
                                                     id="name"
                                                     name="name"
                                                     type="text"
-                                                    placeholder="Enter first name"
+                                                    placeholder="Enter Full name"
                                                     disabled={isSubmitting}
                                                     value={contactFormData.name}
                                                     onChange={(e) => setContactFormData({ ...contactFormData, name: e.target.value })}
