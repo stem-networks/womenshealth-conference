@@ -5,7 +5,7 @@ import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import countries from "../../data/countries";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 // import Captcha from "./Captcha"; // Make sure you have this component
 
 interface FormData {
@@ -25,15 +25,14 @@ interface FormData {
   upload_abstract_file: File | null;
 }
 
-
 interface CaptchaRefType {
   focusCaptcha: () => void;
 }
 
 type PossibleRef =
   | React.RefObject<
-    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
-  >
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
+    >
   | React.RefObject<CaptchaRefType | null>;
 
 interface FormAutoData {
@@ -71,14 +70,13 @@ interface CaptchaRefType {
   focusCaptcha: () => void;
   resetCaptchaInput: () => void;
   refreshCaptcha: () => void;
-
 }
 
 // FieldRef type union includes both types of refs
 type FieldRef =
   | React.RefObject<
-    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
-  >
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
+    >
   | React.RefObject<CaptchaRefType | null>
   | null;
 
@@ -178,16 +176,40 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     [key: string]: string | undefined;
   }>({});
 
-  // Upload File to CMS 
-  async function uploadFile(file: File | null): Promise<string> {
+  // Upload File to CMS
+  // async function uploadFile(file: File | null): Promise<string> {
+  //   if (!file) return "";
+  //   const formData = new FormData();
+  //   formData.append("file", file);
+
+  //   const uploadRes = await fetch("/api/upload", {
+  //     method: "POST",
+  //     body: formData,
+  //   });
+
+  //   const { fileUrl } = await uploadRes.json();
+  //   return fileUrl;
+  // }
+
+  async function uploadFile(
+    file: File | null,
+    projectName: string
+  ): Promise<string> {
     if (!file) return "";
+
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("project", projectName); // required for Vercel Blob folder structure
 
     const uploadRes = await fetch("/api/upload", {
       method: "POST",
       body: formData,
     });
+
+    if (!uploadRes.ok) {
+      const errorData = await uploadRes.json();
+      throw new Error(errorData.error || "File upload failed");
+    }
 
     const { fileUrl } = await uploadRes.json();
     return fileUrl;
@@ -196,21 +218,24 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
   function validateAbstractFile(file: File | null): string | null {
     if (!file) return "Abstract file is required";
 
-    const allowedTypes = ["application/pdf", "application/msword",
+    const allowedTypes = [
+      "application/pdf",
+      "application/msword",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "application/rtf"];
+      "application/rtf",
+    ];
 
     if (!allowedTypes.includes(file.type)) {
       return "Invalid file type. Please upload a PDF, DOC, DOCX, or RTF file.";
     }
 
-    if (file.size > 2 * 1024 * 1024) { // 2MB
+    if (file.size > 2 * 1024 * 1024) {
+      // 2MB
       return "File size should be less than 2MB.";
     }
 
     return null;
   }
-
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -391,7 +416,6 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
   //       captchaRef.current?.refreshCaptcha();
 
   //     }
-
 
   //     else {
   //       toast.error(result.error || "Failed to submit the form");
@@ -621,8 +645,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
 
       // console.log("Response:", response.data);
       return response.data;
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Error sending form data:", error);
       await sendErrorToCMS({
         name: String(updatedData.name || "Unknown User"),
@@ -632,13 +655,12 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
           (error instanceof Error
             ? error.message
             : typeof error === "string"
-              ? error
-              : JSON.stringify(error)),
+            ? error
+            : JSON.stringify(error)),
         formBased: "CMS Abstract Form Submission",
       });
       return null;
     }
-
   };
 
   const isValidEmail = (email: string): boolean => {
@@ -733,10 +755,12 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     //   firstErrorField = fileRef;
     // }
 
-
     // ====== CAPTCHA CHECK ======
-
-    else if (!captchaValue || !captchaValue.text || captchaValue.text.trim() === "") {
+    else if (
+      !captchaValue ||
+      !captchaValue.text ||
+      captchaValue.text.trim() === ""
+    ) {
       formErrors.captcha = "CAPTCHA is required";
       setErrors(formErrors);
       toast.error(formErrors.captcha);
@@ -744,9 +768,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
       captchaRef.current?.focusCaptcha?.();
 
       return;
-    }
-
-    else if (!isCaptchaValid) {
+    } else if (!isCaptchaValid) {
       formErrors.captcha = "Invalid CAPTCHA";
       setErrors(formErrors);
       toast.error(formErrors.captcha);
@@ -755,8 +777,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
       captchaRef.current?.focusCaptcha?.();
 
       return;
-    }
-    else {
+    } else {
       const fileError = validateAbstractFile(formData.upload_abstract_file);
       if (fileError) {
         formErrors.upload_abstract_file = fileError;
@@ -769,9 +790,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
       setErrors({ ...formErrors });
 
       const firstErrorMessage = Object.values(formErrors)[0];
-      toast.error(
-        firstErrorMessage ?? "Validation Error"
-      );
+      toast.error(firstErrorMessage ?? "Validation Error");
 
       if (firstErrorField?.current?.focus) {
         firstErrorField.current.focus();
@@ -794,10 +813,13 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     });
 
     // Upload file and get URL
-    const fileUrl = await uploadFile(formData.upload_abstract_file); // Implement separately
+    // const fileUrl = await uploadFile(formData.upload_abstract_file); // Implement separately
+    const fileUrl = await uploadFile(
+      formData.upload_abstract_file,
+      "stem-2025"
+    ); // replace with dynamic project name if needed
 
     try {
-
       // Prepare payload (Base64 encode here)
       const payload = {
         abstract_title: btoa(formData.abstract_title.trim()),
@@ -823,9 +845,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
         body: JSON.stringify(payload),
       });
 
-
       if (response.ok) {
-
         setShowModal(true);
 
         setFormData({
@@ -845,20 +865,16 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
           upload_abstract_file: null,
         });
         captchaRef.current?.refreshCaptcha();
-
-      }
-
-
-      else {
+      } else {
         const errorAbs = await response.json();
         toast.error(errorAbs.error || "Failed to submit the form");
         await sendErrorToCMS({
           name: formData?.name || "Unknown User",
           email: formData?.email || "Unknown Email",
-          errorMessage: `Form submission failed with server response: ${errorAbs.error || "No specific error"
-            }`,
+          errorMessage: `Form submission failed with server response: ${
+            errorAbs.error || "No specific error"
+          }`,
         });
-
       }
     } catch (error) {
       console.error("Form submission failed:", error);
@@ -866,21 +882,24 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
       await sendErrorToCMS({
         name: formData?.name || "Unknown User",
         email: formData?.email || "Unknown Email",
-        errorMessage: `Failed to submit Abstract form: ${(error as Error)?.message || "No error message"
-          }`,
+        errorMessage: `Failed to submit Abstract form: ${
+          (error as Error)?.message || "No error message"
+        }`,
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // sendError to Telegram 
+  // sendError to Telegram
   async function sendErrorToCMS({
     name,
     email,
     errorMessage,
     formBased = "Abstract Form",
-    siteName = `${general.clname || "N/A"} (${general.csname || "N/A"} - ${general.year || "N/A"})`,
+    siteName = `${general.clname || "N/A"} (${general.csname || "N/A"} - ${
+      general.year || "N/A"
+    })`,
   }: {
     name: string;
     email: string;
