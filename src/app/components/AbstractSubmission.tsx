@@ -178,6 +178,40 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     [key: string]: string | undefined;
   }>({});
 
+  // Upload File to CMS 
+  async function uploadFile(file: File | null): Promise<string> {
+    if (!file) return "";
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const uploadRes = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const { fileUrl } = await uploadRes.json();
+    return fileUrl;
+  }
+
+  function validateAbstractFile(file: File | null): string | null {
+    if (!file) return "Abstract file is required";
+
+    const allowedTypes = ["application/pdf", "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/rtf"];
+
+    if (!allowedTypes.includes(file.type)) {
+      return "Invalid file type. Please upload a PDF, DOC, DOCX, or RTF file.";
+    }
+
+    if (file.size > 2 * 1024 * 1024) { // 2MB
+      return "File size should be less than 2MB.";
+    }
+
+    return null;
+  }
+
+
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -225,170 +259,170 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
 
-    setErrors({});
-    const formErrors: Errors = {};
-    let firstErrorField: FieldRef = null;
+  //   setErrors({});
+  //   const formErrors: Errors = {};
+  //   let firstErrorField: FieldRef = null;
 
-    // ====== VALIDATION ======
-    if (!formData.title) {
-      formErrors.title = "Title is required";
-      firstErrorField = titleRef;
-    } else if (!formData.name) {
-      formErrors.name = "Name is required";
-      firstErrorField = nameRef;
-    } else if (!formData.email) {
-      formErrors.email = "Email is required";
-      firstErrorField = emailRef;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      formErrors.email = "Email is Invalid";
-      firstErrorField = emailRef;
-    } else if (formData.alt_email && !/\S+@\S+\.\S+/.test(formData.alt_email)) {
-      formErrors.alt_email = "Alternative Email is Invalid";
-      firstErrorField = altEmailRef;
-    } else if (!formData.phone) {
-      formErrors.phone = "Phone number is required";
-      firstErrorField = phoneRef;
-    } else if (!formData.city) {
-      formErrors.city = "City is required";
-      firstErrorField = cityRef;
-    } else if (!formData.country) {
-      formErrors.country = "Country is required";
-      firstErrorField = countryRef;
-    } else if (!formData.organization) {
-      formErrors.organization = "Organization is required";
-      firstErrorField = organizationRef;
-    } else if (!formData.intrested) {
-      formErrors.intrested = "Interested In is required";
-      firstErrorField = intrestedRef;
-    } else if (!formData.abstract_title) {
-      formErrors.abstract_title = "Abstract Title is required";
-      firstErrorField = abstractTitleRef;
-    } else if (!formData.upload_abstract_file) {
-      formErrors.upload_abstract_file = "Abstract file is required";
-      firstErrorField = fileRef;
-    }
+  //   // ====== VALIDATION ======
+  //   if (!formData.title) {
+  //     formErrors.title = "Title is required";
+  //     firstErrorField = titleRef;
+  //   } else if (!formData.name) {
+  //     formErrors.name = "Name is required";
+  //     firstErrorField = nameRef;
+  //   } else if (!formData.email) {
+  //     formErrors.email = "Email is required";
+  //     firstErrorField = emailRef;
+  //   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+  //     formErrors.email = "Email is Invalid";
+  //     firstErrorField = emailRef;
+  //   } else if (formData.alt_email && !/\S+@\S+\.\S+/.test(formData.alt_email)) {
+  //     formErrors.alt_email = "Alternative Email is Invalid";
+  //     firstErrorField = altEmailRef;
+  //   } else if (!formData.phone) {
+  //     formErrors.phone = "Phone number is required";
+  //     firstErrorField = phoneRef;
+  //   } else if (!formData.city) {
+  //     formErrors.city = "City is required";
+  //     firstErrorField = cityRef;
+  //   } else if (!formData.country) {
+  //     formErrors.country = "Country is required";
+  //     firstErrorField = countryRef;
+  //   } else if (!formData.organization) {
+  //     formErrors.organization = "Organization is required";
+  //     firstErrorField = organizationRef;
+  //   } else if (!formData.intrested) {
+  //     formErrors.intrested = "Interested In is required";
+  //     firstErrorField = intrestedRef;
+  //   } else if (!formData.abstract_title) {
+  //     formErrors.abstract_title = "Abstract Title is required";
+  //     firstErrorField = abstractTitleRef;
+  //   } else if (!formData.upload_abstract_file) {
+  //     formErrors.upload_abstract_file = "Abstract file is required";
+  //     firstErrorField = fileRef;
+  //   }
 
-    // ====== CAPTCHA CHECK ======
+  //   // ====== CAPTCHA CHECK ======
 
-    else if (!captchaValue || !captchaValue.text || captchaValue.text.trim() === "") {
-      formErrors.captcha = "CAPTCHA is required";
-      setErrors(formErrors);
-      toast.error(formErrors.captcha);
+  //   else if (!captchaValue || !captchaValue.text || captchaValue.text.trim() === "") {
+  //     formErrors.captcha = "CAPTCHA is required";
+  //     setErrors(formErrors);
+  //     toast.error(formErrors.captcha);
 
-      captchaRef.current?.focusCaptcha?.();
+  //     captchaRef.current?.focusCaptcha?.();
 
-      return;
-    }
+  //     return;
+  //   }
 
-    else if (!isCaptchaValid) {
-      formErrors.captcha = "Invalid CAPTCHA";
-      setErrors(formErrors);
-      toast.error(formErrors.captcha);
+  //   else if (!isCaptchaValid) {
+  //     formErrors.captcha = "Invalid CAPTCHA";
+  //     setErrors(formErrors);
+  //     toast.error(formErrors.captcha);
 
-      // captchaRef.current?.refreshCaptcha();
-      captchaRef.current?.focusCaptcha?.();
+  //     // captchaRef.current?.refreshCaptcha();
+  //     captchaRef.current?.focusCaptcha?.();
 
-      return;
-    }
+  //     return;
+  //   }
 
-    // ====== SHOW VALIDATION ERRORS ======
-    if (Object.keys(formErrors).length > 0) {
-      setErrors({ ...formErrors });
+  //   // ====== SHOW VALIDATION ERRORS ======
+  //   if (Object.keys(formErrors).length > 0) {
+  //     setErrors({ ...formErrors });
 
-      const firstErrorMessage = Object.values(formErrors)[0];
-      toast.error(
-        firstErrorMessage ?? "Validation Error"
-      );
+  //     const firstErrorMessage = Object.values(formErrors)[0];
+  //     toast.error(
+  //       firstErrorMessage ?? "Validation Error"
+  //     );
 
-      if (firstErrorField?.current?.focus) {
-        firstErrorField.current.focus();
-      }
+  //     if (firstErrorField?.current?.focus) {
+  //       firstErrorField.current.focus();
+  //     }
 
-      return;
-    }
+  //     return;
+  //   }
 
-    // ====== SUBMIT FORM ======
-    setIsSubmitting(true);
+  //   // ====== SUBMIT FORM ======
+  //   setIsSubmitting(true);
 
-    const formDataToSend = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        formDataToSend.append(
-          key,
-          value instanceof File ? value : String(value)
-        );
-      }
-    });
+  //   const formDataToSend = new FormData();
+  //   Object.entries(formData).forEach(([key, value]) => {
+  //     if (value !== null && value !== undefined) {
+  //       formDataToSend.append(
+  //         key,
+  //         value instanceof File ? value : String(value)
+  //       );
+  //     }
+  //   });
 
-    try {
-      const response = await fetch("/api/abstract", {
-        method: "POST",
-        body: formDataToSend,
-      });
+  //   try {
+  //     const response = await fetch("/api/abstract", {
+  //       method: "POST",
+  //       body: formDataToSend,
+  //     });
 
-      const result = await response.json();
+  //     const result = await response.json();
 
-      if (result.success) {
-        // toast.success("Abstract form submitted successfully!", {
-        //   autoClose: 3000,
-        // });
+  //     if (result.success) {
+  //       // toast.success("Abstract form submitted successfully!", {
+  //       //   autoClose: 3000,
+  //       // });
 
-        setShowModal(true);
+  //       setShowModal(true);
 
-        setFormData({
-          module_name: "abstract_save",
-          title: "",
-          name: "",
-          email: "",
-          alt_email: "",
-          phone: "",
-          whatsapp_number: "", // add missing field
-          city: "",
-          country: "",
-          organization: "",
-          intrested: "",
-          abstract_title: "",
-          message: "", //  add missing field
-          upload_abstract_file: null,
-        });
-        captchaRef.current?.refreshCaptcha();
+  //       setFormData({
+  //         module_name: "abstract_save",
+  //         title: "",
+  //         name: "",
+  //         email: "",
+  //         alt_email: "",
+  //         phone: "",
+  //         whatsapp_number: "", // add missing field
+  //         city: "",
+  //         country: "",
+  //         organization: "",
+  //         intrested: "",
+  //         abstract_title: "",
+  //         message: "", //  add missing field
+  //         upload_abstract_file: null,
+  //       });
+  //       captchaRef.current?.refreshCaptcha();
 
-      }
+  //     }
 
 
-      else {
-        toast.error(result.error || "Failed to submit the form");
-        await sendErrorToCMS({
-          name: formData?.name || "Unknown User",
-          email: formData?.email || "Unknown Email",
-          errorMessage: `Form submission failed with server response: ${result.error || "No specific error"
-            }`,
-        });
-        // await logError(
-        //   `Abstract Form Submission Error: ${result.error || "Unknown error"}`
-        // );
+  //     else {
+  //       toast.error(result.error || "Failed to submit the form");
+  //       await sendErrorToCMS({
+  //         name: formData?.name || "Unknown User",
+  //         email: formData?.email || "Unknown Email",
+  //         errorMessage: `Form submission failed with server response: ${result.error || "No specific error"
+  //           }`,
+  //       });
+  //       // await logError(
+  //       //   `Abstract Form Submission Error: ${result.error || "Unknown error"}`
+  //       // );
 
-      }
-    } catch (error) {
-      console.error("Form submission failed:", error);
-      toast.error("There was an error submitting the form. Please try again.");
-      await sendErrorToCMS({
-        name: formData?.name || "Unknown User",
-        email: formData?.email || "Unknown Email",
-        errorMessage: `Failed to submit Abstract form: ${(error as Error)?.message || "No error message"
-          }`,
-      });
-      // await logError(
-      //   `Abstract Form Submission Error: ${error instanceof Error ? error.message : "Unknown error"
-      //   }`
-      // );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  //     }
+  //   } catch (error) {
+  //     console.error("Form submission failed:", error);
+  //     toast.error("There was an error submitting the form. Please try again.");
+  //     await sendErrorToCMS({
+  //       name: formData?.name || "Unknown User",
+  //       email: formData?.email || "Unknown Email",
+  //       errorMessage: `Failed to submit Abstract form: ${(error as Error)?.message || "No error message"
+  //         }`,
+  //     });
+  //     // await logError(
+  //     //   `Abstract Form Submission Error: ${error instanceof Error ? error.message : "Unknown error"
+  //     //   }`
+  //     // );
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
 
   const handleKeyDown = (
     e: React.KeyboardEvent,
@@ -443,8 +477,13 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
         fieldName === "upload_abstract_file" &&
         !formData.upload_abstract_file
       ) {
-        newErrors.upload_abstract_file = "Abstract file is required";
-        fieldValid = false;
+        // newErrors.upload_abstract_file = "Abstract file is required";
+        // fieldValid = false;
+        const fileError = validateAbstractFile(formData.upload_abstract_file);
+        if (fileError) {
+          newErrors.upload_abstract_file = fileError;
+          fieldValid = false;
+        }
       }
 
       if (!fieldValid) {
@@ -555,149 +594,6 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     document.body.removeChild(link);
   };
 
-  // const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
-
-  // const handleFieldUpdate = (fieldName: keyof FormAutoData, value: string) => {
-  //   setFormAutoData((prevState) => {
-  //     const updatedData = {
-  //       ...prevState,
-  //       [fieldName]: value,
-  //       submit_status: prevState.submit_status || "0",
-  //     };
-
-  //     // Email validation and conditional API trigger
-  //     if (fieldName === "email") {
-  //       if (!value.trim()) {
-  //         setErrors((prev) => ({ ...prev, email: "Email is required." }));
-  //         console.error("Email is required. API not triggered.");
-  //         return updatedData;
-  //       }
-
-  //       if (!isValidEmail(value)) {
-  //         setErrors((prev) => ({ ...prev, email: "Invalid email format." }));
-  //         console.error("Invalid email format. API not triggered.");
-  //         return updatedData;
-  //       }
-
-  //       // Clear previous error
-  //       setErrors((prev) => ({ ...prev, email: "" }));
-
-  //       // Send data only when email is present and valid
-  //       sendFullFormData(updatedData);
-  //     }
-
-  //     return updatedData;
-  //   });
-  // };
-
-  // const handleFieldUpdate = (fieldName: keyof FormAutoData, value: string) => {
-  //   setFormAutoData((prevState) => ({
-  //     ...prevState,
-  //     [fieldName]: value,
-  //     submit_status: prevState.submit_status || "0",
-  //   }));
-  // };
-
-  // const sendFullFormData = async (
-  //   updatedData: FormAutoData,
-  //   submitStatus?: string
-  // ) => {
-  //   try {
-  //     const formData = new FormData();
-
-  //     Object.entries(updatedData).forEach(([key, value]) => {
-  //       formData.append(key, value);
-  //     });
-
-  //     if (submitStatus) {
-  //       formData.append("submit_status", submitStatus);
-  //     }
-
-  //     const response = await axios.post("/api/send-to-cms", formData, {
-  //       headers: { "Content-Type": "multipart/form-data" },
-  //     });
-
-  //     if (response.data?.data?.web_token) {
-  //       setFormAutoData((prevState) => ({
-  //         ...prevState,
-  //         web_token: response.data.data.web_token,
-  //       }));
-  //     }
-  //   } catch (error) {
-  //     console.error("Error saving form data:", error);
-  //   }
-  // };
-
-  // const sendFullFormData = async (
-  //   updatedData: FormAutoData,
-  //   submitStatus?: string
-  // ) => {
-  //   try {
-  //     const formData = new FormData();
-
-  //     Object.entries(updatedData).forEach(([key, value]) => {
-  //       formData.append(key, value || "");
-  //     });
-
-  //     if (submitStatus) {
-  //       formData.append("submit_status", submitStatus);
-  //     }
-
-  //     const response = await axios.post("/api/send-to-cms", formData, {
-  //       headers: { "Content-Type": "multipart/form-data" },
-  //     });
-
-  //     return response.data;
-  //   } catch (error) {
-  //     console.error("Error sending form data:", error);
-  //     return null;
-  //   }
-  // };
-
-  // const isValidEmail = (email: string): boolean => {
-  //   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  // };
-
-  // const handleBlur = (
-  //   e: React.FocusEvent<
-  //     HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-  //   >
-  // ) => {
-  //   const { name, value } = e.target;
-
-  //   const updatedData = {
-  //     ...formAutoData,
-  //     [name]: value,
-  //     submit_status: formAutoData.submit_status || "0",
-  //   };
-
-  //   setFormAutoData(updatedData);
-
-  //   // Validate email only if it exists
-  //   const emailValue = name === "email" ? value : updatedData.email;
-
-  //   if (!emailValue) {
-  //     if (name === "email") {
-  //       setErrors((prev) => ({ ...prev, email: "Email is required." }));
-  //     }
-  //     return; // Don't send API if email is missing
-  //   }
-
-  //   if (!isValidEmail(emailValue)) {
-  //     if (name === "email") {
-  //       setErrors((prev) => ({ ...prev, email: "Invalid email format." }));
-  //     }
-  //     return; // Don't send API if email is invalid
-  //   }
-
-  //   // Clear email error and send form data
-  //   if (name === "email") {
-  //     setErrors((prev) => ({ ...prev, email: "" }));
-  //   }
-
-  //   sendFullFormData(updatedData);
-  // };
-
   const sendFullFormData = async (
     updatedData: FormAutoData,
     submitStatus?: string
@@ -790,30 +686,193 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     sendFullFormData(updatedData);
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  // const logError = async (message: string) => {
-  //   try {
-  //     const formErrorData = new FormData();
-  //     formErrorData.append("name", formData.name || "N/A");
-  //     formErrorData.append("email", formData.email || "N/A");
-  //     formErrorData.append("form_based", "Abstract Form");
-  //     formErrorData.append("error_message", message);
+    setErrors({});
+    const formErrors: Errors = {};
+    let firstErrorField: FieldRef = null;
 
-  //     const response = await fetch("/api/send-to-telegram", {
-  //       method: "POST",
-  //       body: formErrorData,
-  //     });
+    // ====== VALIDATION ======
+    if (!formData.title) {
+      formErrors.title = "Title is required";
+      firstErrorField = titleRef;
+    } else if (!formData.name) {
+      formErrors.name = "Name is required";
+      firstErrorField = nameRef;
+    } else if (!formData.email) {
+      formErrors.email = "Email is required";
+      firstErrorField = emailRef;
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      formErrors.email = "Email is Invalid";
+      firstErrorField = emailRef;
+    } else if (formData.alt_email && !/\S+@\S+\.\S+/.test(formData.alt_email)) {
+      formErrors.alt_email = "Alternative Email is Invalid";
+      firstErrorField = altEmailRef;
+    } else if (!formData.phone) {
+      formErrors.phone = "Phone number is required";
+      firstErrorField = phoneRef;
+    } else if (!formData.city) {
+      formErrors.city = "City is required";
+      firstErrorField = cityRef;
+    } else if (!formData.country) {
+      formErrors.country = "Country is required";
+      firstErrorField = countryRef;
+    } else if (!formData.organization) {
+      formErrors.organization = "Organization is required";
+      firstErrorField = organizationRef;
+    } else if (!formData.intrested) {
+      formErrors.intrested = "Interested In is required";
+      firstErrorField = intrestedRef;
+    } else if (!formData.abstract_title) {
+      formErrors.abstract_title = "Abstract Title is required";
+      firstErrorField = abstractTitleRef;
+    }
+    // else if (!formData.upload_abstract_file) {
+    //   formErrors.upload_abstract_file = "Abstract file is required";
+    //   firstErrorField = fileRef;
+    // }
 
-  //     const result = await response.json();
 
-  //     if (!result.success) {
-  //       console.error("Failed to log error to Telegram via telegram");
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to send error to /api/send-to-telegram:", error);
-  //   }
-  // };
+    // ====== CAPTCHA CHECK ======
 
+    else if (!captchaValue || !captchaValue.text || captchaValue.text.trim() === "") {
+      formErrors.captcha = "CAPTCHA is required";
+      setErrors(formErrors);
+      toast.error(formErrors.captcha);
+
+      captchaRef.current?.focusCaptcha?.();
+
+      return;
+    }
+
+    else if (!isCaptchaValid) {
+      formErrors.captcha = "Invalid CAPTCHA";
+      setErrors(formErrors);
+      toast.error(formErrors.captcha);
+
+      // captchaRef.current?.refreshCaptcha();
+      captchaRef.current?.focusCaptcha?.();
+
+      return;
+    }
+    else {
+      const fileError = validateAbstractFile(formData.upload_abstract_file);
+      if (fileError) {
+        formErrors.upload_abstract_file = fileError;
+        firstErrorField = fileRef;
+      }
+    }
+
+    // ====== SHOW VALIDATION ERRORS ======
+    if (Object.keys(formErrors).length > 0) {
+      setErrors({ ...formErrors });
+
+      const firstErrorMessage = Object.values(formErrors)[0];
+      toast.error(
+        firstErrorMessage ?? "Validation Error"
+      );
+
+      if (firstErrorField?.current?.focus) {
+        firstErrorField.current.focus();
+      }
+
+      return;
+    }
+
+    // ====== SUBMIT FORM ======
+    setIsSubmitting(true);
+
+    const formDataToSend = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        formDataToSend.append(
+          key,
+          value instanceof File ? value : String(value)
+        );
+      }
+    });
+
+    // Upload file and get URL
+    const fileUrl = await uploadFile(formData.upload_abstract_file); // Implement separately
+
+    try {
+
+      // Prepare payload (Base64 encode here)
+      const payload = {
+        abstract_title: btoa(formData.abstract_title.trim()),
+        title: btoa(formData.title.trim()),
+        name: btoa(formData.name.trim()),
+        country: btoa(formData.country.trim()),
+        email: btoa(formData.email.trim()),
+        alt_email: btoa(formData.alt_email.trim()),
+        phone: btoa(formData.phone.trim()),
+        intrested: btoa(formData.intrested.trim()),
+        upload_abstract_file: btoa(fileUrl.trim()),
+
+        // New fields
+        whatsapp_number: btoa(formData.whatsapp_number.trim()),
+        city: btoa(formData.city.trim()),
+        organization: btoa(formData.organization.trim()),
+        message: btoa(formData.message.trim()),
+      };
+
+      const response = await fetch("/api/abstract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+
+      if (response.ok) {
+
+        setShowModal(true);
+
+        setFormData({
+          module_name: "abstract_save",
+          title: "",
+          name: "",
+          email: "",
+          alt_email: "",
+          phone: "",
+          whatsapp_number: "", // add missing field
+          city: "",
+          country: "",
+          organization: "",
+          intrested: "",
+          abstract_title: "",
+          message: "", //  add missing field
+          upload_abstract_file: null,
+        });
+        captchaRef.current?.refreshCaptcha();
+
+      }
+
+
+      else {
+        const errorAbs = await response.json();
+        toast.error(errorAbs.error || "Failed to submit the form");
+        await sendErrorToCMS({
+          name: formData?.name || "Unknown User",
+          email: formData?.email || "Unknown Email",
+          errorMessage: `Form submission failed with server response: ${errorAbs.error || "No specific error"
+            }`,
+        });
+
+      }
+    } catch (error) {
+      console.error("Form submission failed:", error);
+      toast.error("There was an error submitting the form. Please try again.");
+      await sendErrorToCMS({
+        name: formData?.name || "Unknown User",
+        email: formData?.email || "Unknown Email",
+        errorMessage: `Failed to submit Abstract form: ${(error as Error)?.message || "No error message"
+          }`,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // sendError to Telegram 
   async function sendErrorToCMS({

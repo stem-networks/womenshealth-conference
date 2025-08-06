@@ -58,11 +58,12 @@ const BannerSection: React.FC<BannerSectionProps> = ({
   const [showModal9, setShowModal9] = useState(false);
   const [showModal4, setShowModal4] = useState(false);
   const [showModal5, setShowModal5] = useState(false);
+  const [modalType, setModalType] = useState('');
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   const shouldShowModal = (): boolean => {
     if (typeof window === "undefined") return true;
-    const lastInteraction = localStorage.getItem("brochureFormClosed");
+    const lastInteraction = localStorage.getItem("TentativeFormClosed");
     if (!lastInteraction) return true;
 
     const lastInteractionTime = parseInt(lastInteraction, 10);
@@ -76,6 +77,7 @@ const BannerSection: React.FC<BannerSectionProps> = ({
 
     if (shouldShowModal()) {
       const timer = setTimeout(() => {
+        setModalType('tentative')
         setShowModal9(true);
       }, 20000);
 
@@ -119,17 +121,20 @@ const BannerSection: React.FC<BannerSectionProps> = ({
 
   const formattedEarlyBirdDate = earlyBirdDateRaw
     ? earlyBirdDateRaw
-        .replace(/<sub>/g, "<sup>")
-        .replace(/<\/sub>/g, "</sup>")
-        .replace(/<br\s*\/?>/g, " ")
+      .replace(/<sub>/g, "<sup>")
+      .replace(/<\/sub>/g, "</sup>")
+      .replace(/<br\s*\/?>/g, " ")
     : "";
 
-  const openBrochureModal = () => setShowModal9(true);
+  const openBrochureModal = (type: 'brochure' | 'tentative') => {
+    setModalType(type); // 'brochure' or 'tentative'
+    setShowModal9(true);
+  }
 
   const closeBrochureModal = () => {
     setShowModal9(false);
     if (typeof window !== "undefined") {
-      localStorage.setItem("brochureFormClosed", Date.now().toString());
+      localStorage.setItem("TentativeFormClosed", Date.now().toString());
     }
   };
 
@@ -182,6 +187,7 @@ const BannerSection: React.FC<BannerSectionProps> = ({
         country: btoa(brochureFormData.country.trim()),
         message: btoa(brochureFormData.message.trim()),
         interested_in: btoa(brochureFormData.interested_in.trim()),
+        modalType,
       };
 
       const response = await fetch("/api/brochure", {
@@ -234,15 +240,26 @@ const BannerSection: React.FC<BannerSectionProps> = ({
 
   const handleDownload = async () => {
     const conferenceName = `${general.clogotext}`;
-    const brochureFile = `${conferenceName}_Brochure.pdf`;
-    const brochureURL = `/${brochureFile}`;
+    // const brochureFile = `${conferenceName}_Brochure.pdf`;
+    // const brochureURL = `/${brochureFile}`;
+
+    let fileName = '';
+    let fileURL = '';
+
+    if (modalType === 'tentative') {
+      fileName = `${conferenceName} Scientific Program.pdf`;
+      fileURL = `${fileName}`;
+    } else {
+      fileName = `${conferenceName}_Brochure.pdf`;
+      fileURL = `/${fileName}`;
+    }
 
     try {
-      const response = await fetch(brochureURL);
+      const response = await fetch(fileURL);
       if (response.ok) {
         const link = document.createElement("a");
-        link.href = brochureURL;
-        link.setAttribute("download", brochureFile);
+        link.href = fileURL;
+        link.setAttribute("download", fileName);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -278,6 +295,13 @@ const BannerSection: React.FC<BannerSectionProps> = ({
                 <div className="marquee-content">
                   {/* Your marquee items */}
                   <div className="marquee-item">
+                    <i
+                      className="fa fa-bell bell-icon bell-anim"
+                      aria-hidden="true"
+                    ></i>
+                    <span>Limited speaker slots available</span>
+                  </div>
+                  <div className="marquee-item">
                     <i className="fa fa-hourglass-half" aria-hidden="true"></i>
                     <span>
                       Early Bird Registration closes on{" "}
@@ -295,6 +319,14 @@ const BannerSection: React.FC<BannerSectionProps> = ({
                   </div>
                   <div className="marquee-item">
                     <i className="fa fa-bell bell-icon" aria-hidden="true"></i>
+                    <span>Avail special discounts for students and groups</span>
+                  </div>
+                  {/* <div className="marquee-item">
+                    <i className="fa fa-file-pdf-o" aria-hidden="true"></i>
+                    <span className='tentative-pdf-down highlight-program'><button onClick={() => openBrochureModal('tentative')} title={`${general.clogotext} Scientific Program`}>Download the Tentative Scientific Program (PDF)</button></span>
+                  </div>  */}
+                  <div className="marquee-item">
+                    <i className="fa fa-bell bell-icon" aria-hidden="true"></i>
                     <span className="me-2">For discount queries contact </span>
                     <i className="bx bxs-phone-call box-phone"></i>
                     <b>
@@ -306,6 +338,8 @@ const BannerSection: React.FC<BannerSectionProps> = ({
                       </a>
                     </b>
                   </div>
+
+                  {/* <!-- Repeat for looping --> */}
                   <div className="marquee-item">
                     <i
                       className="fa fa-bell bell-icon bell-anim"
@@ -333,6 +367,10 @@ const BannerSection: React.FC<BannerSectionProps> = ({
                     <i className="fa fa-bell bell-icon" aria-hidden="true"></i>
                     <span>Avail special discounts for students and groups</span>
                   </div>
+                  {/* <div className="marquee-item">
+                    <i className="fa fa-file-pdf-o" aria-hidden="true"></i>
+                    <span className='tentative-pdf-down highlight-program'><button onClick={() => openBrochureModal('tentative')} title={`${general.clogotext} Scientific Program`}>Download the Tentative Scientific Program (PDF)</button></span>
+                  </div>  */}
                   <div className="marquee-item">
                     <i className="fa fa-bell bell-icon" aria-hidden="true"></i>
                     <span className="me-2">For discount queries contact </span>
@@ -371,7 +409,7 @@ const BannerSection: React.FC<BannerSectionProps> = ({
               <button
                 type="button"
                 title={`${general?.clogotext}_Brochure`}
-                onClick={openBrochureModal}
+                onClick={() => openBrochureModal('brochure')}
               >
                 Download Brochure
               </button>
@@ -391,7 +429,7 @@ const BannerSection: React.FC<BannerSectionProps> = ({
                     style={{ marginBottom: "35px" }}
                   ></i>
                 </div>
-                <h4 className="modal-title w-100">Download Brochure</h4>
+                <h4 className="modal-title w-100"> {modalType === 'brochure' ? 'Download Brochure' : 'Download Scientific Program'}</h4>
                 <button
                   type="button"
                   className="close"
@@ -591,7 +629,7 @@ const BannerSection: React.FC<BannerSectionProps> = ({
                     &#10003;
                   </i>
                 </div>
-                <h4 className="modal-title w-100">Brochure downloading..!</h4>
+                <h4 className="modal-title w-100">{modalType === 'brochure' ? 'Brochure downloading..!' : 'Scientific program downloading..!'}</h4>
                 <p>
                   Thank you for your interest. If you have any questions, feel
                   free to reach out to us.{" "}

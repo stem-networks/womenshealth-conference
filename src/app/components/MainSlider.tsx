@@ -4,7 +4,7 @@ import React, { useState, useRef } from 'react'
 import Slider from 'react-slick';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
-import axios from 'axios';
+// import axios from 'axios';
 import { ApiResponse, RegistrationInfo } from '@/types';
 
 interface ContactFormData {
@@ -258,13 +258,17 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
 
             try {
 
-                await axios.post('/api/contact', {
-                    formData: {
-                        name: btoa(contactFormData.name.trim()),
-                        email: btoa(contactFormData.email.trim()),
-                        phone: btoa(contactFormData.phone.trim()),
-                        query: btoa(contactFormData.query.trim())
-                    }
+                const payload = {
+                    name: btoa(contactFormData.name.trim()),
+                    email: btoa(contactFormData.email.trim()),
+                    phone: btoa(contactFormData.phone.trim()),
+                    query: btoa(contactFormData.query.trim()),
+                };
+
+                await fetch("/api/sponsor-exhibitor", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
                 });
 
                 // Close modal and show success

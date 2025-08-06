@@ -112,22 +112,34 @@ const Footer: React.FC<FooterProps> = ({ generalData, indexPageData }) => {
     setSubmitting(true);
 
     try {
+      // const response = await fetch("/api/enquiry", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     enquiryname: formData.enquiryname,
+      //     enquiryemail: formData.enquiryemail,
+      //     enquiryquery: formData.enquiryquery,
+      //     category: "enquiry", // or pass dynamically if needed
+      //   }),
+      // });
+
+      // const result = await response.json();
+
+      const payload = {
+        enquiryname: btoa(formData.enquiryname.trim()),
+        enquiryemail: btoa(formData.enquiryemail.trim()),
+        enquiryquery: btoa(formData.enquiryquery.trim()),
+      };
+
       const response = await fetch("/api/enquiry", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          enquiryname: formData.enquiryname,
-          enquiryemail: formData.enquiryemail,
-          enquiryquery: formData.enquiryquery,
-          category: "enquiry", // or pass dynamically if needed
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
-      const result = await response.json();
-
-      if (result.success) {
+      if (response.ok) {
         setShowModal2(true);
         setFormData({
           enquiryname: "",
@@ -136,7 +148,9 @@ const Footer: React.FC<FooterProps> = ({ generalData, indexPageData }) => {
         });
         setFormErrors({});
       } else {
-        toast.error(result.message || "Submission failed. Please try again.");
+        // toast.error(response.message || "Submission failed. Please try again.");
+        const errorData = await response.json();
+        toast.error(errorData?.error || "Submission failed. Please try again.");
       }
     } catch (err) {
       toast.error("Submission failed. Please try again.");

@@ -1,47 +1,50 @@
-// app/api/enquiry/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import axios from "axios";
+// // app/api/enquiry/route.ts
 
-export async function POST(req: NextRequest) {
+import { NextResponse } from 'next/server';
+
+export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { enquiryname, enquiryemail,enquiryquery, category } = body;
+    const data = await req.json();
 
-    // Basic validation
-    // if (!enquiryname) {
-    //   return NextResponse.json(
-    //     { success: false, message: "All fields are required." },
-    //     { status: 400 }
-    //   );
-    // }
+    const { enquiryname, enquiryemail, enquiryquery = '' } = data;
 
-    const payload = {
-      module_name: "enquiry_form",
-      keys: {
-        data: [
-          {
-            name: enquiryname,
-            email: enquiryemail,
-            query:enquiryquery,
-            category,
-          },
-        ],
+    const cid = process.env.CID || '';
+
+    const formData = new FormData();
+    formData.append('website_form', btoa('contact_query'));
+    formData.append('cid', btoa(cid));
+    formData.append('first_name', enquiryname);
+    formData.append('last_name', btoa(''));
+    formData.append('email', enquiryemail);
+    formData.append('message', enquiryquery);
+    formData.append('country', btoa(''));
+    formData.append('phone', btoa(''));
+
+    // const addonInfo = {
+    //     interested_in: atob(interested_in), // Optional: decode before stringify
+    // };
+    // formData.append('additional_info', btoa(JSON.stringify(addonInfo)));
+    // formData.append('additional_info', btoa(JSON.stringify({
+    //   interested_in: atob(interested_in),
+    // })));
+
+
+    const apiRes = await fetch(`${process.env.CMS_URL}`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Accept: '*/*',
       },
-      cid: process.env.CID,
-    };
+    });
 
-    const response = await axios.post(process.env.API_URL as string, payload);
-
-    return NextResponse.json({ success: true, data: response.data });
+    if (apiRes.ok) {
+      return NextResponse.json({ success: true });
+    } else {
+      return NextResponse.json({ success: false, error: 'Failed to submit form' }, { status: 500 });
+    }
   } catch (error) {
-    console.error(
-      "Enquiry API Error:",
-      error instanceof Error ? error.message : error
-    );
-
-    return NextResponse.json(
-      { success: false, message: "Server error. Please try again." },
-      { status: 500 }
-    );
+    console.error('API Error:', error);
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }
+
