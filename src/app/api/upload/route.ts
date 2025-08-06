@@ -76,7 +76,6 @@
 // }
 
 
-//vercel blob storage 
 import { put } from "@vercel/blob";
 import { NextResponse } from "next/server";
 
@@ -100,10 +99,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "File too large (2MB max)" }, { status: 400 });
     }
 
-    const uniqueName = `${project}/abstract_${Date.now()}.${fileExtension}`;
-    const blob = await put(uniqueName, file, {
-      access: "public", // or "private"
+    const fileName = `${project}/abstract_${Date.now()}.${fileExtension}`;
+
+    // 🔍 Add logging here to debug
+    console.log("Uploading file:", fileName);
+
+    const blob = await put(fileName, file, {
+      access: "public", // change to "private" if needed
     });
+
+    console.log("Uploaded to:", blob.url);
 
     return NextResponse.json({ fileUrl: blob.url });
   } catch (error) {
@@ -111,3 +116,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }
+
