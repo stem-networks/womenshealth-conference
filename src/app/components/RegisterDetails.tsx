@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 // import Head from "next/head";
-// import axios from "axios";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -101,65 +101,29 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
   }, [searchParams]);
 
 
-  // useEffect(() => {
-  //   const fetchDetails = async () => {
-  //     const web_token = searchParams?.get("web_token");
-  //     if (!web_token) return;
-
-  //     try {
-  //       const response = await axios.post("/api/registration-details", {
-  //         web_token,
-  //       });
-
-  //       if (response.status === 200 && response.data) {
-  //         const data = response.data.data;
-  //         setDetails(data);
-
-  //         // Prevent double redirect if already on payment_success page
-  //         if (
-  //           data?.transaction_id !== null &&
-  //           !window.location.pathname.includes("payment_success")
-  //         ) {
-  //           router.replace(`/payment_success?web_token=${web_token}`);
-  //         }
-  //       } else {
-  //         setDetails(null);
-  //       }
-  //     } catch (error) {
-  //       console.error("Client error:", error);
-  //       setDetails(null);
-  //     }
-  //   };
-
-  //   fetchDetails();
-  // }, [searchParams, router]);
-
   useEffect(() => {
     const fetchDetails = async () => {
-      const rawWebToken = searchParams?.get("web_token");
-      if (!rawWebToken) return;
+      const web_token = searchParams?.get("web_token");
+      if (!web_token) return;
 
       try {
-        // Encode the token before sending to CMS
-        const encodedWebToken = btoa(rawWebToken);
-
-        // Fetch data directly from CMS
-        const response = await fetch(`${process.env.CMS_URL}/registration-details`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            web_token: encodedWebToken,
-            cid: process.env.CID,
-          }),
+        const response = await axios.post("/api/registration-details", {
+          web_token,
         });
 
-        const result = await response.json();
-        const data = result?.data;
-        setDetails(data);
+        if (response.status === 200 && response.data) {
+          const data = response.data.data;
+          setDetails(data);
 
-        // Handle redirect to payment_success
-        if (data?.transaction_id !== null && !window.location.pathname.includes("payment_success")) {
-          router.replace(`/payment_success?web_token=${rawWebToken}`);
+          // Prevent double redirect if already on payment_success page
+          if (
+            data?.transaction_id !== null &&
+            !window.location.pathname.includes("payment_success")
+          ) {
+            router.replace(`/payment_success?web_token=${web_token}`);
+          }
+        } else {
+          setDetails(null);
         }
       } catch (error) {
         console.error("Client error:", error);
