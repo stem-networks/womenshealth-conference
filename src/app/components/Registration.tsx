@@ -135,7 +135,6 @@ const Registration: React.FC<RegisterProps> = ({
   };
 
   // Handler for selecting participant type
-
   const sendFullFormData = useCallback(async (data: FormData) => {
     try {
       // First check if email exists and is valid
@@ -145,9 +144,24 @@ const Registration: React.FC<RegisterProps> = ({
       }
 
       const formDataObj = new FormData();
+      // Object.entries(data).forEach(([key, value]) => {
+      //   if (
+      //     typeof value === "string" ||
+      //     typeof value === "number" ||
+      //     typeof value === "boolean"
+      //   ) {
+      //     formDataObj.append(key, String(value));
+      //   } else if (value instanceof Blob) {
+      //     formDataObj.append(key, value);
+      //   } else if (value !== undefined && value !== null) {
+      //     formDataObj.append(key, JSON.stringify(value));
+      //   }
+      // });
+
       Object.entries(data).forEach(([key, value]) => {
-        if (
-          typeof value === "string" ||
+        if (typeof value === "string") {
+          formDataObj.append(key, value.trim()); // Trim string
+        } else if (
           typeof value === "number" ||
           typeof value === "boolean"
         ) {
@@ -767,43 +781,11 @@ const Registration: React.FC<RegisterProps> = ({
     const updatedFormData = { ...formData, submit_status: "1" };
     sendFullFormData(updatedFormData);
 
-    // Prepare API payload
-    // const postData = {
-    //   module_name: "registration_save",
-    //   keys: {
-    //     data: [
-    //       {
-    //         title: formData.title,
-    //         name: formData.name,
-    //         email: formData.email,
-    //         alt_email: formData.alt_email,
-    //         phone: formData.phone,
-    //         whatsapp_number: formData.whatsapp,
-    //         institution: formData.organization,
-    //         country: formData.country,
-    //         reg_category: formData.intrested,
-    //         occupency_text: formData.other_info["Selected Accommodation"],
-    //         occupancy:
-    //           formData.other_info["selected Accommodation Price"].toString(),
-    //         check_insel: formData.other_info["check In Date"],
-    //         check_outsel: formData.other_info["check Out Date"],
-    //         nights: formData.other_info["Num of Nights"].toString(),
-    //         no_of_participants: formData.no_participants.toString(),
-    //         no_of_accompanying: formData.no_accompanying.toString(),
-    //         reg_tot_hidden:
-    //           formData.other_info["Registration Price"].toString(),
-    //         price_of_each_accompanying:
-    //           formData.other_info["Price Per Accompanying Person"].toString(),
-    //         final_amt_input: formData.other_info["Total Price"].toString(),
-    //       },
-    //     ],
-    //   },
-    // };
-
-    // const webToken = `${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
-    const rawWebToken = `${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
+    // const rawWebToken = `${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
+    const rawWebToken = `${Math.floor(Date.now() / 1000)}_${Math.floor(Math.random() * 32768)}`;
     const encodedWebToken = btoa(rawWebToken);
 
+    // Prepare API payload
     const postData = {
       title: btoa(formData.title.trim()),
       name: btoa(formData.name.trim()),
@@ -828,12 +810,97 @@ const Registration: React.FC<RegisterProps> = ({
       // description: btoa(formData.description || ""),
     };
 
+    // try {
+    //   await axios.post("/api/register", postData, {
+    //     headers: { "Content-Type": "application/json" },
+    //   });
+
+    //   if (rawWebToken) {
+    //     router.push(`/register_details?web_token=${rawWebToken}`);
+    //   } else {
+    //     console.error("Web token not found in response");
+    //     await sendErrorToCMS({
+    //       name: formData?.name || "Unknown User",
+    //       email: formData?.email || "Unknown Email",
+    //       errorMessage: `Web token is missing in the API response.`,
+    //     });
+    //     // await logError("Web token is missing in the API response.");
+    //   }
+    // } catch (error) {
+    //   console.error("Error submitting registration:", error);
+    //   toast.error("Something went wrong while submitting the form.");
+    //   await sendErrorToCMS({
+    //     name: formData?.name || "Unknown User",
+    //     email: formData?.email || "Unknown Email",
+    //     errorMessage: `Failed to submit registration form: ${(error as Error).message || "No error message"}`,
+    //   });
+
+    //   // await logError("Registration failed: something went wrong.");
+    // }
 
     try {
+      // 1. Submit to CMS API
       await axios.post("/api/register", postData, {
         headers: { "Content-Type": "application/json" },
       });
 
+      // 2. Prepare payload for saving to JSON blob
+      const registerUserPayload = {
+        title: formData.title.trim(),
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        alt_email: formData.alt_email.trim() || "",
+        phone: formData.phone.trim(),
+        whatsapp: formData.whatsapp.trim() || "",
+        institution: formData.organization.trim(),
+        country: formData.country.trim(),
+        sub_type: formData.intrested.trim(),
+        reg_type: formData.intrested.trim().toLowerCase().replace(/ /g, "-"),
+        participants: formData.no_participants.toString(),
+        accompanying: formData.no_accompanying.toString(),
+        reg_price: formData.other_info["Registration Price"].toString(),
+        accompanying_price: formData.other_info["Price Per Accompanying Person"].toString(),
+        occupancy: formData.other_info["Selected Accommodation"],
+        occupancy_price: formData.other_info["selected Accommodation Price"].toString(),
+        checkin_date: formData.other_info["check In Date"],
+        checkout_date: formData.other_info["check Out Date"],
+        nights: formData.other_info["Num of Nights"].toString(),
+        total_price: formData.other_info["Total Price"].toString(),
+        price_type: "USD",
+        discount_reg: "0",
+        discount_accom: "0",
+        currency_rate: "1",
+        created_dt: new Date().toISOString().split("T")[0] + " 00:00:00",
+        updated_dt: new Date().toISOString().split("T")[0] + " 00:00:00",
+        reg_date: new Date().toISOString(),
+        viewed_dt: new Date().toISOString(),
+        reply_dt: new Date().toISOString(),
+        received_dt: new Date().toISOString(),
+        attempt: "1",
+        status: "1",
+        type: "Registration",
+        email_check_status: "0",
+        created_by: "User",
+        payment_type: "",
+        web_token: rawWebToken,
+        cid: "10029",
+        description: "",
+        url_link: null,
+        transaction_id: null,
+        viewed_by: null,
+        viewed_status: "0",
+        reply_status: "0",
+        other_info: null,
+        id: Date.now().toString(), // You can use an ID generator or UUID if needed
+        edition_id: "0",
+      };
+
+      // 3. Send to your save-register-user API
+      await axios.post("/api/save-register-user", registerUserPayload, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      // 4. Redirect to register_details
       if (rawWebToken) {
         router.push(`/register_details?web_token=${rawWebToken}`);
       } else {
@@ -843,7 +910,6 @@ const Registration: React.FC<RegisterProps> = ({
           email: formData?.email || "Unknown Email",
           errorMessage: `Web token is missing in the API response.`,
         });
-        // await logError("Web token is missing in the API response.");
       }
     } catch (error) {
       console.error("Error submitting registration:", error);
@@ -853,8 +919,6 @@ const Registration: React.FC<RegisterProps> = ({
         email: formData?.email || "Unknown Email",
         errorMessage: `Failed to submit registration form: ${(error as Error).message || "No error message"}`,
       });
-
-      // await logError("Registration failed: something went wrong.");
     }
 
     setLoading(false);

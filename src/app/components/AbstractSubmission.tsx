@@ -621,8 +621,14 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
 
       const formData = new FormData();
 
+      // Object.entries(updatedData).forEach(([key, value]) => {
+      //   formData.append(key, value || "");
+      // });
+
       Object.entries(updatedData).forEach(([key, value]) => {
-        formData.append(key, value || "");
+        const trimmedValue =
+          typeof value === "string" ? value.trim() : value ?? "";
+        formData.append(key, trimmedValue);
       });
 
       if (submitStatus) {
