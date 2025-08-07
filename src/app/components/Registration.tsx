@@ -883,7 +883,7 @@ const Registration: React.FC<RegisterProps> = ({
         created_by: "User",
         payment_type: "",
         web_token: rawWebToken,
-        cid: "10029",
+        cid: general.cid,
         description: "",
         url_link: null,
         transaction_id: null,

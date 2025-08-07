@@ -1,8 +1,6 @@
 // app/api/save-register-user/route.ts
-import { list, put } from "@vercel/blob";
+import { put, list } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
-
-const BLOB_PATH = "registration/register_user_details.json";
 
 export async function POST(req: NextRequest) {
     try {
@@ -12,6 +10,9 @@ export async function POST(req: NextRequest) {
             return val === undefined || val === null || val === "" ? fallback : val;
         };
 
+        const web_token = defaultValue(incoming.web_token, `${Date.now()}_${Math.floor(Math.random() * 100000)}`);
+
+        const BLOB_PATH = `registration/${web_token}.json`;
 
         const newEntry = {
             id: defaultValue(incoming.id, "0") as string | null,
@@ -58,36 +59,25 @@ export async function POST(req: NextRequest) {
             created_by: "User",
             received_dt: defaultValue(incoming.received_dt),
             payment_type: "",
-            web_token: defaultValue(incoming.web_token),
+            web_token: web_token,
             cid: defaultValue(incoming.cid),
             description: "",
             other_info: null,
         };
 
-        let existingData: Record<string, unknown>[] = [];
-
-        try {
-            const blobs = await list();
-            const existingBlob = blobs.blobs.find(b => b.pathname === BLOB_PATH);
-
-            if (existingBlob) {
-                const json = await fetch(existingBlob.url).then(res => res.json());
-                existingData = Array.isArray(json) ? json : [];
-            } else {
-                console.warn("Blob not found. Creating new...");
-            }
-        } catch (error) {
-            console.error("Failed to fetch blob list or data:", error);
+        // Check if a blob with the same token already exists
+        const blobs = await list();
+        const alreadyExists = blobs.blobs.find(b => b.pathname === BLOB_PATH);
+        if (alreadyExists) {
+            return NextResponse.json({ success: false, error: "Token already exists" }, { status: 409 });
         }
 
-        existingData.push(newEntry);
-
-        const updatedBlob = await put(BLOB_PATH, JSON.stringify(existingData, null, 2), {
+        const uploaded = await put(BLOB_PATH, JSON.stringify(newEntry, null, 2), {
             access: "public",
             contentType: "application/json",
         });
 
-        return NextResponse.json({ success: true, url: updatedBlob.url });
+        return NextResponse.json({ success: true, web_token, url: uploaded.url });
     } catch (error) {
         console.error("Error saving registration data:", error);
         return NextResponse.json({ success: false, error: "Unable to save registration data" }, { status: 500 });
