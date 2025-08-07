@@ -36,9 +36,7 @@
 // }
 
 
-// app/api/registration-details/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { get } from "@vercel/blob";
 
 export async function POST(req: NextRequest) {
   try {
@@ -48,11 +46,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Missing web_token" }, { status: 400 });
     }
 
-    const BLOB_PATH = `registration/${web_token}.json`;
+    const BLOB_URL = `https://stemnetwork.blob.vercel-storage.com/registration/${web_token}.json`;
 
     try {
-      const blob = await get(BLOB_PATH);
-      const data = await blob.json();
+      const response = await fetch(BLOB_URL);
+
+      if (!response.ok) {
+        throw new Error("Blob not found");
+      }
+
+      const data = await response.json();
 
       return NextResponse.json({ success: true, data }, { status: 200 });
     } catch (err) {
@@ -64,3 +67,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: "Server error" }, { status: 500 });
   }
 }
+
