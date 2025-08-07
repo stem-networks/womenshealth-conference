@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 // import Head from "next/head";
-import axios from "axios";
+// import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -100,70 +100,6 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
     }
   }, [searchParams]);
 
-  // const CancelModal: React.FC = () => {
-  //   return (
-  //     <div className="modal-backdrop">
-  //       <div className="modal">
-  //         <p>You clicked cancel. Do you want to try again?</p>
-  //         <div className="modal-footer">
-  //           <button onClick={() => setShowCancelModal(false)} className="btn">
-  //             OK
-  //           </button>
-  //         </div>
-  //       </div>
-  //       <style jsx>{`
-  //         .modal-backdrop {
-  //           position: fixed;
-  //           top: 0;
-  //           left: 0;
-  //           width: 100vw;
-  //           height: 100vh;
-  //           background: rgba(0, 0, 0, 0.5);
-  //           display: flex;
-  //           align-items: center;
-  //           justify-content: center;
-  //           z-index: 1000;
-  //         }
-  //         .modal {
-  //           background: white;
-  //           padding: 30px;
-  //           border-radius: 10px;
-  //           box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  //           width: 400px;
-  //           height: 200px;
-  //           max-width: 90%;
-  //           display: flex;
-  //           flex-direction: column;
-  //         }
-  //         .modal p {
-  //           margin-bottom: 5px;
-  //           line-height: 28px;
-  //           font-size: 18px;
-  //           text-align: center;
-  //         }
-  //         .modal-backdrop .modal-footer {
-  //           width: 100%;
-  //         }
-  //         .btn {
-  //           padding: 10px 20px;
-  //           font-size: 16px;
-  //           background: var(--primary-color);
-  //           color: #fff;
-  //           border-radius: 4px;
-  //           text-decoration: none;
-  //           transition: all 0.4s;
-  //           line-height: normal;
-  //           border: none;
-  //           transition: background-color 0.2s ease;
-  //           width: 100%;
-  //         }
-  //         .btn:hover {
-  //           background: var(--primary-color);
-  //         }
-  //       `}</style>
-  //     </div>
-  //   );
-  // };
 
   // useEffect(() => {
   //   const fetchDetails = async () => {
@@ -175,16 +111,20 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
   //         web_token,
   //       });
 
-  //       setTimeout(() => {
-  //         if (response.status === 200 && response.data) {
-  //           if (response.data.data?.transaction_id !== null) {
-  //             router.push(`/payment_success?web_token=${web_token}`);
-  //           }
-  //           setDetails(response.data.data);
-  //         } else {
-  //           setDetails(null);
+  //       if (response.status === 200 && response.data) {
+  //         const data = response.data.data;
+  //         setDetails(data);
+
+  //         // Prevent double redirect if already on payment_success page
+  //         if (
+  //           data?.transaction_id !== null &&
+  //           !window.location.pathname.includes("payment_success")
+  //         ) {
+  //           router.replace(`/payment_success?web_token=${web_token}`);
   //         }
-  //       }, 1000);
+  //       } else {
+  //         setDetails(null);
+  //       }
   //     } catch (error) {
   //       console.error("Client error:", error);
   //       setDetails(null);
@@ -196,27 +136,30 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
 
   useEffect(() => {
     const fetchDetails = async () => {
-      const web_token = searchParams?.get("web_token");
-      if (!web_token) return;
+      const rawWebToken = searchParams?.get("web_token");
+      if (!rawWebToken) return;
 
       try {
-        const response = await axios.post("/api/registration-details", {
-          web_token,
+        // Encode the token before sending to CMS
+        const encodedWebToken = btoa(rawWebToken);
+
+        // Fetch data directly from CMS
+        const response = await fetch(`${process.env.CMS_URL}/registration-details`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            web_token: encodedWebToken,
+            cid: process.env.CID,
+          }),
         });
 
-        if (response.status === 200 && response.data) {
-          const data = response.data.data;
-          setDetails(data);
+        const result = await response.json();
+        const data = result?.data;
+        setDetails(data);
 
-          // Prevent double redirect if already on payment_success page
-          if (
-            data?.transaction_id !== null &&
-            !window.location.pathname.includes("payment_success")
-          ) {
-            router.replace(`/payment_success?web_token=${web_token}`);
-          }
-        } else {
-          setDetails(null);
+        // Handle redirect to payment_success
+        if (data?.transaction_id !== null && !window.location.pathname.includes("payment_success")) {
+          router.replace(`/payment_success?web_token=${rawWebToken}`);
         }
       } catch (error) {
         console.error("Client error:", error);
@@ -226,6 +169,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
 
     fetchDetails();
   }, [searchParams, router]);
+
 
   const dataToShow = details;
 
@@ -454,7 +398,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
     } catch (err) {
       setLocalError("Error applying coupon: " + (err as Error).message);
       console.error("Error applying coupon:", err);
-      
+
     }
   };
 

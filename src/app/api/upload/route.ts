@@ -99,9 +99,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "File too large (2MB max)" }, { status: 400 });
     }
 
-    const fileName = `${project}/abstract_${Date.now()}.${fileExtension}`;
+    // Generate unique name: abstract_<hex_timestamp>.<random_decimal>.<ext>
+    const hexTimestamp = Date.now().toString(16);
+    const randomDecimal = Math.random().toString().slice(2, 8);
+    const uniqueName = `abstract_${hexTimestamp}.${randomDecimal}.${fileExtension}`;
+    const fileName = `${project}/${uniqueName}`;
 
-    // 🔍 Add logging here to debug
+    //  Add logging here to debug
     console.log("Uploading file:", fileName);
 
     const blob = await put(fileName, file, {

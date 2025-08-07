@@ -54,10 +54,6 @@ export async function POST(req: Request) {
       intrested,
       abstract_title,
       upload_abstract_file, // Base64-encoded URL of uploaded file
-      whatsapp_number,
-      city,
-      organization,
-      message,
     } = data;
 
     const cid = process.env.CID || "";
@@ -79,17 +75,22 @@ export async function POST(req: Request) {
     formData.append("abstract_attachment_url", upload_abstract_file);
 
     // Include extra fields in additional_info
-    formData.append(
-      "additional_info",
-      btoa(
-        JSON.stringify({
-          whatsapp_number,
-          city,
-          organization,
-          message,
-        })
-      )
-    );
+    // formData.append(
+    //   "additional_info",
+    //   btoa(
+    //     JSON.stringify({
+    //       whatsapp_number,
+    //       city,
+    //       organization,
+    //       message,
+    //     })
+    //   )
+    // );
+
+    if (data.other_info) {
+      formData.append("additional_info", data.other_info); // already base64-encoded
+    }
+
 
     const apiRes = await fetch(`${process.env.CMS_URL}`, {
       method: "POST",

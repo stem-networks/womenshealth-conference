@@ -31,8 +31,8 @@ interface CaptchaRefType {
 
 type PossibleRef =
   | React.RefObject<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
-    >
+    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
+  >
   | React.RefObject<CaptchaRefType | null>;
 
 interface FormAutoData {
@@ -75,8 +75,8 @@ interface CaptchaRefType {
 // FieldRef type union includes both types of refs
 type FieldRef =
   | React.RefObject<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
-    >
+    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
+  >
   | React.RefObject<CaptchaRefType | null>
   | null;
 
@@ -176,21 +176,11 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     [key: string]: string | undefined;
   }>({});
 
+  // Extract dynamic project name from general.site_url
+  const rawSiteUrl = general?.site_url || "";
+  const siteHostname = rawSiteUrl.replace(/^https?:\/\//, "").replace(".com", "");
+
   // Upload File to CMS
-  // async function uploadFile(file: File | null): Promise<string> {
-  //   if (!file) return "";
-  //   const formData = new FormData();
-  //   formData.append("file", file);
-
-  //   const uploadRes = await fetch("/api/upload", {
-  //     method: "POST",
-  //     body: formData,
-  //   });
-
-  //   const { fileUrl } = await uploadRes.json();
-  //   return fileUrl;
-  // }
-
   async function uploadFile(
     file: File | null,
     projectName: string
@@ -655,8 +645,8 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
           (error instanceof Error
             ? error.message
             : typeof error === "string"
-            ? error
-            : JSON.stringify(error)),
+              ? error
+              : JSON.stringify(error)),
         formBased: "CMS Abstract Form Submission",
       });
       return null;
@@ -812,15 +802,23 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
       }
     });
 
-    // Upload file and get URL
-    // const fileUrl = await uploadFile(formData.upload_abstract_file); // Implement separately
+    // Upload file and get URL using dynamic project name
     const fileUrl = await uploadFile(
       formData.upload_abstract_file,
-      "stem-2025"
-    ); // replace with dynamic project name if needed
+      siteHostname
+    );
 
     try {
-      // Prepare payload (Base64 encode here)
+
+      // Construct other_info field
+      const otherInfo = {
+        whatsapp_number: formData.whatsapp_number.trim(),
+        city: formData.city.trim(),
+        organization: formData.organization.trim(),
+        message: formData.message.trim(),
+      };
+
+      // Final payload with other_info field
       const payload = {
         abstract_title: btoa(formData.abstract_title.trim()),
         title: btoa(formData.title.trim()),
@@ -831,13 +829,28 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
         phone: btoa(formData.phone.trim()),
         intrested: btoa(formData.intrested.trim()),
         upload_abstract_file: btoa(fileUrl.trim()),
-
-        // New fields
-        whatsapp_number: btoa(formData.whatsapp_number.trim()),
-        city: btoa(formData.city.trim()),
-        organization: btoa(formData.organization.trim()),
-        message: btoa(formData.message.trim()),
+        other_info: btoa(JSON.stringify(otherInfo)), // Moved here as base64 encoded JSON
       };
+
+
+      // Prepare payload (Base64 encode here)
+      // const payload = {
+      //   abstract_title: btoa(formData.abstract_title.trim()),
+      //   title: btoa(formData.title.trim()),
+      //   name: btoa(formData.name.trim()),
+      //   country: btoa(formData.country.trim()),
+      //   email: btoa(formData.email.trim()),
+      //   alt_email: btoa(formData.alt_email.trim()),
+      //   phone: btoa(formData.phone.trim()),
+      //   intrested: btoa(formData.intrested.trim()),
+      //   upload_abstract_file: btoa(fileUrl.trim()),
+
+      //   // New fields
+      //   whatsapp_number: btoa(formData.whatsapp_number.trim()),
+      //   city: btoa(formData.city.trim()),
+      //   organization: btoa(formData.organization.trim()),
+      //   message: btoa(formData.message.trim()),
+      // };
 
       const response = await fetch("/api/abstract", {
         method: "POST",
@@ -871,9 +884,8 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
         await sendErrorToCMS({
           name: formData?.name || "Unknown User",
           email: formData?.email || "Unknown Email",
-          errorMessage: `Form submission failed with server response: ${
-            errorAbs.error || "No specific error"
-          }`,
+          errorMessage: `Form submission failed with server response: ${errorAbs.error || "No specific error"
+            }`,
         });
       }
     } catch (error) {
@@ -882,9 +894,8 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
       await sendErrorToCMS({
         name: formData?.name || "Unknown User",
         email: formData?.email || "Unknown Email",
-        errorMessage: `Failed to submit Abstract form: ${
-          (error as Error)?.message || "No error message"
-        }`,
+        errorMessage: `Failed to submit Abstract form: ${(error as Error)?.message || "No error message"
+          }`,
       });
     } finally {
       setIsSubmitting(false);
@@ -897,8 +908,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     email,
     errorMessage,
     formBased = "Abstract Form",
-    siteName = `${general.clname || "N/A"} (${general.csname || "N/A"} - ${
-      general.year || "N/A"
+    siteName = `${general.clname || "N/A"} (${general.csname || "N/A"} - ${general.year || "N/A"
     })`,
   }: {
     name: string;

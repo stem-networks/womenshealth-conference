@@ -134,32 +134,6 @@ const Registration: React.FC<RegisterProps> = ({
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-  // const sendFullFormData = useCallback(async (data: FormData) => {
-  //   try {
-  //     const formDataObj = new FormData();
-  //     Object.entries(data).forEach(([key, value]) => {
-  //       if (
-  //         typeof value === "string" ||
-  //         typeof value === "number" ||
-  //         typeof value === "boolean"
-  //       ) {
-  //         formDataObj.append(key, String(value));
-  //       } else if (value instanceof Blob) {
-  //         formDataObj.append(key, value);
-  //       } else if (value !== undefined && value !== null) {
-  //         formDataObj.append(key, JSON.stringify(value));
-  //       }
-  //     });
-
-  //     await axios.post("/api/send-to-cms", formDataObj, {
-  //       headers: { "Content-Type": "multipart/form-data" },
-  //     });
-
-  //   } catch (err) {
-  //     console.error("Error saving form data:", err);
-  //   }
-  // }, []);
-
   // Handler for selecting participant type
 
   const sendFullFormData = useCallback(async (data: FormData) => {
@@ -794,48 +768,74 @@ const Registration: React.FC<RegisterProps> = ({
     sendFullFormData(updatedFormData);
 
     // Prepare API payload
+    // const postData = {
+    //   module_name: "registration_save",
+    //   keys: {
+    //     data: [
+    //       {
+    //         title: formData.title,
+    //         name: formData.name,
+    //         email: formData.email,
+    //         alt_email: formData.alt_email,
+    //         phone: formData.phone,
+    //         whatsapp_number: formData.whatsapp,
+    //         institution: formData.organization,
+    //         country: formData.country,
+    //         reg_category: formData.intrested,
+    //         occupency_text: formData.other_info["Selected Accommodation"],
+    //         occupancy:
+    //           formData.other_info["selected Accommodation Price"].toString(),
+    //         check_insel: formData.other_info["check In Date"],
+    //         check_outsel: formData.other_info["check Out Date"],
+    //         nights: formData.other_info["Num of Nights"].toString(),
+    //         no_of_participants: formData.no_participants.toString(),
+    //         no_of_accompanying: formData.no_accompanying.toString(),
+    //         reg_tot_hidden:
+    //           formData.other_info["Registration Price"].toString(),
+    //         price_of_each_accompanying:
+    //           formData.other_info["Price Per Accompanying Person"].toString(),
+    //         final_amt_input: formData.other_info["Total Price"].toString(),
+    //       },
+    //     ],
+    //   },
+    // };
+
+    // const webToken = `${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
+    const rawWebToken = `${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
+    const encodedWebToken = btoa(rawWebToken);
+
     const postData = {
-      module_name: "registration_save",
-      keys: {
-        data: [
-          {
-            title: formData.title,
-            name: formData.name,
-            email: formData.email,
-            alt_email: formData.alt_email,
-            phone: formData.phone,
-            whatsapp_number: formData.whatsapp,
-            institution: formData.organization,
-            country: formData.country,
-            reg_category: formData.intrested,
-            occupency_text: formData.other_info["Selected Accommodation"],
-            occupancy:
-              formData.other_info["selected Accommodation Price"].toString(),
-            check_insel: formData.other_info["check In Date"],
-            check_outsel: formData.other_info["check Out Date"],
-            nights: formData.other_info["Num of Nights"].toString(),
-            no_of_participants: formData.no_participants.toString(),
-            no_of_accompanying: formData.no_accompanying.toString(),
-            reg_tot_hidden:
-              formData.other_info["Registration Price"].toString(),
-            price_of_each_accompanying:
-              formData.other_info["Price Per Accompanying Person"].toString(),
-            final_amt_input: formData.other_info["Total Price"].toString(),
-          },
-        ],
-      },
+      title: btoa(formData.title.trim()),
+      name: btoa(formData.name.trim()),
+      email: btoa(formData.email.trim()),
+      alt_email: btoa(formData.alt_email.trim() || ""),
+      phone: btoa(formData.phone.trim()),
+      whatsapp_number: btoa(formData.whatsapp.trim() || ""),
+      institution: btoa(formData.organization.trim()),
+      country: btoa(formData.country.trim()),
+      reg_category: btoa(formData.intrested.trim()),
+      occupency_text: btoa(formData.other_info["Selected Accommodation"]),
+      occupancy: btoa(formData.other_info["selected Accommodation Price"].toString()),
+      check_insel: btoa(formData.other_info["check In Date"]),
+      check_outsel: btoa(formData.other_info["check Out Date"]),
+      nights: btoa(formData.other_info["Num of Nights"].toString()),
+      no_of_participants: btoa(formData.no_participants.toString()),
+      no_of_accompanying: btoa(formData.no_accompanying.toString()),
+      reg_tot_hidden: btoa(formData.other_info["Registration Price"].toString()),
+      price_of_each_accompanying: btoa(formData.other_info["Price Per Accompanying Person"].toString()),
+      final_amt_input: btoa(formData.other_info["Total Price"].toString()),
+      web_token: encodedWebToken,
+      // description: btoa(formData.description || ""),
     };
 
+
     try {
-      const response = await axios.post("/api/register", postData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+      await axios.post("/api/register", postData, {
+        headers: { "Content-Type": "application/json" },
       });
 
-      const token = response.data?.data;
-      if (token) {
-        router.push(`/register_details?web_token=${token}`);
+      if (rawWebToken) {
+        router.push(`/register_details?web_token=${rawWebToken}`);
       } else {
         console.error("Web token not found in response");
         await sendErrorToCMS({
@@ -1030,26 +1030,6 @@ const Registration: React.FC<RegisterProps> = ({
   if (!isHydrated) {
     return null;
   }
-
-  // const logError = useCallback(
-  //   async (message: string) => {
-  //     try {
-  //       const payload = new FormData();
-  //       payload.append("form_based", "Registration Form");
-  //       payload.append("error_message", message);
-  //       payload.append("name", formData.name);
-  //       payload.append("email", formData.email);
-
-  //       await fetch("/api/send-to-telegram", {
-  //         method: "POST",
-  //         body: payload,
-  //       });
-  //     } catch (err) {
-  //       console.error("Error logging error:", err);
-  //     }
-  //   },
-  //   [formData.name, formData.email]
-  // );
 
 
 
