@@ -52,6 +52,7 @@ interface GeneralInfo {
   csname?: string;
   year?: string;
   clname?: string;
+  site_url?: string;
 }
 interface RegisterDetailsClientProps {
   generalInfo: GeneralInfo; // Replace `any` with the correct type if available
@@ -101,13 +102,54 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
   }, [searchParams]);
 
 
+  // useEffect(() => {
+  //   const fetchDetails = async () => {
+  //     const web_token = searchParams?.get("web_token");
+  //     if (!web_token) return;
+
+  //     try {
+  //       const response = await axios.post("/api/registration-details", {
+  //         web_token,
+  //       });
+
+  //       if (response.status === 200 && response.data) {
+  //         const data = response.data.data;
+  //         setDetails(data);
+
+  //         // Prevent double redirect if already on payment_success page
+  //         if (
+  //           data?.transaction_id !== null &&
+  //           !window.location.pathname.includes("payment_success")
+  //         ) {
+  //           router.replace(`/payment_success?web_token=${web_token}`);
+  //         }
+  //       } else {
+  //         setDetails(null);
+  //       }
+  //     } catch (error) {
+  //       console.error("Client error:", error);
+  //       setDetails(null);
+  //     }
+  //   };
+
+  //   fetchDetails();
+  // }, [searchParams, router]);
+
   useEffect(() => {
     const fetchDetails = async () => {
       const web_token = searchParams?.get("web_token");
       if (!web_token) return;
 
+      // Extract project name from site_url
+      const rawSiteUrl = generalInfo?.site_url || "";
+      const projectName = rawSiteUrl
+        .replace(/^https?:\/\//, "")
+        .replace(".com", "")
+        .trim();
+
       try {
-        const response = await axios.post("/api/registration-details", {
+        const response = await axios.post("/api/get-registration-details", {
+          projectName, // Added
           web_token,
         });
 
@@ -132,7 +174,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
     };
 
     fetchDetails();
-  }, [searchParams, router]);
+  }, [searchParams, router, generalInfo]);
 
 
   const dataToShow = details;
