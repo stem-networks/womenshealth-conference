@@ -1071,7 +1071,6 @@ const Registration: React.FC<RegisterProps> = ({
   }
 
 
-
   // sendError to Telegram 
   async function sendErrorToCMS({
     name,
