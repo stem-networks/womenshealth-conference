@@ -690,8 +690,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                           No of Accompanying Persons ($
                           {(dataToShow?.accompanying ?? 0) > 0
                             ? `${Math.round(
-                              (dataToShow?.accompanying_price ?? 0) /
-                              (dataToShow?.accompanying ?? 1)
+                              (dataToShow?.accompanying_price ?? 0)
                             )}`
                             : "N/A"}{" "}
                           each Person):
@@ -708,7 +707,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                           Total Accompanying Persons Price:
                         </td>
                         <td className="re_p3_main text-right fw-600">
-                          ${dataToShow?.accompanying_price}
+                          ${(dataToShow?.accompanying_price ?? 0) * (dataToShow?.accompanying ?? 0)}
                         </td>
                       </tr>
                     )}

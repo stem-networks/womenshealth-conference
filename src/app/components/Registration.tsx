@@ -224,15 +224,15 @@ const Registration: React.FC<RegisterProps> = ({
   const getCategoryFromParticipant = (participant: string): string => {
     switch (participant) {
       case "Listener (In-Person)":
-        return "1_Listener-In-Person_listener-in-person";
+        return "listener-in-person";
       case "Presenter (In-Person)":
-        return "2_Presenter-In-Person_presenter-in-person";
+        return "presenter-in-person";
       case "Student/Young Researcher":
-        return "3_Young-Researcher-In-Person_young-researcher-in-person";
+        return "young-researcher-in-person";
       case "Listener (Virtual)":
-        return "4_Listener-Virtual_listener-virtual";
+        return "listener-virtual";
       case "Presenter (Virtual)":
-        return "5_Presenter-Virtual_presenter-virtual";
+        return "presenter-virtual";
       default:
         return "";
     }
