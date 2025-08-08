@@ -68,6 +68,11 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
             }),
           });
 
+          console.log(
+            'Payment Confirm',
+            new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+          );
+
           const result = await response.json();
 
           if (result.success) {
@@ -92,6 +97,12 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
         } else {
           setPaymentStatus("not_done");
         }
+
+        console.log(
+          'Payment check',
+          new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+        );
+
       } catch (error) {
         console.error("Client: Payment check failed", error);
         setPaymentStatus("error");
