@@ -82,29 +82,6 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
       }
 
       // If orderID is missing or processing failed, check actual status
-      // try {
-      //   const paymentCheckData = {
-      //     module_name: "payment_check",
-      //     keys: { data: [{ web_token }] },
-      //     cid: process.env.NEXT_PUBLIC_CID,
-      //   };
-
-      //   const response = await axios.post(process.env.NEXT_PUBLIC_API_URL || "",
-      //     paymentCheckData
-      //   );
-      //   const resData = response.data;
-
-      //   if (resData.status === 200 && resData.data) {
-      //     setPaymentStatus("success");
-      //   } else {
-      //     setPaymentStatus("not_done");
-      //   }
-      // } catch (error) {
-      //   console.error("Payment check failed:", error);
-      //   setPaymentStatus("error");
-      // } finally {
-      //   setLoading(false);
-      // }
 
       try {
         const res = await axios.post("/api/payment-check", { web_token });
