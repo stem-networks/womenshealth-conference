@@ -810,34 +810,6 @@ const Registration: React.FC<RegisterProps> = ({
       // description: btoa(formData.description || ""),
     };
 
-    // try {
-    //   await axios.post("/api/register", postData, {
-    //     headers: { "Content-Type": "application/json" },
-    //   });
-
-    //   if (rawWebToken) {
-    //     router.push(`/register_details?web_token=${rawWebToken}`);
-    //   } else {
-    //     console.error("Web token not found in response");
-    //     await sendErrorToCMS({
-    //       name: formData?.name || "Unknown User",
-    //       email: formData?.email || "Unknown Email",
-    //       errorMessage: `Web token is missing in the API response.`,
-    //     });
-    //     // await logError("Web token is missing in the API response.");
-    //   }
-    // } catch (error) {
-    //   console.error("Error submitting registration:", error);
-    //   toast.error("Something went wrong while submitting the form.");
-    //   await sendErrorToCMS({
-    //     name: formData?.name || "Unknown User",
-    //     email: formData?.email || "Unknown Email",
-    //     errorMessage: `Failed to submit registration form: ${(error as Error).message || "No error message"}`,
-    //   });
-
-    //   // await logError("Registration failed: something went wrong.");
-    // }
-
     try {
       // 1. Submit to CMS API
       await axios.post("/api/register", postData, {
@@ -893,6 +865,9 @@ const Registration: React.FC<RegisterProps> = ({
         other_info: null,
         id: Date.now().toString(), // You can use an ID generator or UUID if needed
         edition_id: "0",
+
+        // New field so API can detect project name
+        site_url: general?.site_url || ""
       };
 
       // 3. Send to your save-register-user API
