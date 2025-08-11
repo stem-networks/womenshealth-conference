@@ -951,6 +951,13 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                       try {
                         const capturePayload = { orderID: data.orderID };
 
+                        // Extract project name from site_url
+                        const rawSiteUrl = generalInfo?.site_url || "";
+                        const projectName = rawSiteUrl
+                          .replace(/^https?:\/\//, "")
+                          .replace(".com", "")
+                          .trim();
+
                         // 1️⃣ Capture PayPal payment
                         const res = await fetch("/api/paypal/capture-order", {
                           method: "POST",
@@ -963,7 +970,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
 
                         // 2️⃣ Shared payment payload
                         const savePaymentPayload = {
-                          projectName: generalInfo?.site_url || "",
+                          projectName,
                           payment_ref_id: captureData.id,
                           web_token: dataToShow?.web_token,
                           total_price: adjustedPriceRef.current,
