@@ -143,8 +143,6 @@
 //   }
 // }
 
-
-
 // app/api/update-payment/route.ts
 import { list, put } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
@@ -160,27 +158,12 @@ type Payment = {
 
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) return error.message;
-  if (typeof error === "string") return error;
-  try {
-    return JSON.stringify(error);
-  } catch {
-    return "Unknown error";
-  }
+  return String(error);
 }
 
 export async function POST(req: NextRequest) {
   try {
-    // Parse JSON body safely
-    let body: unknown;
-    try {
-      body = await req.json();
-    } catch {
-      return NextResponse.json(
-        { success: false, error: "Invalid JSON body" },
-        { status: 400 }
-      );
-    }
-
+    const body = await req.json().catch(() => null);
     if (!body || typeof body !== "object") {
       return NextResponse.json(
         { success: false, error: "Invalid JSON body" },
@@ -194,7 +177,6 @@ export async function POST(req: NextRequest) {
       payment?: Payment;
     };
 
-    // Validate required fields
     if (!projectName || typeof projectName !== "string") {
       return NextResponse.json(
         { success: false, error: "Missing projectName" },
@@ -216,7 +198,7 @@ export async function POST(req: NextRequest) {
 
     const filePath = `${projectName}/registration/${web_token}.json`;
 
-    // 1) Check if blob exists
+    // Check blob existence
     const { blobs } = await list({ prefix: filePath });
     const found = blobs.find((b) => b.pathname === filePath);
     if (!found) {
@@ -226,38 +208,32 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 2) Fetch existing JSON, bypassing CDN cache
-    let existingData: Record<string, unknown> | null = null;
-    try {
-      const res = await fetch(`${found.url}?t=${Date.now()}`, { cache: "no-store" });
-      if (!res.ok) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: `Failed to read existing blob: ${res.status} ${res.statusText}`,
-          },
-          { status: 502 }
-        );
-      }
-      existingData = await res.json();
-    } catch {
+    // Read the existing JSON directly from blob URL with cache bypass
+    const res = await fetch(`${found.url}?t=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) {
       return NextResponse.json(
-        { success: false, error: "Failed to load existing JSON" },
-        { status: 500 }
+        {
+          success: false,
+          error: `Failed to read existing blob: ${res.status} ${res.statusText}`,
+        },
+        { status: 502 }
       );
     }
+    const existingData = (await res.json().catch(() => null)) as Record<string, unknown> | null;
 
     if (!existingData || typeof existingData !== "object") {
       return NextResponse.json(
-        { success: false, error: "Invalid existing registration data" },
+        { success: false, error: "Blob content is not valid JSON" },
         { status: 500 }
       );
     }
 
-    // 3) Merge payment - prefer new values over old
+    // Merge the payment fields
     const mergedPayment = {
-      ...(typeof existingData.payment === "object" ? existingData.payment : {}),
-      ...(typeof payment === "object" ? payment : {}),
+      ...(existingData.payment && typeof existingData.payment === "object"
+        ? existingData.payment
+        : {}),
+      ...payment,
     };
 
     const updated = {
@@ -266,7 +242,7 @@ export async function POST(req: NextRequest) {
       updated_dt: new Date().toISOString(),
     };
 
-    // 4) Save updated JSON back to blob storage (overwrite allowed)
+    // Write back with overwrite allowed
     await put(filePath, JSON.stringify(updated, null, 2), {
       access: "public",
       contentType: "application/json",
