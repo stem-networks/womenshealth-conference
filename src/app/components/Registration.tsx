@@ -817,7 +817,7 @@ const Registration: React.FC<RegisterProps> = ({
       });
 
       // 2. Prepare payload for saving to JSON blob
-      const registerUserPayload = [{
+      const registerUserPayload = {
         title: formData.title.trim(),
         name: formData.name.trim(),
         email: formData.email.trim(),
@@ -865,15 +865,10 @@ const Registration: React.FC<RegisterProps> = ({
         other_info: null,
         id: Date.now().toString(), // You can use an ID generator or UUID if needed
         edition_id: "0",
-        site_url: general?.site_url || "",
-        payment: {
-          payment_ref_id: "",
-          status: "",
-          total_price: "",
-          payment_method: "",
-          other_info: {}
-        }
-      }];
+
+        // New field so API can detect project name
+        site_url: general?.site_url || ""
+      };
 
       // 3. Send to your save-register-user API
       await axios.post("/api/save-register-user", registerUserPayload, {
