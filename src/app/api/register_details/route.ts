@@ -10,7 +10,7 @@ export async function POST(req: Request) {
       cid: process.env.CID, // only available on server
     };
 
-    const response = await fetch("https://stem-cms.com/discount_check.php", {
+    const response = await fetch(`${process.env.DISCOUNT_CHECK_URL}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
