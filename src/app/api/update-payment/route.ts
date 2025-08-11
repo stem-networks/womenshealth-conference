@@ -142,8 +142,10 @@
 //     );
 //   }
 // }
+
+
 // app/api/update-payment/route.ts
-import { list, put, del } from "@vercel/blob";
+import { list, put } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
 
 type Payment = {
@@ -181,23 +183,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Registration not found" }, { status: 404 });
     }
 
-    // Read old JSON
+    // Read old JSON (bypass cache)
     const res = await fetch(`${found.url}?t=${Date.now()}`, { cache: "no-store" });
     if (!res.ok) {
       return NextResponse.json({ success: false, error: "Failed to fetch existing file" }, { status: 502 });
     }
     const existingData = await res.json();
 
-    // Merge payment fields
-    const mergedPayment = {
-      ...(existingData.payment || {}),
-      ...payment
-    };
+    // Merge new payment into existing payment object
+    const mergedPayment = { ...(existingData.payment || {}), ...payment };
 
-    // Delete old file
-    await del(found.url);
-
-    // Save new file
+    // Overwrite the file directly (no delete)
     const updatedData = {
       ...existingData,
       payment: mergedPayment,
@@ -207,13 +203,15 @@ export async function POST(req: NextRequest) {
     await put(filePath, JSON.stringify(updatedData, null, 2), {
       access: "public",
       contentType: "application/json",
+      // 👇 ensures we overwrite the existing blob instead of creating a new one
+      addRandomSuffix: false,
     });
 
     return NextResponse.json({
       success: true,
       message: "Payment updated successfully",
       filePath,
-      payment: mergedPayment
+      payment: mergedPayment,
     });
 
   } catch (err: unknown) {
