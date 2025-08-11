@@ -1,3 +1,4 @@
+// app/api/cleanup/route.ts
 import { NextResponse } from "next/server";
 import { list, del } from "@vercel/blob";
 
@@ -13,10 +14,10 @@ export async function POST(req: Request) {
     }
 
     const start = new Date(startDate);
-    start.setHours(0, 0, 0, 0); // Start of the day
+    start.setHours(0, 0, 0, 0); // Start of day
 
     const end = new Date(endDate);
-    end.setHours(23, 59, 59, 999); // End of the day
+    end.setHours(23, 59, 59, 999); // End of day
 
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
       return NextResponse.json(
@@ -29,7 +30,8 @@ export async function POST(req: Request) {
     const deletedFiles: string[] = [];
 
     for (const blob of files.blobs) {
-      if (blob.pathname.startsWith(folderPath)) {
+      // Skip if it's exactly the folder name (no file after slash)
+      if (blob.pathname.startsWith(folderPath) && blob.pathname !== folderPath) {
         const uploadedTime = new Date(blob.uploadedAt);
         if (uploadedTime >= start && uploadedTime <= end) {
           await del(blob.pathname);
