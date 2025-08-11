@@ -262,7 +262,6 @@ export async function POST(req: NextRequest) {
                 reply_status: "0",
                 reply_by: null,
                 reply_dt: defaultValue(incoming.reply_dt),
-                type: "Registration",
                 email_check_status: "0",
                 created_by: "User",
                 received_dt: defaultValue(incoming.received_dt),
@@ -271,15 +270,15 @@ export async function POST(req: NextRequest) {
                 cid: defaultValue(incoming.cid),
                 description: "",
                 other_info: null,
-                site_url: siteUrl
-            },
-            {
-                type: "Payment",
-                payment_ref_id: "",
-                status: "",
-                total_price: "",
-                payment_method: "",
-                other_info: {}
+                site_url: siteUrl,
+
+                payment: {
+                    payment_ref_id: "",
+                    status: "",
+                    total_price: "",
+                    payment_method: "",
+                    other_info: {}
+                }
             }
         ];
 

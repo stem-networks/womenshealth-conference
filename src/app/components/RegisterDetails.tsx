@@ -182,6 +182,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
       const web_token = searchParams?.get("web_token");
       if (!web_token) return;
 
+      // Extract project name from site_url
       const rawSiteUrl = generalInfo?.site_url || "";
       const projectName = rawSiteUrl
         .replace(/^https?:\/\//, "")
@@ -190,28 +191,20 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
 
       try {
         const response = await axios.post("/api/get-registration-details", {
-          projectName,
+          projectName, // Added
           web_token,
         });
 
         if (response.status === 200 && response.data) {
           const data = response.data.data;
+          setDetails(data);
 
-          if (Array.isArray(data)) {
-            const registrationData = data.find((item) => item.type === "Registration") || null;
-            const paymentData = data.find((item) => item.type === "Payment") || null;
-
-            setDetails(registrationData);
-
-            if (
-              paymentData?.transaction_id &&
-              String(paymentData.transaction_id).trim() !== "" &&
-              !window.location.pathname.includes("payment_success")
-            ) {
-              router.replace(`/payment_success?web_token=${web_token}`);
-            }
-          } else {
-            setDetails(data);
+          // Prevent double redirect if already on payment_success page
+          if (
+            data?.transaction_id !== null &&
+            !window.location.pathname.includes("payment_success")
+          ) {
+            router.replace(`/payment_success?web_token=${web_token}`);
           }
         } else {
           setDetails(null);
@@ -224,8 +217,6 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
 
     fetchDetails();
   }, [searchParams, router, generalInfo]);
-
-
 
   const dataToShow = details;
 
@@ -1031,18 +1022,18 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                         };
 
                         // 3️⃣ Save to CMS
-                        // let cmsResult;
-                        // try {
-                        //   const cmsRes = await fetch("/api/paypal/save-payment", {
-                        //     method: "POST",
-                        //     headers: { "Content-Type": "application/json" },
-                        //     body: JSON.stringify(savePaymentPayload),
-                        //   });
-                        //   cmsResult = await cmsRes.json();
-                        //   console.log("✅ CMS save-payment Response:", cmsResult);
-                        // } catch (cmsErr) {
-                        //   console.error("❌ CMS save-payment Error:", cmsErr);
-                        // }
+                        let cmsResult;
+                        try {
+                          const cmsRes = await fetch("/api/paypal/save-payment", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(savePaymentPayload),
+                          });
+                          cmsResult = await cmsRes.json();
+                          console.log("✅ CMS save-payment Response:", cmsResult);
+                        } catch (cmsErr) {
+                          console.error("❌ CMS save-payment Error:", cmsErr);
+                        }
 
                         // 4️⃣ Save to Vercel Blob
                         let vercelResult;
