@@ -1,4 +1,3 @@
-// app/api/cleanup/route.ts
 import { NextResponse } from "next/server";
 import { list, del } from "@vercel/blob";
 
@@ -14,7 +13,10 @@ export async function POST(req: Request) {
     }
 
     const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0); // Start of the day
+
     const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999); // End of the day
 
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
       return NextResponse.json(
