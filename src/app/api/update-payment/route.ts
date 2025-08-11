@@ -144,16 +144,16 @@
 // }
 
 // app/api/update-payment/route.ts
-import { list, put } from "@vercel/blob";
+import { list, put, del } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
 
 type Payment = {
-  type?: string;
-  payment_ref_id?: string;
-  status?: string;
-  total_price?: string | number;
-  payment_method?: string;
-  other_info?: Record<string, unknown>;
+  type: string;
+  payment_ref_id: string;
+  status: string;
+  total_price: string | number;
+  payment_method: string;
+  other_info: Record<string, unknown>;
 };
 
 function getErrorMessage(error: unknown): string {
@@ -198,7 +198,7 @@ export async function POST(req: NextRequest) {
 
     const filePath = `${projectName}/registration/${web_token}.json`;
 
-    // Check blob existence
+    // Step 1 — Find existing blob
     const { blobs } = await list({ prefix: filePath });
     const found = blobs.find((b) => b.pathname === filePath);
     if (!found) {
@@ -208,7 +208,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Read the existing JSON directly from blob URL with cache bypass
+    // Step 2 — Read existing file content
     const res = await fetch(`${found.url}?t=${Date.now()}`, { cache: "no-store" });
     if (!res.ok) {
       return NextResponse.json(
@@ -219,8 +219,8 @@ export async function POST(req: NextRequest) {
         { status: 502 }
       );
     }
-    const existingData = (await res.json().catch(() => null)) as Record<string, unknown> | null;
 
+    const existingData = (await res.json().catch(() => null)) as Record<string, unknown> | null;
     if (!existingData || typeof existingData !== "object") {
       return NextResponse.json(
         { success: false, error: "Blob content is not valid JSON" },
@@ -228,40 +228,31 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Merge the payment fields
-    const mergedPayment = {
-      ...(existingData.payment && typeof existingData.payment === "object"
-        ? existingData.payment
-        : {}),
-      ...payment,
-    };
+    // Step 3 — Delete old blob
+    await del(found.url);
 
-    const updated = {
+    // Step 4 — Create new file with updated payment data
+    const updatedData = {
       ...existingData,
-      payment: mergedPayment,
+      payment,
       updated_dt: new Date().toISOString(),
     };
 
-    // Write back with overwrite allowed
-    await put(filePath, JSON.stringify(updated, null, 2), {
+    await put(filePath, JSON.stringify(updatedData, null, 2), {
       access: "public",
       contentType: "application/json",
-      allowOverwrite: true,
     });
 
     return NextResponse.json({
       success: true,
-      message: "Payment updated successfully",
+      message: "Payment replaced successfully",
       web_token,
       filePath,
     });
   } catch (error: unknown) {
     console.error("Payment update error:", error);
     return NextResponse.json(
-      {
-        success: false,
-        error: getErrorMessage(error),
-      },
+      { success: false, error: getErrorMessage(error) },
       { status: 500 }
     );
   }
