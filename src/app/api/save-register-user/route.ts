@@ -156,8 +156,7 @@ export async function POST(req: NextRequest) {
             cid: defaultValue(incoming.cid),
             description: "",
             other_info: null,
-            site_url: siteUrl,
-            
+            site_url: siteUrl,            
             payment: {
                 type: "payment",
                 payment_ref_id: "",

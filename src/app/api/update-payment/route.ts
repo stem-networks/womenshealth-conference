@@ -2,10 +2,53 @@
 import { list, put } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
 
+type Payment = {
+  type?: string;
+  payment_ref_id?: string;
+  status?: string;
+  total_price?: string | number;
+  payment_method?: string;
+  other_info?: Record<string, unknown>;
+};
+
+// Helper to ensure we always return a readable error message
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "string") return error;
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return "Unknown error";
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { projectName, web_token, payment } = await req.json();
+    // Parse body safely
+    let body: unknown;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json(
+        { success: false, error: "Invalid JSON body" },
+        { status: 400 }
+      );
+    }
 
+    if (!body || typeof body !== "object") {
+      return NextResponse.json(
+        { success: false, error: "Invalid JSON body" },
+        { status: 400 }
+      );
+    }
+
+    const { projectName, web_token, payment } = body as {
+      projectName?: string;
+      web_token?: string;
+      payment?: Payment;
+    };
+
+    // Validate required fields
     if (!projectName || typeof projectName !== "string") {
       return NextResponse.json(
         { success: false, error: "Missing projectName" },
@@ -27,30 +70,56 @@ export async function POST(req: NextRequest) {
 
     const filePath = `${projectName}/registration/${web_token}.json`;
 
-    // Find the blob
-    const blobs = await list({ prefix: filePath });
-    if (!blobs.blobs.length) {
+    // 1) Check if blob exists
+    const { blobs } = await list({ prefix: filePath });
+    const found = blobs.find((b) => b.pathname === filePath);
+    if (!found) {
       return NextResponse.json(
         { success: false, error: "Registration not found" },
         { status: 404 }
       );
     }
 
-    // Public URL of the blob
-    const fileUrl = blobs.blobs[0].url;
+    // 2) Read existing JSON file from public URL
+    const res = await fetch(found.url, { cache: "no-store" });
+    if (!res.ok) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Failed to read existing blob: ${res.status} ${res.statusText}`,
+        },
+        { status: 502 }
+      );
+    }
 
-    // Fetch and parse JSON
-    const res = await fetch(fileUrl);
-    const existingData = await res.json();
+    const existingData = (await res.json().catch(() => null)) as Record<
+      string,
+      unknown
+    > | null;
 
-    // Update payment field
-    existingData.payment = {
-      ...existingData.payment,
+    if (!existingData || typeof existingData !== "object") {
+      return NextResponse.json(
+        { success: false, error: "Blob content is not valid JSON" },
+        { status: 500 }
+      );
+    }
+
+    // 3) Merge payment data
+    const mergedPayment = {
+      ...(existingData.payment && typeof existingData.payment === "object"
+        ? existingData.payment
+        : {}),
       ...payment,
     };
 
-    // Save back to blob storage
-    await put(filePath, JSON.stringify(existingData, null, 2), {
+    const updated = {
+      ...existingData,
+      payment: mergedPayment,
+      updated_dt: new Date().toISOString(),
+    };
+
+    // 4) Save updated JSON back to blob storage
+    await put(filePath, JSON.stringify(updated, null, 2), {
       access: "public",
       contentType: "application/json",
     });
@@ -58,11 +127,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       message: "Payment updated successfully",
+      web_token,
+      filePath,
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Payment update error:", error);
     return NextResponse.json(
-      { success: false, error: "Server error" },
+      {
+        success: false,
+        error: getErrorMessage(error),
+      },
       { status: 500 }
     );
   }
