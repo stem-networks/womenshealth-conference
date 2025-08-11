@@ -114,41 +114,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { put, list, ListBlobResult, ListBlobResultBlob } from "@vercel/blob";
 
-// type BlobItem = {
-//   pathname: string;
-//   url: string;
-//   size: number;
-//   uploadedAt: string;
-// };
-
-// type BlobList = {
-//   blobs: BlobItem[];
-//   cursor?: string;
-// };
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-
     const {
       payment_ref_id, // PayPal transaction ID
       web_token,
       total_price,
-      other_info, // This will be additional_info
+      other_info, // additional_info
       payment_method = "PayPal",
       status = "success",
     } = body;
 
     if (!payment_ref_id || !web_token || !total_price) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    /**
-     * 1️⃣ Save payment to CMS (same as before)
-     */
+    // 1️⃣ Save payment to CMS
     const formData = new FormData();
     formData.append("or_payment", "1");
     formData.append("paymentstatus", btoa(status === "success" ? "1" : "0"));
@@ -161,9 +143,7 @@ export async function POST(req: NextRequest) {
     const cmsRes = await fetch(`${process.env.CMS_URL}`, {
       method: "POST",
       body: formData,
-      headers: {
-        Accept: "*/*",
-      },
+      headers: { Accept: "*/*" },
     });
 
     if (!cmsRes.ok) {
@@ -172,29 +152,17 @@ export async function POST(req: NextRequest) {
 
     const cmsData = await cmsRes.json();
 
-    /**
-     * 2️⃣ Update registration JSON in Vercel Blob
-     */
-    // const blobList: BlobList = await list();
-    // const registrationBlob = blobList.blobs.find((b: BlobItem) =>
-    //   b.pathname.endsWith(`/registration/${web_token}.json`)
-    // );
-
+    // 2️⃣ Update registration JSON in Vercel Blob
     const blobList: ListBlobResult = await list();
     const registrationBlob = blobList.blobs.find((b: ListBlobResultBlob) =>
-      b.pathname.endsWith(`/registration/${web_token}.json`)
+      b.pathname.includes(`/registration/${web_token}.json`)
     );
-
 
     if (!registrationBlob) {
       console.error("No registration blob found for token:", web_token);
-      return NextResponse.json(
-        { error: "Registration record not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Registration record not found" }, { status: 404 });
     }
 
-    // Fetch existing JSON data from blob
     let existingData: Record<string, unknown> = {};
     try {
       const res = await fetch(registrationBlob.url);
@@ -216,7 +184,7 @@ export async function POST(req: NextRequest) {
     };
 
     // Save updated JSON back to blob
-    await put(registrationBlob.pathname, JSON.stringify(existingData), {
+    await put(registrationBlob.pathname, JSON.stringify(existingData, null, 2), {
       access: "public",
       contentType: "application/json",
     });
@@ -228,9 +196,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error("❌ Error saving payment:", error);
-    return NextResponse.json(
-      { error: "Failed to save payment" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to save payment" }, { status: 500 });
   }
 }
+
