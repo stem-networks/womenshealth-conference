@@ -143,7 +143,6 @@
 //   }
 // }
 
-
 // app/api/update-payment/route.ts
 import { list, put } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
@@ -161,7 +160,10 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => null);
     if (!body || typeof body !== "object") {
-      return NextResponse.json({ success: false, error: "Invalid JSON body" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "Invalid JSON body" },
+        { status: 400 }
+      );
     }
 
     const { projectName, web_token, payment } = body as {
@@ -170,9 +172,21 @@ export async function POST(req: NextRequest) {
       payment?: Payment;
     };
 
-    if (!projectName) return NextResponse.json({ success: false, error: "Missing projectName" }, { status: 400 });
-    if (!web_token) return NextResponse.json({ success: false, error: "Missing web_token" }, { status: 400 });
-    if (!payment) return NextResponse.json({ success: false, error: "Missing payment data" }, { status: 400 });
+    if (!projectName)
+      return NextResponse.json(
+        { success: false, error: "Missing projectName" },
+        { status: 400 }
+      );
+    if (!web_token)
+      return NextResponse.json(
+        { success: false, error: "Missing web_token" },
+        { status: 400 }
+      );
+    if (!payment)
+      return NextResponse.json(
+        { success: false, error: "Missing payment data" },
+        { status: 400 }
+      );
 
     const filePath = `${projectName}/registration/${web_token}.json`;
 
@@ -180,13 +194,21 @@ export async function POST(req: NextRequest) {
     const { blobs } = await list({ prefix: filePath });
     const found = blobs.find((b) => b.pathname === filePath);
     if (!found) {
-      return NextResponse.json({ success: false, error: "Registration not found" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, error: "Registration not found" },
+        { status: 404 }
+      );
     }
 
     // Read old JSON (bypass cache)
-    const res = await fetch(`${found.url}?t=${Date.now()}`, { cache: "no-store" });
+    const res = await fetch(`${found.url}?t=${Date.now()}`, {
+      cache: "no-store",
+    });
     if (!res.ok) {
-      return NextResponse.json({ success: false, error: "Failed to fetch existing file" }, { status: 502 });
+      return NextResponse.json(
+        { success: false, error: "Failed to fetch existing file" },
+        { status: 502 }
+      );
     }
     const existingData = await res.json();
 
@@ -200,11 +222,12 @@ export async function POST(req: NextRequest) {
       updated_dt: new Date().toISOString(),
     };
 
+    // Overwrite the file directly (no delete)
     await put(filePath, JSON.stringify(updatedData, null, 2), {
       access: "public",
       contentType: "application/json",
-      // 👇 ensures we overwrite the existing blob instead of creating a new one
       addRandomSuffix: false,
+      allowOverwrite: true, // ✅ critical for overwriting
     });
 
     return NextResponse.json({
@@ -213,9 +236,11 @@ export async function POST(req: NextRequest) {
       filePath,
       payment: mergedPayment,
     });
-
   } catch (err: unknown) {
     console.error("Payment update error:", err);
-    return NextResponse.json({ success: false, error: String(err) }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: String(err) },
+      { status: 500 }
+    );
   }
 }
