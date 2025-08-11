@@ -142,7 +142,6 @@
 //     );
 //   }
 // }
-
 // app/api/update-payment/route.ts
 import { list, put, del } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
@@ -156,19 +155,11 @@ type Payment = {
   other_info: Record<string, unknown>;
 };
 
-function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message;
-  return String(error);
-}
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => null);
     if (!body || typeof body !== "object") {
-      return NextResponse.json(
-        { success: false, error: "Invalid JSON body" },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: "Invalid JSON body" }, { status: 400 });
     }
 
     const { projectName, web_token, payment } = body as {
@@ -177,64 +168,39 @@ export async function POST(req: NextRequest) {
       payment?: Payment;
     };
 
-    if (!projectName || typeof projectName !== "string") {
-      return NextResponse.json(
-        { success: false, error: "Missing projectName" },
-        { status: 400 }
-      );
-    }
-    if (!web_token || typeof web_token !== "string") {
-      return NextResponse.json(
-        { success: false, error: "Missing web_token" },
-        { status: 400 }
-      );
-    }
-    if (!payment || typeof payment !== "object") {
-      return NextResponse.json(
-        { success: false, error: "Missing payment data" },
-        { status: 400 }
-      );
-    }
+    if (!projectName) return NextResponse.json({ success: false, error: "Missing projectName" }, { status: 400 });
+    if (!web_token) return NextResponse.json({ success: false, error: "Missing web_token" }, { status: 400 });
+    if (!payment) return NextResponse.json({ success: false, error: "Missing payment data" }, { status: 400 });
 
     const filePath = `${projectName}/registration/${web_token}.json`;
 
-    // Step 1 — Find existing blob
+    // Find blob
     const { blobs } = await list({ prefix: filePath });
     const found = blobs.find((b) => b.pathname === filePath);
     if (!found) {
-      return NextResponse.json(
-        { success: false, error: "Registration not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, error: "Registration not found" }, { status: 404 });
     }
 
-    // Step 2 — Read existing file content
+    // Read old JSON
     const res = await fetch(`${found.url}?t=${Date.now()}`, { cache: "no-store" });
     if (!res.ok) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: `Failed to read existing blob: ${res.status} ${res.statusText}`,
-        },
-        { status: 502 }
-      );
+      return NextResponse.json({ success: false, error: "Failed to fetch existing file" }, { status: 502 });
     }
+    const existingData = await res.json();
 
-    const existingData = (await res.json().catch(() => null)) as Record<string, unknown> | null;
-    if (!existingData || typeof existingData !== "object") {
-      return NextResponse.json(
-        { success: false, error: "Blob content is not valid JSON" },
-        { status: 500 }
-      );
-    }
+    // Merge payment fields
+    const mergedPayment = {
+      ...(existingData.payment || {}),
+      ...payment
+    };
 
-    // Step 3 — Delete old blob
+    // Delete old file
     await del(found.url);
 
-    // Step 4 — Create new file with updated payment data
+    // Save new file
     const updatedData = {
       ...existingData,
-      payment,
+      payment: mergedPayment,
       updated_dt: new Date().toISOString(),
     };
 
@@ -245,15 +211,13 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Payment replaced successfully",
-      web_token,
+      message: "Payment updated successfully",
       filePath,
+      payment: mergedPayment
     });
-  } catch (error: unknown) {
-    console.error("Payment update error:", error);
-    return NextResponse.json(
-      { success: false, error: getErrorMessage(error) },
-      { status: 500 }
-    );
+
+  } catch (err: unknown) {
+    console.error("Payment update error:", err);
+    return NextResponse.json({ success: false, error: String(err) }, { status: 500 });
   }
 }
