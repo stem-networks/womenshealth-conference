@@ -963,6 +963,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
 
                         // 2️⃣ Shared payment payload
                         const savePaymentPayload = {
+                          projectName: generalInfo?.site_url || "",
                           payment_ref_id: captureData.id,
                           web_token: dataToShow?.web_token,
                           total_price: adjustedPriceRef.current,
@@ -973,18 +974,18 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                         };
 
                         // 3️⃣ Save to CMS
-                        let cmsResult;
-                        try {
-                          const cmsRes = await fetch("/api/paypal/save-payment", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(savePaymentPayload),
-                          });
-                          cmsResult = await cmsRes.json();
-                          console.log("✅ CMS save-payment Response:", cmsResult);
-                        } catch (cmsErr) {
-                          console.error("❌ CMS save-payment Error:", cmsErr);
-                        }
+                        // let cmsResult;
+                        // try {
+                        //   const cmsRes = await fetch("/api/paypal/save-payment", {
+                        //     method: "POST",
+                        //     headers: { "Content-Type": "application/json" },
+                        //     body: JSON.stringify(savePaymentPayload),
+                        //   });
+                        //   cmsResult = await cmsRes.json();
+                        //   console.log("✅ CMS save-payment Response:", cmsResult);
+                        // } catch (cmsErr) {
+                        //   console.error("❌ CMS save-payment Error:", cmsErr);
+                        // }
 
                         // 4️⃣ Save to Vercel Blob
                         let vercelResult;
