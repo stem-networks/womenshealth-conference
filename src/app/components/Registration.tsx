@@ -867,7 +867,16 @@ const Registration: React.FC<RegisterProps> = ({
         edition_id: "0",
 
         // New field so API can detect project name
-        site_url: general?.site_url || ""
+        site_url: general?.site_url || "",
+        payment: {
+          type: "payment",
+          payment_ref_id: "",
+          status: "",
+          total_price: "",
+          payment_method: "",
+          other_info: {}
+        }
+
       };
 
       // 3. Send to your save-register-user API

@@ -156,6 +156,16 @@ export async function POST(req: NextRequest) {
             cid: defaultValue(incoming.cid),
             description: "",
             other_info: null,
+            site_url: siteUrl,
+            
+            payment: {
+                type: "payment",
+                payment_ref_id: "",
+                status: "",
+                total_price: "",
+                payment_method: "",
+                other_info: {}
+            }
         };
 
         // ✅ Check if a blob with the same token already exists in this folder
