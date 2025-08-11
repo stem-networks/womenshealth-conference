@@ -961,7 +961,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                         const captureData = await res.json();
                         if (!res.ok) throw new Error("Failed to capture order");
 
-                        // 2️⃣ Prepare shared payment payload
+                        // 2️⃣ Shared payment payload
                         const savePaymentPayload = {
                           payment_ref_id: captureData.id,
                           web_token: dataToShow?.web_token,
@@ -973,22 +973,32 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                         };
 
                         // 3️⃣ Save to CMS
-                        const cmsRes = await fetch("/api/paypal/save-payment", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify(savePaymentPayload),
-                        });
-                        const cmsResult = await cmsRes.json();
-                        console.log("✅ CMS save-payment Response:", cmsResult);
+                        let cmsResult;
+                        try {
+                          const cmsRes = await fetch("/api/paypal/save-payment", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(savePaymentPayload),
+                          });
+                          cmsResult = await cmsRes.json();
+                          console.log("✅ CMS save-payment Response:", cmsResult);
+                        } catch (cmsErr) {
+                          console.error("❌ CMS save-payment Error:", cmsErr);
+                        }
 
                         // 4️⃣ Save to Vercel Blob
-                        const vercelRes = await fetch("/api/update-payment-vercel", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify(savePaymentPayload),
-                        });
-                        const vercelResult = await vercelRes.json();
-                        console.log("✅ Vercel update-payment Response:", vercelResult);
+                        let vercelResult;
+                        try {
+                          const vercelRes = await fetch("/api/update-payment", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(savePaymentPayload),
+                          });
+                          vercelResult = await vercelRes.json();
+                          console.log("✅ Vercel update-payment Response:", vercelResult);
+                        } catch (vercelErr) {
+                          console.error("❌ Vercel update-payment Error:", vercelErr);
+                        }
 
                         // 5️⃣ Redirect to success page
                         const encryptedData = btoa(JSON.stringify(savePaymentPayload));
@@ -1012,6 +1022,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                         setIsPending(false);
                       }
                     }}
+
 
 
                     onCancel={async (data) => {

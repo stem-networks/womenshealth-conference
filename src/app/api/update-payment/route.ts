@@ -1,4 +1,4 @@
-// src/app/api/vercel/update-payment/route.ts
+// src/app/api/update-payment/route.ts
 import { put, list } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
 

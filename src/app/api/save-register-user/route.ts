@@ -168,7 +168,13 @@ export async function POST(req: NextRequest) {
             site_url: siteUrl,
 
             // <<< NEW: placeholder for payment data so structure is consistent
-            payment: null
+            payment: {
+                payment_ref_id: "",
+                status: "",
+                total_price: "",
+                payment_method: "",
+                other_info: {}
+            }
         };
 
         // Check if a blob with the same token already exists in this folder
