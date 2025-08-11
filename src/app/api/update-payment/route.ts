@@ -122,6 +122,7 @@ export async function POST(req: NextRequest) {
     await put(filePath, JSON.stringify(updated, null, 2), {
       access: "public",
       contentType: "application/json",
+      allowOverwrite: true, // ✅ necessary to update existing file
     });
 
     return NextResponse.json({
