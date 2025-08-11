@@ -880,30 +880,88 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                       }
                     }}
 
-                    onApprove={async (data) => {
-                      // console.log("🟣 [PayPal] onApprove Triggered");
-                      // console.log("🧾 Approval Data:", data);
+                    // onApprove={async (data) => {
+                    //   try {
+                    //     const capturePayload = { orderID: data.orderID };
 
+
+                    //     const res = await fetch("/api/paypal/capture-order", {
+                    //       method: "POST",
+                    //       headers: {
+                    //         "Content-Type": "application/json",
+                    //       },
+                    //       body: JSON.stringify(capturePayload),
+                    //     });
+
+                    //     const captureData = await res.json();
+
+                    //     if (!res.ok) throw new Error("Failed to capture order");
+
+                    //     const savePaymentPayload = {
+                    //       payment_ref_id: captureData.id,
+                    //       web_token: dataToShow?.web_token,
+                    //       total_price: adjustedPriceRef.current,
+                    //       other_info: actualAmountRef.current,
+                    //       payment_method: "PayPal",
+                    //       status: "success",
+                    //       discount_amt: 0,
+                    //     };
+
+                    //     const saveRes = await fetch(
+                    //       "/api/paypal/save-payment",
+                    //       {
+                    //         method: "POST",
+                    //         headers: {
+                    //           "Content-Type": "application/json",
+                    //         },
+                    //         body: JSON.stringify(savePaymentPayload),
+                    //       }
+                    //     );
+
+                    //     const saveResult = await saveRes.json();
+                    //     console.log("✅ save-payment Response:", saveResult);
+
+                    //     const encryptedData = btoa(
+                    //       JSON.stringify(savePaymentPayload)
+                    //     );
+                    //     const query = new URLSearchParams({
+                    //       status: "success",
+                    //       web_token: dataToShow?.web_token || "",
+                    //       orderID: data.orderID || "",
+                    //       other_info: encryptedData || "",
+                    //     }).toString();
+
+                    //     router.push(`/payment_success?${query}`);
+                    //   } catch (error) {
+                    //     console.error("❌ Error in onApprove:", error);
+                    //     await sendErrorToCMS({
+                    //       name: dataToShow?.name || "Unknown User",
+                    //       email: dataToShow?.email || "Unknown Email",
+                    //       errorMessage: `Something went wrong while approving the PayPal transaction (capture/save step): ${(error as Error).message || "Unknown error in onApprove"}`,
+                    //     });
+                    //     router.push(
+                    //       `/register_details?status=failure&web_token=${dataToShow?.web_token}`
+                    //     );
+                    //   } finally {
+                    //     setIsPending(false);
+                    //   }
+                    // }}
+
+                    onApprove={async (data) => {
                       try {
                         const capturePayload = { orderID: data.orderID };
-                        // console.log(
-                        //   "📤 Sending to /api/paypal/capture-order:",
-                        //   capturePayload
-                        // );
 
+                        // 1️⃣ Capture PayPal payment
                         const res = await fetch("/api/paypal/capture-order", {
                           method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
+                          headers: { "Content-Type": "application/json" },
                           body: JSON.stringify(capturePayload),
                         });
 
                         const captureData = await res.json();
-                        // console.log("✅ capture-order Response:", captureData);
-
                         if (!res.ok) throw new Error("Failed to capture order");
 
+                        // 2️⃣ Prepare shared payment payload
                         const savePaymentPayload = {
                           payment_ref_id: captureData.id,
                           web_token: dataToShow?.web_token,
@@ -914,28 +972,26 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                           discount_amt: 0,
                         };
 
-                        // console.log(
-                        //   "📤 Sending to /api/paypal/save-payment:",
-                        //   savePaymentPayload
-                        // );
+                        // 3️⃣ Save to CMS
+                        const cmsRes = await fetch("/api/paypal/save-payment", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify(savePaymentPayload),
+                        });
+                        const cmsResult = await cmsRes.json();
+                        console.log("✅ CMS save-payment Response:", cmsResult);
 
-                        const saveRes = await fetch(
-                          "/api/paypal/save-payment",
-                          {
-                            method: "POST",
-                            headers: {
-                              "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify(savePaymentPayload),
-                          }
-                        );
+                        // 4️⃣ Save to Vercel Blob
+                        const vercelRes = await fetch("/api/update-payment-vercel", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify(savePaymentPayload),
+                        });
+                        const vercelResult = await vercelRes.json();
+                        console.log("✅ Vercel update-payment Response:", vercelResult);
 
-                        const saveResult = await saveRes.json();
-                        console.log("✅ save-payment Response:", saveResult);
-
-                        const encryptedData = btoa(
-                          JSON.stringify(savePaymentPayload)
-                        );
+                        // 5️⃣ Redirect to success page
+                        const encryptedData = btoa(JSON.stringify(savePaymentPayload));
                         const query = new URLSearchParams({
                           status: "success",
                           web_token: dataToShow?.web_token || "",
@@ -949,15 +1005,14 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                         await sendErrorToCMS({
                           name: dataToShow?.name || "Unknown User",
                           email: dataToShow?.email || "Unknown Email",
-                          errorMessage: `Something went wrong while approving the PayPal transaction (capture/save step): ${(error as Error).message || "Unknown error in onApprove"}`,
+                          errorMessage: `Something went wrong while approving the PayPal transaction: ${(error as Error).message}`,
                         });
-                        router.push(
-                          `/register_details?status=failure&web_token=${dataToShow?.web_token}`
-                        );
+                        router.push(`/register_details?status=failure&web_token=${dataToShow?.web_token}`);
                       } finally {
                         setIsPending(false);
                       }
                     }}
+
 
                     onCancel={async (data) => {
                       console.warn("🟠 [PayPal] onCancel Triggered");
