@@ -12,7 +12,14 @@
 
 //         const web_token = defaultValue(incoming.web_token, `${Date.now()}_${Math.floor(Math.random() * 100000)}`);
 
-//         const BLOB_PATH = `registration/${web_token}.json`;
+//         // Extract project name from site_url (or fallback)
+//         const siteUrl = incoming.site_url || "";
+//         const projectName = siteUrl
+//             ? siteUrl.replace(/^https?:\/\//, "").replace(".com", "")
+//             : "default_project";
+
+//         // Store inside projectName/registration folder
+//         const BLOB_PATH = `${projectName}/registration/${web_token}.json`;
 
 //         const newEntry = {
 //             id: defaultValue(incoming.id, "0") as string | null,
@@ -65,13 +72,14 @@
 //             other_info: null,
 //         };
 
-//         // Check if a blob with the same token already exists
+//         // Check if a blob with the same token already exists in this folder
 //         const blobs = await list();
 //         const alreadyExists = blobs.blobs.find(b => b.pathname === BLOB_PATH);
 //         if (alreadyExists) {
 //             return NextResponse.json({ success: false, error: "Token already exists" }, { status: 409 });
 //         }
 
+//         // Upload to the correct folder path
 //         const uploaded = await put(BLOB_PATH, JSON.stringify(newEntry, null, 2), {
 //             access: "public",
 //             contentType: "application/json",
@@ -83,7 +91,6 @@
 //         return NextResponse.json({ success: false, error: "Unable to save registration data" }, { status: 500 });
 //     }
 // }
-
 
 import { put, list } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
@@ -98,13 +105,13 @@ export async function POST(req: NextRequest) {
 
         const web_token = defaultValue(incoming.web_token, `${Date.now()}_${Math.floor(Math.random() * 100000)}`);
 
-        // ✅ Extract project name from site_url (or fallback)
+        // Extract project name from site_url (or fallback)
         const siteUrl = incoming.site_url || "";
         const projectName = siteUrl
             ? siteUrl.replace(/^https?:\/\//, "").replace(".com", "")
             : "default_project";
 
-        // ✅ Store inside projectName/registration folder
+        // Store inside projectName/registration folder
         const BLOB_PATH = `${projectName}/registration/${web_token}.json`;
 
         const newEntry = {
@@ -156,16 +163,22 @@ export async function POST(req: NextRequest) {
             cid: defaultValue(incoming.cid),
             description: "",
             other_info: null,
+
+            // <<< NEW: store the site_url so we can derive projectName later if needed
+            site_url: siteUrl,
+
+            // <<< NEW: placeholder for payment data so structure is consistent
+            payment: null
         };
 
-        // ✅ Check if a blob with the same token already exists in this folder
+        // Check if a blob with the same token already exists in this folder
         const blobs = await list();
         const alreadyExists = blobs.blobs.find(b => b.pathname === BLOB_PATH);
         if (alreadyExists) {
             return NextResponse.json({ success: false, error: "Token already exists" }, { status: 409 });
         }
 
-        // ✅ Upload to the correct folder path
+        // Upload to the correct folder path
         const uploaded = await put(BLOB_PATH, JSON.stringify(newEntry, null, 2), {
             access: "public",
             contentType: "application/json",
