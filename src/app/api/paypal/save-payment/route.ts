@@ -51,60 +51,92 @@
 //   }
 // }
 
-// src/app/api/paypal/save-payment/route.ts
+// src/app/api/update-payment/route.ts
+import { put } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-
     const {
-      payment_ref_id, // PayPal transaction ID
-      web_token,
+      projectName,       // e.g. "diabetes-conference"
+      web_token,         // e.g. "1754899790_27670"
+      status,
+      payment_method,
+      payment_ref_id,
       total_price,
-      other_info, // This will be additional_info
-      payment_method = "PayPal",
-      status = "success",
+      other_info
     } = body;
 
-    if (!payment_ref_id || !web_token || !total_price) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
+    // Validate
+    if (!projectName || typeof projectName !== "string") {
+      return NextResponse.json({ error: "Missing projectName" }, { status: 400 });
+    }
+    if (!web_token || typeof web_token !== "string") {
+      return NextResponse.json({ error: "Missing web_token" }, { status: 400 });
+    }
+    if (!process.env.BLOB_BASE_URL) {
+      return NextResponse.json({ error: "BLOB_BASE_URL is not configured" }, { status: 500 });
     }
 
-    const formData = new FormData();
-    formData.append("or_payment", "1");
-    formData.append("paymentstatus", btoa(status === "success" ? "1" : "0"));
-    formData.append("transaction_id", btoa(payment_ref_id));
-    formData.append("payment_method", btoa(payment_method));
-    formData.append("total_price", btoa(String(total_price)));
-    formData.append("web_token", btoa(web_token));
-    formData.append(
-      "additional_info",
-      btoa(JSON.stringify(other_info || {}))
-    );
+    const blobPath = `${projectName}/registration/${web_token}.json`;
+    const blobUrl = `${process.env.BLOB_BASE_URL}/${blobPath}`;
 
-    const cmsRes = await fetch(`${process.env.CMS_URL}`, {
-      method: "POST",
-      body: formData,
-      headers: {
-        Accept: "*/*",
-      },
+    // 1️⃣ Fetch existing registration record
+    const fetchRes = await fetch(blobUrl);
+    if (!fetchRes.ok) {
+      return NextResponse.json({ error: "Registration not found" }, { status: 404 });
+    }
+    const existingData = await fetchRes.json();
+
+    // 2️⃣ Prepare updated payment info
+    const updatedPayment = {
+      type: "Payment",
+      payment_ref_id: payment_ref_id || "",
+      status: status || "",
+      total_price: total_price || "",
+      payment_method: payment_method || "",
+      other_info: other_info || {},
+      updated_dt: new Date().toISOString(),
+    };
+
+    // 3️⃣ Handle array or object formats
+    let newData;
+    if (Array.isArray(existingData)) {
+      const paymentIndex = existingData.findIndex(
+        (item) => item.type && item.type.toLowerCase() === "payment"
+      );
+      if (paymentIndex === -1) {
+        existingData.push(updatedPayment);
+      } else {
+        existingData[paymentIndex] = {
+          ...existingData[paymentIndex],
+          ...updatedPayment,
+        };
+      }
+      newData = existingData;
+    } else if (typeof existingData === "object" && existingData !== null) {
+      existingData.payment = updatedPayment;
+      newData = existingData;
+    } else {
+      return NextResponse.json({ error: "Invalid registration data format" }, { status: 500 });
+    }
+
+    // 4️⃣ Save updated JSON back to blob
+    await put(blobPath, JSON.stringify(newData, null, 2), {
+      access: "public",
+      contentType: "application/json",
     });
 
-    if (!cmsRes.ok) {
-      throw new Error(`CMS returned ${cmsRes.status}`);
-    }
+    return NextResponse.json({
+      status: "success",
+      message: "Payment updated successfully",
+    });
 
-    const cmsData = await cmsRes.json();
-
-    return NextResponse.json({ status: "success", cmsResponse: cmsData });
   } catch (error) {
-    console.error("❌ Error saving payment to CMS:", error);
+    console.error("❌ Error updating payment:", error);
     return NextResponse.json(
-      { error: "Failed to save payment" },
+      { error: "Failed to update payment" },
       { status: 500 }
     );
   }
