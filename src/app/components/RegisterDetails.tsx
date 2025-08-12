@@ -495,39 +495,6 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
     totalAccommodationPrice,
   ]);
 
-  // async function sendErrorToCMS({
-  //   name,
-  //   email,
-  //   errorMessage,
-  //   formBased = "PayPal Payment",
-  // }: {
-  //   name: string;
-  //   email: string;
-  //   errorMessage: string;
-  //   formBased?: string;
-  // }) {
-  //   try {
-  //     const payload = new FormData();
-  //     payload.append("name", name);
-  //     payload.append("email", email);
-  //     payload.append("error_message", errorMessage);
-  //     payload.append("form_based", formBased);
-
-  //     const res = await fetch("/api/send-to-telegram", {
-  //       method: "POST",
-  //       body: payload,
-  //     });
-
-  //     if (!res.ok) {
-  //       console.error("Failed to send error to CMS");
-  //     }
-  //   } catch (err) {
-  //     console.error("Error sending to CMS:", err);
-  //   }
-  // }
-
-
-
   // sendError to Telegram 
   async function sendErrorToCMS({
     name,

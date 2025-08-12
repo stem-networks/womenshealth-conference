@@ -49,6 +49,13 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
         return;
       }
 
+      // Extract project name from site_url
+      const rawSiteUrl = general?.site_url || "";
+      const projectName = rawSiteUrl
+        .replace(/^https?:\/\//, "")
+        .replace(".com", "")
+        .trim();
+
       // If payment was marked success
       if (status === "success" && orderID && other_info) {
         try {
@@ -59,6 +66,7 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
             },
             body: JSON.stringify({
               payment_ref_id: orderID,
+              projectName,
               web_token,
               payment_method: "PayPal",
               status: "success",
@@ -88,8 +96,9 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
 
       // If orderID is missing or processing failed, check actual status
 
+
       try {
-        const res = await axios.post("/api/payment-check", { web_token });
+        const res = await axios.post("/api/payment-check", { projectName, web_token });
         const resData = res.data;
 
         if (resData.status === 200 && resData.data) {

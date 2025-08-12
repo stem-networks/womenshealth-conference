@@ -1,4 +1,4 @@
-// // app/api/payment-check/route.ts
+// app/api/payment-check/route.ts
 // import { NextRequest, NextResponse } from "next/server";
 // import axios from "axios";
 
@@ -38,34 +38,56 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { web_token } = await req.json();
+    const { projectName, web_token } = await req.json();
 
-    if (!web_token) {
-      return NextResponse.json({ error: "Missing web_token" }, { status: 400 });
+    if (!projectName || typeof projectName !== "string") {
+      return NextResponse.json(
+        { success: false, error: "Missing projectName" },
+        { status: 400 }
+      );
     }
 
-    // Prepare CMS form data (matching their expected params)
-    const formData = new FormData();
-    formData.append("or_payment_check", "1");
-    formData.append("web_token", btoa(web_token));
-    formData.append("cid", btoa(process.env.CID || ""));
+    if (!web_token || typeof web_token !== "string") {
+      return NextResponse.json(
+        { success: false, error: "Missing web_token" },
+        { status: 400 }
+      );
+    }
 
-    const cmsRes = await fetch(process.env.CMS_URL || "", {
-      method: "POST",
-      body: formData,
-      headers: {
-        Accept: "*/*",
-      },
-    });
+    if (!process.env.BLOB_BASE_URL) {
+      throw new Error("BLOB_BASE_URL is not set in environment variables");
+    }
 
-    const cmsData = await cmsRes.json();
+    // Example: https://<blob-url>/<projectName>/payment/<web_token>.json
+    const BLOB_URL = `${process.env.BLOB_BASE_URL}/${projectName}/payment/${web_token}.json`;
 
-    return NextResponse.json(cmsData);
+    try {
+      const response = await fetch(BLOB_URL);
+
+      if (!response.ok) {
+        throw new Error("Blob not found");
+      }
+
+      const data = await response.json();
+
+      return NextResponse.json(
+        { success: true, status: 200, data },
+        { status: 200 }
+      );
+    } catch (err) {
+      console.error("Blob fetch error:", err);
+      return NextResponse.json(
+        { success: false, status: 404, error: "Payment data not found" },
+        { status: 404 }
+      );
+    }
   } catch (error) {
-    console.error("Payment check error:", error);
+    console.error("Unexpected error:", error);
     return NextResponse.json(
-      { error: "Server error" },
+      { success: false, status: 500, error: "Server error" },
       { status: 500 }
     );
   }
 }
+
+
