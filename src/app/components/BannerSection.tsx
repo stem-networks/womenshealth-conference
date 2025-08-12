@@ -63,7 +63,7 @@ const BannerSection: React.FC<BannerSectionProps> = ({
 
   const shouldShowModal = (): boolean => {
     if (typeof window === "undefined") return true;
-    const lastInteraction = localStorage.getItem("TentativeFormClosed");
+    const lastInteraction = localStorage.getItem("BrochureFormClosed");
     if (!lastInteraction) return true;
 
     const lastInteractionTime = parseInt(lastInteraction, 10);
@@ -77,7 +77,7 @@ const BannerSection: React.FC<BannerSectionProps> = ({
 
     if (shouldShowModal()) {
       const timer = setTimeout(() => {
-        setModalType('tentative')
+        setModalType('brochure')
         setShowModal9(true);
       }, 20000);
 
@@ -134,7 +134,7 @@ const BannerSection: React.FC<BannerSectionProps> = ({
   const closeBrochureModal = () => {
     setShowModal9(false);
     if (typeof window !== "undefined") {
-      localStorage.setItem("TentativeFormClosed", Date.now().toString());
+      localStorage.setItem("BrochureFormClosed", Date.now().toString());
     }
   };
 
