@@ -1,16 +1,16 @@
-// src/app/components/PDFViewerWrapper.tsx
-'use client';
+// // src/app/components/PDFViewerWrapper.tsx
+// 'use client';
 
-import dynamic from 'next/dynamic';
+// import dynamic from 'next/dynamic';
 
-const PDFViewer = dynamic(() => import('./PDFViewer'), {
-    ssr: false,
-});
+// const PDFViewer = dynamic(() => import('./PDFViewer'), {
+//     ssr: false,
+// });
 
-interface PDFViewerWrapperProps {
-    fileUrl: string;
-}
+// interface PDFViewerWrapperProps {
+//     fileUrl: string;
+// }
 
-export default function PDFViewerWrapper({ fileUrl }: PDFViewerWrapperProps) {
-    return <PDFViewer fileUrl={fileUrl} />;
-}
+// export default function PDFViewerWrapper({ fileUrl }: PDFViewerWrapperProps) {
+//     return <PDFViewer fileUrl={fileUrl} />;
+// }
