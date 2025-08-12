@@ -102,7 +102,6 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
     }
   }, [searchParams]);
 
-
   // useEffect(() => {
   //   const fetchDetails = async () => {
   //     const web_token = searchParams?.get("web_token");
@@ -177,9 +176,49 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
   //   fetchDetails();
   // }, [searchParams, router, generalInfo]);
 
+  // useEffect(() => {
+  //   const fetchDetails = async () => {
+  //     const web_token = searchParams?.get("web_token");
+  //     if (!web_token) return;
+
+  //     // Extract project name from site_url
+  //     const rawSiteUrl = generalInfo?.site_url || "";
+  //     const projectName = rawSiteUrl
+  //       .replace(/^https?:\/\//, "")
+  //       .replace(".com", "")
+  //       .trim();
+
+  //     try {
+  //       const response = await axios.post("/api/get-registration-details", {
+  //         projectName, // Added
+  //         web_token,
+  //       });
+
+  //       if (response.status === 200 && response.data) {
+  //         const data = response.data.data;
+  //         setDetails(data);
+
+  //         // Prevent double redirect if already on payment_success page
+  //         if (
+  //           data?.transaction_id !== null &&
+  //           !window.location.pathname.includes("payment_success")
+  //         ) {
+  //           router.replace(`/payment_success?web_token=${web_token}`);
+  //         }
+  //       } else {
+  //         setDetails(null);
+  //       }
+  //     } catch (error) {
+  //       console.error("Client error:", error);
+  //       setDetails(null);
+  //     }
+  //   };
+
+  //   fetchDetails();
+  // }, [searchParams, router, generalInfo]);
 
   useEffect(() => {
-    const fetchDetails = async () => {
+    const fetchData = async () => {
       const web_token = searchParams?.get("web_token");
       if (!web_token) return;
 
@@ -191,33 +230,43 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
         .trim();
 
       try {
-        const response = await axios.post("/api/get-registration-details", {
-          projectName, // Added
+        // Step 1: Check payment confirmation
+        const paymentRes = await axios.post("/api/payment/confirm", {
+          projectName,
           web_token,
         });
 
-        if (response.status === 200 && response.data) {
-          const data = response.data.data;
-          setDetails(data);
+        if (paymentRes?.data?.success) {
+          // ✅ Payment confirmed — redirect
+          router.replace(`/payment_success?web_token=${web_token}`);
+          return; // stop here
+        }
+      } catch (error) {
+        console.error("Payment check error:", error);
+        // We continue to fetch registration details if payment check fails
+      }
 
-          // Prevent double redirect if already on payment_success page
-          if (
-            data?.transaction_id !== null &&
-            !window.location.pathname.includes("payment_success")
-          ) {
-            router.replace(`/payment_success?web_token=${web_token}`);
-          }
+      // Step 2: Fetch registration details if payment is not confirmed
+      try {
+        const regRes = await axios.post("/api/get-registration-details", {
+          projectName,
+          web_token,
+        });
+
+        if (regRes.status === 200 && regRes.data) {
+          setDetails(regRes.data.data);
         } else {
           setDetails(null);
         }
       } catch (error) {
-        console.error("Client error:", error);
+        console.error("Registration fetch error:", error);
         setDetails(null);
       }
     };
 
-    fetchDetails();
+    fetchData();
   }, [searchParams, router, generalInfo]);
+  
 
   const dataToShow = details;
 
@@ -313,23 +362,23 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
 
           const newActualAmount = data.cust_amt
             ? {
-              "Discount Applied With": data.applied_with || "",
-              "Total Amount": payTotal || 0,
-              "Discount Amount": payTotal - (data.cust_amt || payTotal),
-              "Final Amount After Discount": data.cust_amt || 0,
-            }
+                "Discount Applied With": data.applied_with || "",
+                "Total Amount": payTotal || 0,
+                "Discount Amount": payTotal - (data.cust_amt || payTotal),
+                "Final Amount After Discount": data.cust_amt || 0,
+              }
             : {
-              "Discount Applied With": data.applied_with || "",
-              "Total Amount": payTotal || 0,
-              [`Registration Discount (${data?.reg_per || "0"}%) Applied:`]:
-                (totalRegistrationPrice * (data?.reg_per || 0)) / 100 || 0,
-              [`Accommodation Discount (${data?.acc_per || "0"}%) Applied:`]:
-                (totalAccommodationPrice * (data?.acc_per || 0)) / 100 || 0,
-              "Final Amount After Discount":
-                payTotal -
-                (totalRegistrationPrice * (data?.reg_per || 0)) / 100 -
-                (totalAccommodationPrice * (data?.acc_per || 0)) / 100 || 0,
-            };
+                "Discount Applied With": data.applied_with || "",
+                "Total Amount": payTotal || 0,
+                [`Registration Discount (${data?.reg_per || "0"}%) Applied:`]:
+                  (totalRegistrationPrice * (data?.reg_per || 0)) / 100 || 0,
+                [`Accommodation Discount (${data?.acc_per || "0"}%) Applied:`]:
+                  (totalAccommodationPrice * (data?.acc_per || 0)) / 100 || 0,
+                "Final Amount After Discount":
+                  payTotal -
+                    (totalRegistrationPrice * (data?.reg_per || 0)) / 100 -
+                    (totalAccommodationPrice * (data?.acc_per || 0)) / 100 || 0,
+              };
           setActualAmount(newActualAmount);
           actualAmountRef.current = newActualAmount;
         } else {
@@ -446,7 +495,6 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
     } catch (err) {
       setLocalError("Error applying coupon: " + (err as Error).message);
       console.error("Error applying coupon:", err);
-
     }
   };
 
@@ -479,8 +527,8 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
         0,
         Math.round(
           (dataToShow?.total_price || 0) -
-          registrationDiscount -
-          accommodationDiscount
+            registrationDiscount -
+            accommodationDiscount
         )
       );
     }
@@ -495,13 +543,15 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
     totalAccommodationPrice,
   ]);
 
-  // sendError to Telegram 
+  // sendError to Telegram
   async function sendErrorToCMS({
     name,
     email,
     errorMessage,
     formBased = "PayPal Payment",
-    siteName = `${generalInfo.clname || "N/A"} (${generalInfo.csname || "N/A"} - ${generalInfo.year || "N/A"})`,
+    siteName = `${generalInfo.clname || "N/A"} (${
+      generalInfo.csname || "N/A"
+    } - ${generalInfo.year || "N/A"})`,
   }: {
     name: string;
     email: string;
@@ -529,7 +579,6 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
       console.error("❌ Exception while sending error to Telegram:", err);
     }
   }
-
 
   return (
     <div>
@@ -682,16 +731,16 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                     {(totalAccommodationPrice > 0 ||
                       ((dataToShow?.nights ?? 0) > 0 &&
                         dataToShow?.reg_type ===
-                        "customized-registration")) && (
-                        <tr>
-                          <td className="re_p3_main">
-                            Total Accommodation Price:
-                          </td>
-                          <td className="re_p3_main text-right fw-600">
-                            ${Math.round(totalAccommodationPrice)}
-                          </td>
-                        </tr>
-                      )}
+                          "customized-registration")) && (
+                      <tr>
+                        <td className="re_p3_main">
+                          Total Accommodation Price:
+                        </td>
+                        <td className="re_p3_main text-right fw-600">
+                          ${Math.round(totalAccommodationPrice)}
+                        </td>
+                      </tr>
+                    )}
 
                     {(dataToShow?.accompanying_price ?? 0) > 0 && (
                       <tr>
@@ -699,8 +748,8 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                           No of Accompanying Persons ($
                           {(dataToShow?.accompanying ?? 0) > 0
                             ? `${Math.round(
-                              (dataToShow?.accompanying_price ?? 0)
-                            )}`
+                                dataToShow?.accompanying_price ?? 0
+                              )}`
                             : "N/A"}{" "}
                           each Person):
                         </td>
@@ -716,7 +765,9 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                           Total Accompanying Persons Price:
                         </td>
                         <td className="re_p3_main text-right fw-600">
-                          ${(dataToShow?.accompanying_price ?? 0) * (dataToShow?.accompanying ?? 0)}
+                          $
+                          {(dataToShow?.accompanying_price ?? 0) *
+                            (dataToShow?.accompanying ?? 0)}
                         </td>
                       </tr>
                     )}
@@ -765,7 +816,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                             {Math.round(
                               (totalRegistrationPrice *
                                 discountDetails.reg_per) /
-                              100
+                                100
                             )}
                           </td>
                         </tr>
@@ -784,7 +835,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                             {Math.round(
                               (totalAccommodationPrice *
                                 (discountDetails.acc_per || 0)) /
-                              100
+                                100
                             )}
                           </td>
                         </tr>
@@ -792,15 +843,15 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
 
                     {((discountDetails?.reg_per || 0) > 0 ||
                       (discountDetails?.acc_per || 0) > 0) && (
-                        <tr>
-                          <td className="re_p3_main">
-                            Final Amount After Discount:
-                          </td>
-                          <td className="re_p3_main text-right fw-600 re_p3_main_right">
-                            ${adjustedPrice}
-                          </td>
-                        </tr>
-                      )}
+                      <tr>
+                        <td className="re_p3_main">
+                          Final Amount After Discount:
+                        </td>
+                        <td className="re_p3_main text-right fw-600 re_p3_main_right">
+                          ${adjustedPrice}
+                        </td>
+                      </tr>
+                    )}
 
                     {(discountDetails?.cust_amt || 0) > 0 && (
                       <tr>
@@ -883,16 +934,17 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                         await sendErrorToCMS({
                           name: dataToShow?.name || "Unknown User",
                           email: dataToShow?.email || "Unknown Email",
-                          errorMessage: `Something went wrong while creating the PayPal order: ${(error as Error).message || "Unknown error in createOrder"}`,
+                          errorMessage: `Something went wrong while creating the PayPal order: ${
+                            (error as Error).message ||
+                            "Unknown error in createOrder"
+                          }`,
                         });
                         setIsPending(false);
                       }
                     }}
-
                     // onApprove={async (data) => {
                     //   try {
                     //     const capturePayload = { orderID: data.orderID };
-
 
                     //     const res = await fetch("/api/paypal/capture-order", {
                     //       method: "POST",
@@ -982,13 +1034,16 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                         };
 
                         // 1️⃣ Keep existing CMS save-payment call
-                        const saveRes = await fetch("/api/paypal/save-payment", {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify(savePaymentPayload),
-                        });
+                        const saveRes = await fetch(
+                          "/api/paypal/save-payment",
+                          {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(savePaymentPayload),
+                          }
+                        );
 
                         const saveResult = await saveRes.json();
                         console.log("✅ save-payment Response:", saveResult);
@@ -1019,7 +1074,9 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                         });
 
                         // 3️⃣ Redirect to success page
-                        const encryptedData = btoa(JSON.stringify(savePaymentPayload));
+                        const encryptedData = btoa(
+                          JSON.stringify(savePaymentPayload)
+                        );
                         const query = new URLSearchParams({
                           status: "success",
                           web_token: dataToShow?.web_token || "",
@@ -1033,8 +1090,10 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                         await sendErrorToCMS({
                           name: dataToShow?.name || "Unknown User",
                           email: dataToShow?.email || "Unknown Email",
-                          errorMessage: `Something went wrong while approving the PayPal transaction (capture/save step): ${(error as Error).message || "Unknown error in onApprove"
-                            }`,
+                          errorMessage: `Something went wrong while approving the PayPal transaction (capture/save step): ${
+                            (error as Error).message ||
+                            "Unknown error in onApprove"
+                          }`,
                         });
                         router.push(
                           `/register_details?status=failure&web_token=${dataToShow?.web_token}`
@@ -1043,15 +1102,14 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                         setIsPending(false);
                       }
                     }}
-
-
                     onCancel={async (data) => {
                       console.warn("🟠 [PayPal] onCancel Triggered");
                       // console.log("❗ Cancel Payload:", data);
 
                       // Construct a readable cancel message
-                      const cancelMessage = `User canceled the PayPal payment. Order ID: ${data?.orderID || "N/A"
-                        }`;
+                      const cancelMessage = `User canceled the PayPal payment. Order ID: ${
+                        data?.orderID || "N/A"
+                      }`;
 
                       await sendErrorToCMS({
                         name: dataToShow?.name || "Unknown User",
@@ -1061,14 +1119,15 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
 
                       setShowCancelModal(true);
                     }}
-
                     onError={async (err) => {
                       console.error("🔴 [PayPal] onError Triggered");
                       console.error("💥 Error Payload:", err);
                       await sendErrorToCMS({
                         name: dataToShow?.name || "Unknown User",
                         email: dataToShow?.email || "Unknown Email",
-                        errorMessage: `An unexpected error occurred during the PayPal flow: ${JSON.stringify(err) || "No error in PayPal error"}`,
+                        errorMessage: `An unexpected error occurred during the PayPal flow: ${
+                          JSON.stringify(err) || "No error in PayPal error"
+                        }`,
                       });
                       router.push(
                         `/register_details?status=failure&web_token=${dataToShow?.web_token}`
