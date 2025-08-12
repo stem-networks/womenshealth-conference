@@ -238,7 +238,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
 
         if (paymentRes?.data?.success) {
           // ✅ Payment confirmed — redirect
-          router.replace(`/payment_success?web_token=${web_token}`);
+          router.replace(`/payment_success?status=success&web_token=${web_token}`);
           return; // stop here
         }
       } catch (error) {
@@ -266,7 +266,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
 
     fetchData();
   }, [searchParams, router, generalInfo]);
-  
+
 
   const dataToShow = details;
 

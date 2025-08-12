@@ -57,7 +57,7 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
         .trim();
 
       // If payment was marked success
-      if (status === "success" && orderID && other_info) {
+      if (status === "success") {
         try {
           const response = await fetch("/api/payment/confirm", {
             method: "POST",
@@ -65,14 +65,8 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              payment_ref_id: orderID,
               projectName,
               web_token,
-              payment_method: "PayPal",
-              status: "success",
-              total_price: otherInfoObject.total_price || "N/A",
-              other_info: otherInfoObject.other_info || "N/A",
-              discount_amt: otherInfoObject.discount_amt || 0,
             }),
           });
 
