@@ -53,6 +53,7 @@ interface GeneralInfo {
   year?: string;
   clname?: string;
   site_url?: string;
+  cid?: string;
 }
 interface RegisterDetailsClientProps {
   generalInfo: GeneralInfo; // Replace `any` with the correct type if available
@@ -992,26 +993,18 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                       try {
                         const capturePayload = { orderID: data.orderID };
 
-                        // Extract project name from site_url
-                        const rawSiteUrl = generalInfo?.site_url || "";
-                        const projectName = rawSiteUrl
-                          .replace(/^https?:\/\//, "")
-                          .replace(".com", "")
-                          .trim();
-
-                        // 1️⃣ Capture PayPal payment
                         const res = await fetch("/api/paypal/capture-order", {
                           method: "POST",
-                          headers: { "Content-Type": "application/json" },
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
                           body: JSON.stringify(capturePayload),
                         });
 
                         const captureData = await res.json();
                         if (!res.ok) throw new Error("Failed to capture order");
 
-                        // 2️⃣ Shared payment payload
                         const savePaymentPayload = {
-                          projectName,
                           payment_ref_id: captureData.id,
                           web_token: dataToShow?.web_token,
                           total_price: adjustedPriceRef.current,
@@ -1021,35 +1014,44 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                           discount_amt: 0,
                         };
 
-                        // 3️⃣ Save to CMS
-                        let cmsResult;
-                        try {
-                          const cmsRes = await fetch("/api/paypal/save-payment", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(savePaymentPayload),
-                          });
-                          cmsResult = await cmsRes.json();
-                          console.log("✅ CMS save-payment Response:", cmsResult);
-                        } catch (cmsErr) {
-                          console.error("❌ CMS save-payment Error:", cmsErr);
-                        }
+                        // 1️⃣ Keep existing CMS save-payment call
+                        const saveRes = await fetch("/api/paypal/save-payment", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify(savePaymentPayload),
+                        });
 
-                        // 4️⃣ Save to Vercel Blob
-                        let vercelResult;
-                        try {
-                          const vercelRes = await fetch("/api/update-payment", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(savePaymentPayload),
-                          });
-                          vercelResult = await vercelRes.json();
-                          console.log("✅ Vercel update-payment Response:", vercelResult);
-                        } catch (vercelErr) {
-                          console.error("❌ Vercel update-payment Error:", vercelErr);
-                        }
+                        const saveResult = await saveRes.json();
+                        console.log("✅ save-payment Response:", saveResult);
 
-                        // 5️⃣ Redirect to success page
+                        // 2️⃣ Also save to /api/save-payment-user (Blob storage)
+                        const paymentUserPayload = {
+                          transaction_id: captureData.id,
+                          payment_method: "PayPal",
+                          paymentstatus: "success",
+                          total_price: adjustedPriceRef.current,
+                          discount_amt: "0",
+                          other_info: actualAmountRef.current,
+                          status: "1",
+                          created_dt: new Date().toISOString(),
+                          updated_dt: new Date().toISOString(),
+                          web_token: dataToShow?.web_token,
+                          cid: generalInfo?.cid,
+                          site_url: generalInfo?.site_url || "",
+                          attempt: "1",
+                        };
+
+                        await fetch("/api/save-payment-user", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify(paymentUserPayload),
+                        });
+
+                        // 3️⃣ Redirect to success page
                         const encryptedData = btoa(JSON.stringify(savePaymentPayload));
                         const query = new URLSearchParams({
                           status: "success",
@@ -1064,14 +1066,16 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                         await sendErrorToCMS({
                           name: dataToShow?.name || "Unknown User",
                           email: dataToShow?.email || "Unknown Email",
-                          errorMessage: `Something went wrong while approving the PayPal transaction: ${(error as Error).message}`,
+                          errorMessage: `Something went wrong while approving the PayPal transaction (capture/save step): ${(error as Error).message || "Unknown error in onApprove"
+                            }`,
                         });
-                        router.push(`/register_details?status=failure&web_token=${dataToShow?.web_token}`);
+                        router.push(
+                          `/register_details?status=failure&web_token=${dataToShow?.web_token}`
+                        );
                       } finally {
                         setIsPending(false);
                       }
                     }}
-
 
 
                     onCancel={async (data) => {
