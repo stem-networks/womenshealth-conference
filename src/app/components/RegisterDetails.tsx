@@ -8,7 +8,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 // import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import { title } from "process";
+// import { title } from "process";
 // import { toast } from "react-toastify";
 
 // import {
