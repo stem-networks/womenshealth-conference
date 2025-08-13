@@ -76,6 +76,7 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
           );
 
           const result = await response.json();
+          console.log("payment results after fetching 111",result);
 
           if (result.success) {
             // Directly show final success content (do not redirect)
