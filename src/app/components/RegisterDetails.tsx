@@ -108,43 +108,17 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
     }
   }, [searchParams]);
 
+
   // useEffect(() => {
-  //   const fetchDetails = async () => {
+  //   const fetchData = async () => {
   //     const web_token = searchParams?.get("web_token");
-  //     if (!web_token) return;
 
-  //     try {
-  //       const response = await axios.post("/api/registration-details", {
-  //         web_token,
-  //       });
-
-  //       if (response.status === 200 && response.data) {
-  //         const data = response.data.data;
-  //         setDetails(data);
-
-  //         // Prevent double redirect if already on payment_success page
-  //         if (
-  //           data?.transaction_id !== null &&
-  //           !window.location.pathname.includes("payment_success")
-  //         ) {
-  //           router.replace(`/payment_success?web_token=${web_token}`);
-  //         }
-  //       } else {
-  //         setDetails(null);
-  //       }
-  //     } catch (error) {
-  //       console.error("Client error:", error);
+  //     // Step 0: Check if token exists
+  //     if (!web_token) {
+  //       setErrorMsg("token-error");
   //       setDetails(null);
+  //       return;
   //     }
-  //   };
-
-  //   fetchDetails();
-  // }, [searchParams, router]);
-
-  // useEffect(() => {
-  //   const fetchDetails = async () => {
-  //     const web_token = searchParams?.get("web_token");
-  //     if (!web_token) return;
 
   //     // Extract project name from site_url
   //     const rawSiteUrl = generalInfo?.site_url || "";
@@ -154,134 +128,114 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
   //       .trim();
 
   //     try {
-  //       const response = await axios.post("/api/get-registration-details", {
-  //         projectName, // Added
+  //       // Step 1: Check payment confirmation
+  //       const paymentRes = await axios.post("/api/payment/confirm", {
+  //         projectName,
   //         web_token,
   //       });
 
-  //       if (response.status === 200 && response.data) {
-  //         const data = response.data.data;
-  //         setDetails(data);
-
-  //         // Prevent double redirect if already on payment_success page
-  //         if (
-  //           data?.transaction_id !== null &&
-  //           !window.location.pathname.includes("payment_success")
-  //         ) {
-  //           router.replace(`/payment_success?web_token=${web_token}`);
-  //         }
-  //       } else {
-  //         setDetails(null);
+  //       if (paymentRes?.data?.success) {
+  //         // ✅ Payment confirmed — redirect
+  //         router.replace(`/payment_success?status=success&web_token=${web_token}`);
+  //         return; // stop here
   //       }
   //     } catch (error) {
-  //       console.error("Client error:", error);
-  //       setDetails(null);
+  //       console.error("Payment check error:", error);
+  //       // We continue to fetch registration details if payment check fails
   //     }
-  //   };
 
-  //   fetchDetails();
-  // }, [searchParams, router, generalInfo]);
-
-  // useEffect(() => {
-  //   const fetchDetails = async () => {
-  //     const web_token = searchParams?.get("web_token");
-  //     if (!web_token) return;
-
-  //     // Extract project name from site_url
-  //     const rawSiteUrl = generalInfo?.site_url || "";
-  //     const projectName = rawSiteUrl
-  //       .replace(/^https?:\/\//, "")
-  //       .replace(".com", "")
-  //       .trim();
-
+  //     // Step 2: Fetch registration details if payment is not confirmed
   //     try {
-  //       const response = await axios.post("/api/get-registration-details", {
-  //         projectName, // Added
+  //       const regRes = await axios.post("/api/get-registration-details", {
+  //         projectName,
   //         web_token,
   //       });
 
-  //       if (response.status === 200 && response.data) {
-  //         const data = response.data.data;
-  //         setDetails(data);
-
-  //         // Prevent double redirect if already on payment_success page
-  //         if (
-  //           data?.transaction_id !== null &&
-  //           !window.location.pathname.includes("payment_success")
-  //         ) {
-  //           router.replace(`/payment_success?web_token=${web_token}`);
-  //         }
+  //       if (regRes.status === 200 && regRes.data) {
+  //         setDetails(regRes.data.data);
   //       } else {
+  //         setErrorMsg("token-error");
   //         setDetails(null);
   //       }
   //     } catch (error) {
-  //       console.error("Client error:", error);
+  //       setErrorMsg("token-error");
+  //       // setErrorMsg("Failed to fetch registration details");
+  //       console.log(error)
   //       setDetails(null);
   //     }
   //   };
 
-  //   fetchDetails();
+  //   fetchData();
   // }, [searchParams, router, generalInfo]);
+
+
+
+  const fetchData = async () => {
+    const web_token = searchParams?.get("web_token");
+
+    // Step 0: Check if token exists
+    if (!web_token) {
+      setErrorMsg("token-error");
+      setDetails(null);
+      return;
+    }
+
+    // Extract project name from site_url
+    const rawSiteUrl = generalInfo?.site_url || "";
+    const projectName = rawSiteUrl
+      .replace(/^https?:\/\//, "")
+      .replace(".com", "")
+      .trim();
+
+    try {
+      // Step 1: Check payment confirmation
+      const paymentRes = await axios.post("/api/payment/confirm", {
+        projectName,
+        web_token,
+      });
+
+      if (paymentRes?.data?.success) {
+        // ✅ Payment confirmed — redirect
+        router.replace(`/payment_success?status=success&web_token=${web_token}`);
+        return; // stop here
+      }
+    } catch (error) {
+      console.error("Payment check error:", error);
+      // We continue to fetch registration details if payment check fails
+    }
+
+    // Step 2: Fetch registration details if payment is not confirmed
+    try {
+      const regRes = await axios.post("/api/get-registration-details", {
+        projectName,
+        web_token,
+      });
+
+      if (regRes.status === 200 && regRes.data) {
+        setDetails(regRes.data.data);
+      } else {
+        setErrorMsg("token-error");
+        setDetails(null);
+      }
+    } catch (error) {
+      setErrorMsg("token-error");
+      // setErrorMsg("Failed to fetch registration details");
+      console.log(error)
+      setDetails(null);
+    }
+  };
+
+  fetchData();
+
+  const handleRetry = () => {
+    setErrorMsg("");
+    setDetails(null);
+    fetchData();
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const web_token = searchParams?.get("web_token");
-
-      // Step 0: Check if token exists
-      if (!web_token) {
-        setErrorMsg("token-error");
-        setDetails(null);
-        return;
-      }
-
-      // Extract project name from site_url
-      const rawSiteUrl = generalInfo?.site_url || "";
-      const projectName = rawSiteUrl
-        .replace(/^https?:\/\//, "")
-        .replace(".com", "")
-        .trim();
-
-      try {
-        // Step 1: Check payment confirmation
-        const paymentRes = await axios.post("/api/payment/confirm", {
-          projectName,
-          web_token,
-        });
-
-        if (paymentRes?.data?.success) {
-          // ✅ Payment confirmed — redirect
-          router.replace(`/payment_success?status=success&web_token=${web_token}`);
-          return; // stop here
-        }
-      } catch (error) {
-        console.error("Payment check error:", error);
-        // We continue to fetch registration details if payment check fails
-      }
-
-      // Step 2: Fetch registration details if payment is not confirmed
-      try {
-        const regRes = await axios.post("/api/get-registration-details", {
-          projectName,
-          web_token,
-        });
-
-        if (regRes.status === 200 && regRes.data) {
-          setDetails(regRes.data.data);
-        } else {
-          setErrorMsg("token-error");
-          setDetails(null);
-        }
-      } catch (error) {
-        setErrorMsg("token-error");
-        // setErrorMsg("Failed to fetch registration details");
-        console.log(error)
-        setDetails(null);
-      }
-    };
-
     fetchData();
   }, [searchParams, router, generalInfo]);
-
 
   const dataToShow = details;
 
@@ -594,6 +548,12 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
     }
   }
 
+  // const handleRetry = () => {
+  //   setErrorMsg("");
+  //   setDetails(null);
+  //   fetchData(); // call the same function from useEffect
+  // };
+
   return (
     <div>
       <div className="brand_wrap">
@@ -662,7 +622,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                 </Link>{" "}.
               </p>
 
-              <Link href={`register_details?web_token=${dataToShow?.web_token}`} style={styles.tryButton}>Try Again</Link>
+              <button onClick={handleRetry} style={styles.tryButton}>Try Again</button>
             </div>
           </div>
         </div>
