@@ -2,16 +2,25 @@
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+
+  // UTF-8 safe Base64 encoder
+  function utf8ToBase64(str: string) {
+    const bytes = new TextEncoder().encode(str);
+    let binary = "";
+    bytes.forEach((b) => binary += String.fromCharCode(b));
+    return btoa(binary);
+  }
+
   try {
     const data = await req.json();
     const cid = process.env.CID || "";
 
     const formData = new FormData();
     formData.append("or", "1");
-    formData.append("cid", data.cid || btoa(cid));
+    formData.append("cid", data.cid || utf8ToBase64(cid));
     formData.append("title", data.title);
     formData.append("fname", data.name);
-    formData.append("lname", btoa(""));
+    formData.append("lname", utf8ToBase64(""));
     formData.append("country", data.country);
     formData.append("email", data.email);
     formData.append("altemail", data.alt_email); // FIXED

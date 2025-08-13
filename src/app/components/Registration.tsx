@@ -700,6 +700,14 @@ const Registration: React.FC<RegisterProps> = ({
     });
   }, [totalPrice]);
 
+  // UTF-8 safe Base64 encoder
+  function utf8ToBase64(str: string) {
+    const bytes = new TextEncoder().encode(str);
+    let binary = "";
+    bytes.forEach((b) => binary += String.fromCharCode(b));
+    return btoa(binary);
+  }
+
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setLoading(true);
@@ -783,29 +791,29 @@ const Registration: React.FC<RegisterProps> = ({
 
     // const rawWebToken = `${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
     const rawWebToken = `${Math.floor(Date.now() / 1000)}_${Math.floor(Math.random() * 32768)}`;
-    const encodedWebToken = btoa(rawWebToken);
+    const encodedWebToken = utf8ToBase64(rawWebToken);
 
     // Prepare API payload
     const postData = {
-      title: btoa(formData.title.trim()),
-      name: btoa(formData.name.trim()),
-      email: btoa(formData.email.trim()),
-      alt_email: btoa(formData.alt_email.trim() || ""),
-      phone: btoa(formData.phone.trim()),
-      whatsapp_number: btoa(formData.whatsapp.trim() || ""),
-      institution: btoa(formData.organization.trim()),
-      country: btoa(formData.country.trim()),
-      reg_category: btoa(formData.intrested.trim()),
-      occupency_text: btoa(formData.other_info["Selected Accommodation"]),
-      occupancy: btoa(formData.other_info["selected Accommodation Price"].toString()),
-      check_insel: btoa(formData.other_info["check In Date"]),
-      check_outsel: btoa(formData.other_info["check Out Date"]),
-      nights: btoa(formData.other_info["Num of Nights"].toString()),
-      no_of_participants: btoa(formData.no_participants.toString()),
-      no_of_accompanying: btoa(formData.no_accompanying.toString()),
-      reg_tot_hidden: btoa(formData.other_info["Registration Price"].toString()),
-      price_of_each_accompanying: btoa(formData.other_info["Price Per Accompanying Person"].toString()),
-      final_amt_input: btoa(formData.other_info["Total Price"].toString()),
+      title: utf8ToBase64(formData.title.trim()),
+      name: utf8ToBase64(formData.name.trim()),
+      email: utf8ToBase64(formData.email.trim()),
+      alt_email: utf8ToBase64(formData.alt_email.trim() || ""),
+      phone: utf8ToBase64(formData.phone.trim()),
+      whatsapp_number: utf8ToBase64(formData.whatsapp.trim() || ""),
+      institution: utf8ToBase64(formData.organization.trim()),
+      country: utf8ToBase64(formData.country.trim()),
+      reg_category: utf8ToBase64(formData.intrested.trim()),
+      occupency_text: utf8ToBase64(formData.other_info["Selected Accommodation"]),
+      occupancy: utf8ToBase64(formData.other_info["selected Accommodation Price"].toString()),
+      check_insel: utf8ToBase64(formData.other_info["check In Date"]),
+      check_outsel: utf8ToBase64(formData.other_info["check Out Date"]),
+      nights: utf8ToBase64(formData.other_info["Num of Nights"].toString()),
+      no_of_participants: utf8ToBase64(formData.no_participants.toString()),
+      no_of_accompanying: utf8ToBase64(formData.no_accompanying.toString()),
+      reg_tot_hidden: utf8ToBase64(formData.other_info["Registration Price"].toString()),
+      price_of_each_accompanying: utf8ToBase64(formData.other_info["Price Per Accompanying Person"].toString()),
+      final_amt_input: utf8ToBase64(formData.other_info["Total Price"].toString()),
       web_token: encodedWebToken,
       // description: btoa(formData.description || ""),
     };

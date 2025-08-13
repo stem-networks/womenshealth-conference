@@ -54,6 +54,7 @@ interface GeneralInfo {
   clname?: string;
   site_url?: string;
   cid?: string;
+  email?: string;
 }
 interface RegisterDetailsClientProps {
   generalInfo: GeneralInfo; // Replace `any` with the correct type if available
@@ -63,6 +64,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [details, setDetails] = useState<RegistrationData | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string>(""); // ✅ For error message
   const [showCancelModal, setShowCancelModal] = useState<boolean>(false);
   const [discountDetails, setDiscountDetails] =
     useState<DiscountDetails | null>(null);
@@ -220,7 +222,13 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
   useEffect(() => {
     const fetchData = async () => {
       const web_token = searchParams?.get("web_token");
-      if (!web_token) return;
+
+      // Step 0: Check if token exists
+      if (!web_token) {
+        setErrorMsg("token-error");
+        setDetails(null);
+        return;
+      }
 
       // Extract project name from site_url
       const rawSiteUrl = generalInfo?.site_url || "";
@@ -256,10 +264,13 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
         if (regRes.status === 200 && regRes.data) {
           setDetails(regRes.data.data);
         } else {
+          setErrorMsg("token-error");
           setDetails(null);
         }
       } catch (error) {
-        console.error("Registration fetch error:", error);
+        setErrorMsg("token-error");
+        // setErrorMsg("Failed to fetch registration details");
+        console.log(error)
         setDetails(null);
       }
     };
@@ -362,23 +373,23 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
 
           const newActualAmount = data.cust_amt
             ? {
-                "Discount Applied With": data.applied_with || "",
-                "Total Amount": payTotal || 0,
-                "Discount Amount": payTotal - (data.cust_amt || payTotal),
-                "Final Amount After Discount": data.cust_amt || 0,
-              }
+              "Discount Applied With": data.applied_with || "",
+              "Total Amount": payTotal || 0,
+              "Discount Amount": payTotal - (data.cust_amt || payTotal),
+              "Final Amount After Discount": data.cust_amt || 0,
+            }
             : {
-                "Discount Applied With": data.applied_with || "",
-                "Total Amount": payTotal || 0,
-                [`Registration Discount (${data?.reg_per || "0"}%) Applied:`]:
-                  (totalRegistrationPrice * (data?.reg_per || 0)) / 100 || 0,
-                [`Accommodation Discount (${data?.acc_per || "0"}%) Applied:`]:
-                  (totalAccommodationPrice * (data?.acc_per || 0)) / 100 || 0,
-                "Final Amount After Discount":
-                  payTotal -
-                    (totalRegistrationPrice * (data?.reg_per || 0)) / 100 -
-                    (totalAccommodationPrice * (data?.acc_per || 0)) / 100 || 0,
-              };
+              "Discount Applied With": data.applied_with || "",
+              "Total Amount": payTotal || 0,
+              [`Registration Discount (${data?.reg_per || "0"}%) Applied:`]:
+                (totalRegistrationPrice * (data?.reg_per || 0)) / 100 || 0,
+              [`Accommodation Discount (${data?.acc_per || "0"}%) Applied:`]:
+                (totalAccommodationPrice * (data?.acc_per || 0)) / 100 || 0,
+              "Final Amount After Discount":
+                payTotal -
+                (totalRegistrationPrice * (data?.reg_per || 0)) / 100 -
+                (totalAccommodationPrice * (data?.acc_per || 0)) / 100 || 0,
+            };
           setActualAmount(newActualAmount);
           actualAmountRef.current = newActualAmount;
         } else {
@@ -527,8 +538,8 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
         0,
         Math.round(
           (dataToShow?.total_price || 0) -
-            registrationDiscount -
-            accommodationDiscount
+          registrationDiscount -
+          accommodationDiscount
         )
       );
     }
@@ -549,8 +560,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
     email,
     errorMessage,
     formBased = "PayPal Payment",
-    siteName = `${generalInfo.clname || "N/A"} (${
-      generalInfo.csname || "N/A"
+    siteName = `${generalInfo.clname || "N/A"} (${generalInfo.csname || "N/A"
     } - ${generalInfo.year || "N/A"})`,
   }: {
     name: string;
@@ -602,547 +612,559 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
       >
         Payment Details
       </h2>
-
-      <div className="auto-container">
-        <div className="row clearfix payment-block">
-          <div className="col-md-9">
-            <div
-              className="count_total_wrap wow fadeInUp"
-              data-wow-delay="400ms"
-              data-wow-duration="1000ms"
-            >
-              <div className="sup_wrap_blue">
-                <table width="100%" cellSpacing="0" cellPadding="0">
-                  <tbody>
-                    {dataToShow?.name && (
-                      <tr>
-                        <td className="re_p3">Name:</td>
-                        <td className="re_p3 text-right fw-600">
-                          {dataToShow.name}
-                        </td>
-                      </tr>
-                    )}
-                    {dataToShow?.email && (
-                      <tr>
-                        <td className="re_p3">Email:</td>
-                        <td className="re_p3 text-right fw-600">
-                          {dataToShow.email}
-                        </td>
-                      </tr>
-                    )}
-                    {dataToShow?.phone && (
-                      <tr>
-                        <td className="re_p3">Phone:</td>
-                        <td className="re_p3 text-right fw-600">
-                          {dataToShow.phone}
-                        </td>
-                      </tr>
-                    )}
-                    {dataToShow?.country && (
-                      <tr>
-                        <td className="re_p3">Country:</td>
-                        <td className="re_p3 text-right fw-600">
-                          {dataToShow.country}
-                        </td>
-                      </tr>
-                    )}
-                    {dataToShow?.reg_type && (
-                      <tr>
-                        <td className="re_p3">Registration Type:</td>
-                        <td className="re_p3 text-right fw-600">
-                          {dataToShow.reg_type}
-                        </td>
-                      </tr>
-                    )}
-                    {(dataToShow?.participants || 0) > 0 && (
-                      <tr>
-                        <td className="re_p3 brb-none">Participants:</td>
-                        <td className="re_p3 brb-none text-right fw-600">
-                          {dataToShow?.participants}
-                        </td>
-                      </tr>
-                    )}
-
-                    {(dataToShow?.reg_price || 0) > 0 &&
-                      dataToShow?.reg_type !== "customized-registration" && (
-                        <tr>
-                          <td className="re_p3">Registration Price:</td>
-                          <td className="re_p3 text-right fw-600">
-                            ${dataToShow?.reg_price}
-                          </td>
-                        </tr>
-                      )}
-
-                    {totalRegistrationPrice >= 0 && (
-                      <tr>
-                        <td className="re_p3_main">
-                          Total Registration Price:
-                        </td>
-                        <td className="re_p3_main text-right fw-600">
-                          ${Math.round(totalRegistrationPrice)}
-                        </td>
-                      </tr>
-                    )}
-
-                    {(dataToShow?.occupancy_price || 0) > 0 &&
-                      dataToShow?.reg_type !== "customized-registration" && (
-                        <tr>
-                          <td className="re_p3">
-                            Accommodation Price Per Night:
-                          </td>
-                          <td className="re_p3 text-right fw-600">
-                            ${dataToShow?.occupancy_price}
-                          </td>
-                        </tr>
-                      )}
-
-                    {(dataToShow?.nights || 0) > 0 && (
-                      <tr>
-                        <td className="re_p3">Total No. Nights:</td>
-                        <td className="re_p3 text-right fw-600">
-                          {dataToShow?.nights}
-                        </td>
-                      </tr>
-                    )}
-                    {dataToShow?.checkin_date &&
-                      (dataToShow?.nights ?? 0) > 0 && (
-                        <tr>
-                          <td className="re_p3">Check-in Date:</td>
-                          <td className="re_p3 text-right fw-600">
-                            {formatDateWithDay(
-                              convertToDDMMYYYY(dataToShow.checkin_date)
-                            )}
-                          </td>
-                        </tr>
-                      )}
-
-                    {dataToShow?.checkout_date &&
-                      (dataToShow?.nights ?? 0) > 0 && (
-                        <tr>
-                          <td className="re_p3 brb-none">Check-out Date:</td>
-                          <td className="re_p3 brb-none text-right fw-600">
-                            {formatDateWithDay(
-                              convertToDDMMYYYY(dataToShow.checkout_date)
-                            )}
-                          </td>
-                        </tr>
-                      )}
-
-                    {(totalAccommodationPrice > 0 ||
-                      ((dataToShow?.nights ?? 0) > 0 &&
-                        dataToShow?.reg_type ===
-                          "customized-registration")) && (
-                      <tr>
-                        <td className="re_p3_main">
-                          Total Accommodation Price:
-                        </td>
-                        <td className="re_p3_main text-right fw-600">
-                          ${Math.round(totalAccommodationPrice)}
-                        </td>
-                      </tr>
-                    )}
-
-                    {(dataToShow?.accompanying_price ?? 0) > 0 && (
-                      <tr>
-                        <td className="re_p3 brb-none">
-                          No of Accompanying Persons ($
-                          {(dataToShow?.accompanying ?? 0) > 0
-                            ? `${Math.round(
-                                dataToShow?.accompanying_price ?? 0
-                              )}`
-                            : "N/A"}{" "}
-                          each Person):
-                        </td>
-                        <td className="re_p3 brb-none text-right fw-600">
-                          {dataToShow?.accompanying ?? 0}
-                        </td>
-                      </tr>
-                    )}
-
-                    {(dataToShow?.accompanying_price || 0) > 0 && (
-                      <tr>
-                        <td className="re_p3_main">
-                          Total Accompanying Persons Price:
-                        </td>
-                        <td className="re_p3_main text-right fw-600">
-                          $
-                          {(dataToShow?.accompanying_price ?? 0) *
-                            (dataToShow?.accompanying ?? 0)}
-                        </td>
-                      </tr>
-                    )}
-
-                    {(dataToShow?.total_price ?? 0) > 0 && (
-                      <tr>
-                        <td className="re_p4">Total Price:</td>
-                        <td className="re_p4 text-right fw-600">
-                          ${Math.round(dataToShow?.total_price ?? 0)}
-                        </td>
-                      </tr>
-                    )}
-
-                    {showCoupon && (
-                      <tr>
-                        <td colSpan={2}>
-                          <button
-                            type="button"
-                            className="coupon-link"
-                            onClick={toggleModal}
-                          >
-                            Have a discount coupon?
-                          </button>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-
-                <table
-                  width="100%"
-                  cellSpacing="0"
-                  cellPadding="0"
-                  className="discount-table"
-                >
-                  <tbody>
-                    {discountDetails?.reg_per != null &&
-                      discountDetails.reg_per > 0 && (
-                        <tr>
-                          <td className="re_p3">
-                            Registration Discount ({discountDetails.reg_per}%)
-                            Applied:
-                          </td>
-                          <td className="re_p3 text-right fw-600 re_p3_right">
-                            -$
-                            {Math.round(
-                              (totalRegistrationPrice *
-                                discountDetails.reg_per) /
-                                100
-                            )}
-                          </td>
-                        </tr>
-                      )}
-
-                    {totalAccommodationPrice > 0 &&
-                      discountDetails &&
-                      (discountDetails.acc_per || 0) > 0 && (
-                        <tr>
-                          <td className="re_p3">
-                            Accommodation Discount ({discountDetails.acc_per}%)
-                            Applied:
-                          </td>
-                          <td className="re_p3 text-right fw-600 re_p3_right">
-                            -$
-                            {Math.round(
-                              (totalAccommodationPrice *
-                                (discountDetails.acc_per || 0)) /
-                                100
-                            )}
-                          </td>
-                        </tr>
-                      )}
-
-                    {((discountDetails?.reg_per || 0) > 0 ||
-                      (discountDetails?.acc_per || 0) > 0) && (
-                      <tr>
-                        <td className="re_p3_main">
-                          Final Amount After Discount:
-                        </td>
-                        <td className="re_p3_main text-right fw-600 re_p3_main_right">
-                          ${adjustedPrice}
-                        </td>
-                      </tr>
-                    )}
-
-                    {(discountDetails?.cust_amt || 0) > 0 && (
-                      <tr>
-                        <td className="re_p3">Discount Amount:</td>
-                        <td className="re_p3 text-right fw-600 re_p3_main_right">
-                          -$
-                          {(dataToShow?.total_price || 0) -
-                            (discountDetails?.cust_amt || 0)}
-                        </td>
-                      </tr>
-                    )}
-
-                    {discountDetails && (discountDetails.cust_amt || 0) > 0 && (
-                      <tr>
-                        <td className="re_p3_main">
-                          Final Amount After Discount:
-                        </td>
-                        <td className="re_p3_main text-right fw-600 re_p3_main_right">
-                          ${discountDetails.cust_amt}
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+      {errorMsg === "token-error"? (
+        <div style={styles.container}>
+          <div style={styles.failureBox}>
+            <h4 style={styles.headingTitle}>
+              Something Went Wrong! Please Check Before Retrying
+            </h4>
+            <div style={styles.content1}>
+              <p>
+                The required access token is missing or invalid. Please verify your registration link or contact the administrator at <Link href={`mailto:${generalInfo.email}`}>{generalInfo.email}</Link>.
+              </p>
             </div>
           </div>
+        </div>
+      ) : details ? (
 
-          <div className="col-md-3">
-            <div className="pg-head">Payment Gateway</div>
-            <div className="payment-section">
-              {clientId && adjustedPrice ? (
-                <PayPalScriptProvider
-                  options={{
-                    clientId: clientId,
-                    currency: "USD",
-                    intent: "capture",
-                    // debug: true,
-                  }}
-                >
-                  <PayPalButtons
-                    style={{ layout: "vertical" }}
-                    onClick={(data, actions) => {
-                      // console.log("🔵 [PayPal] onClick Triggered");
-                      console.log("🟡 Click Payload:", { data, actions });
+        <div className="auto-container">
+          <div className="row clearfix payment-block">
+            <div className="col-md-9">
+              <div
+                className="count_total_wrap wow fadeInUp"
+                data-wow-delay="400ms"
+                data-wow-duration="1000ms"
+              >
+                <div className="sup_wrap_blue">
+                  <table width="100%" cellSpacing="0" cellPadding="0">
+                    <tbody>
+                      {dataToShow?.name && (
+                        <tr>
+                          <td className="re_p3">Name:</td>
+                          <td className="re_p3 text-right fw-600">
+                            {dataToShow.name}
+                          </td>
+                        </tr>
+                      )}
+                      {dataToShow?.email && (
+                        <tr>
+                          <td className="re_p3">Email:</td>
+                          <td className="re_p3 text-right fw-600">
+                            {dataToShow.email}
+                          </td>
+                        </tr>
+                      )}
+                      {dataToShow?.phone && (
+                        <tr>
+                          <td className="re_p3">Phone:</td>
+                          <td className="re_p3 text-right fw-600">
+                            {dataToShow.phone}
+                          </td>
+                        </tr>
+                      )}
+                      {dataToShow?.country && (
+                        <tr>
+                          <td className="re_p3">Country:</td>
+                          <td className="re_p3 text-right fw-600">
+                            {dataToShow.country}
+                          </td>
+                        </tr>
+                      )}
+                      {dataToShow?.reg_type && (
+                        <tr>
+                          <td className="re_p3">Registration Type:</td>
+                          <td className="re_p3 text-right fw-600">
+                            {dataToShow.reg_type}
+                          </td>
+                        </tr>
+                      )}
+                      {(dataToShow?.participants || 0) > 0 && (
+                        <tr>
+                          <td className="re_p3 brb-none">Participants:</td>
+                          <td className="re_p3 brb-none text-right fw-600">
+                            {dataToShow?.participants}
+                          </td>
+                        </tr>
+                      )}
+
+                      {(dataToShow?.reg_price || 0) > 0 &&
+                        dataToShow?.reg_type !== "customized-registration" && (
+                          <tr>
+                            <td className="re_p3">Registration Price:</td>
+                            <td className="re_p3 text-right fw-600">
+                              ${dataToShow?.reg_price}
+                            </td>
+                          </tr>
+                        )}
+
+                      {totalRegistrationPrice >= 0 && (
+                        <tr>
+                          <td className="re_p3_main">
+                            Total Registration Price:
+                          </td>
+                          <td className="re_p3_main text-right fw-600">
+                            ${Math.round(totalRegistrationPrice)}
+                          </td>
+                        </tr>
+                      )}
+
+                      {(dataToShow?.occupancy_price || 0) > 0 &&
+                        dataToShow?.reg_type !== "customized-registration" && (
+                          <tr>
+                            <td className="re_p3">
+                              Accommodation Price Per Night:
+                            </td>
+                            <td className="re_p3 text-right fw-600">
+                              ${dataToShow?.occupancy_price}
+                            </td>
+                          </tr>
+                        )}
+
+                      {(dataToShow?.nights || 0) > 0 && (
+                        <tr>
+                          <td className="re_p3">Total No. Nights:</td>
+                          <td className="re_p3 text-right fw-600">
+                            {dataToShow?.nights}
+                          </td>
+                        </tr>
+                      )}
+                      {dataToShow?.checkin_date &&
+                        (dataToShow?.nights ?? 0) > 0 && (
+                          <tr>
+                            <td className="re_p3">Check-in Date:</td>
+                            <td className="re_p3 text-right fw-600">
+                              {formatDateWithDay(
+                                convertToDDMMYYYY(dataToShow.checkin_date)
+                              )}
+                            </td>
+                          </tr>
+                        )}
+
+                      {dataToShow?.checkout_date &&
+                        (dataToShow?.nights ?? 0) > 0 && (
+                          <tr>
+                            <td className="re_p3 brb-none">Check-out Date:</td>
+                            <td className="re_p3 brb-none text-right fw-600">
+                              {formatDateWithDay(
+                                convertToDDMMYYYY(dataToShow.checkout_date)
+                              )}
+                            </td>
+                          </tr>
+                        )}
+
+                      {(totalAccommodationPrice > 0 ||
+                        ((dataToShow?.nights ?? 0) > 0 &&
+                          dataToShow?.reg_type ===
+                          "customized-registration")) && (
+                          <tr>
+                            <td className="re_p3_main">
+                              Total Accommodation Price:
+                            </td>
+                            <td className="re_p3_main text-right fw-600">
+                              ${Math.round(totalAccommodationPrice)}
+                            </td>
+                          </tr>
+                        )}
+
+                      {(dataToShow?.accompanying_price ?? 0) > 0 && (
+                        <tr>
+                          <td className="re_p3 brb-none">
+                            No of Accompanying Persons ($
+                            {(dataToShow?.accompanying ?? 0) > 0
+                              ? `${Math.round(
+                                dataToShow?.accompanying_price ?? 0
+                              )}`
+                              : "N/A"}{" "}
+                            each Person):
+                          </td>
+                          <td className="re_p3 brb-none text-right fw-600">
+                            {dataToShow?.accompanying ?? 0}
+                          </td>
+                        </tr>
+                      )}
+
+                      {(dataToShow?.accompanying_price || 0) > 0 && (
+                        <tr>
+                          <td className="re_p3_main">
+                            Total Accompanying Persons Price:
+                          </td>
+                          <td className="re_p3_main text-right fw-600">
+                            $
+                            {(dataToShow?.accompanying_price ?? 0) *
+                              (dataToShow?.accompanying ?? 0)}
+                          </td>
+                        </tr>
+                      )}
+
+                      {(dataToShow?.total_price ?? 0) > 0 && (
+                        <tr>
+                          <td className="re_p4">Total Price:</td>
+                          <td className="re_p4 text-right fw-600">
+                            ${Math.round(dataToShow?.total_price ?? 0)}
+                          </td>
+                        </tr>
+                      )}
+
+                      {showCoupon && (
+                        <tr>
+                          <td colSpan={2}>
+                            <button
+                              type="button"
+                              className="coupon-link"
+                              onClick={toggleModal}
+                            >
+                              Have a discount coupon?
+                            </button>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+
+                  <table
+                    width="100%"
+                    cellSpacing="0"
+                    cellPadding="0"
+                    className="discount-table"
+                  >
+                    <tbody>
+                      {discountDetails?.reg_per != null &&
+                        discountDetails.reg_per > 0 && (
+                          <tr>
+                            <td className="re_p3">
+                              Registration Discount ({discountDetails.reg_per}%)
+                              Applied:
+                            </td>
+                            <td className="re_p3 text-right fw-600 re_p3_right">
+                              -$
+                              {Math.round(
+                                (totalRegistrationPrice *
+                                  discountDetails.reg_per) /
+                                100
+                              )}
+                            </td>
+                          </tr>
+                        )}
+
+                      {totalAccommodationPrice > 0 &&
+                        discountDetails &&
+                        (discountDetails.acc_per || 0) > 0 && (
+                          <tr>
+                            <td className="re_p3">
+                              Accommodation Discount ({discountDetails.acc_per}%)
+                              Applied:
+                            </td>
+                            <td className="re_p3 text-right fw-600 re_p3_right">
+                              -$
+                              {Math.round(
+                                (totalAccommodationPrice *
+                                  (discountDetails.acc_per || 0)) /
+                                100
+                              )}
+                            </td>
+                          </tr>
+                        )}
+
+                      {((discountDetails?.reg_per || 0) > 0 ||
+                        (discountDetails?.acc_per || 0) > 0) && (
+                          <tr>
+                            <td className="re_p3_main">
+                              Final Amount After Discount:
+                            </td>
+                            <td className="re_p3_main text-right fw-600 re_p3_main_right">
+                              ${adjustedPrice}
+                            </td>
+                          </tr>
+                        )}
+
+                      {(discountDetails?.cust_amt || 0) > 0 && (
+                        <tr>
+                          <td className="re_p3">Discount Amount:</td>
+                          <td className="re_p3 text-right fw-600 re_p3_main_right">
+                            -$
+                            {(dataToShow?.total_price || 0) -
+                              (discountDetails?.cust_amt || 0)}
+                          </td>
+                        </tr>
+                      )}
+
+                      {discountDetails && (discountDetails.cust_amt || 0) > 0 && (
+                        <tr>
+                          <td className="re_p3_main">
+                            Final Amount After Discount:
+                          </td>
+                          <td className="re_p3_main text-right fw-600 re_p3_main_right">
+                            ${discountDetails.cust_amt}
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-md-3">
+              <div className="pg-head">Payment Gateway</div>
+              <div className="payment-section">
+                {clientId && adjustedPrice ? (
+                  <PayPalScriptProvider
+                    options={{
+                      clientId: clientId,
+                      currency: "USD",
+                      intent: "capture",
+                      // debug: true,
                     }}
-                    createOrder={async () => {
-                      // console.log("🟢 [PayPal] createOrder Triggered");
-                      setIsPending(true);
+                  >
+                    <PayPalButtons
+                      style={{ layout: "vertical" }}
+                      onClick={(data, actions) => {
+                        // console.log("🔵 [PayPal] onClick Triggered");
+                        console.log("🟡 Click Payload:", { data, actions });
+                      }}
+                      createOrder={async () => {
+                        // console.log("🟢 [PayPal] createOrder Triggered");
+                        setIsPending(true);
 
-                      try {
-                        const payload = {
-                          totalAmount: adjustedPriceRef.current,
-                          description: `Registration for ${dataToShow?.name}`,
-                        };
-                        // console.log(
-                        //   "📦 Sending to /api/paypal/create-order:",
-                        //   payload
-                        // );
+                        try {
+                          const payload = {
+                            totalAmount: adjustedPriceRef.current,
+                            description: `Registration for ${dataToShow?.name}`,
+                          };
+                          // console.log(
+                          //   "📦 Sending to /api/paypal/create-order:",
+                          //   payload
+                          // );
 
-                        const res = await fetch("/api/paypal/create-order", {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify(payload),
-                        });
-
-                        const data = await res.json();
-                        // console.log("✅ create-order Response:", data);
-
-                        if (!res.ok)
-                          throw new Error(
-                            data?.message || "Failed to create order"
-                          );
-
-                        return data.orderID;
-                      } catch (error) {
-                        console.error("❌ Error in createOrder:", error);
-                        await sendErrorToCMS({
-                          name: dataToShow?.name || "Unknown User",
-                          email: dataToShow?.email || "Unknown Email",
-                          errorMessage: `Something went wrong while creating the PayPal order: ${
-                            (error as Error).message ||
-                            "Unknown error in createOrder"
-                          }`,
-                        });
-                        setIsPending(false);
-                      }
-                    }}
-                    // onApprove={async (data) => {
-                    //   try {
-                    //     const capturePayload = { orderID: data.orderID };
-
-                    //     const res = await fetch("/api/paypal/capture-order", {
-                    //       method: "POST",
-                    //       headers: {
-                    //         "Content-Type": "application/json",
-                    //       },
-                    //       body: JSON.stringify(capturePayload),
-                    //     });
-
-                    //     const captureData = await res.json();
-
-                    //     if (!res.ok) throw new Error("Failed to capture order");
-
-                    //     const savePaymentPayload = {
-                    //       payment_ref_id: captureData.id,
-                    //       web_token: dataToShow?.web_token,
-                    //       total_price: adjustedPriceRef.current,
-                    //       other_info: actualAmountRef.current,
-                    //       payment_method: "PayPal",
-                    //       status: "success",
-                    //       discount_amt: 0,
-                    //     };
-
-                    //     const saveRes = await fetch(
-                    //       "/api/paypal/save-payment",
-                    //       {
-                    //         method: "POST",
-                    //         headers: {
-                    //           "Content-Type": "application/json",
-                    //         },
-                    //         body: JSON.stringify(savePaymentPayload),
-                    //       }
-                    //     );
-
-                    //     const saveResult = await saveRes.json();
-                    //     console.log("✅ save-payment Response:", saveResult);
-
-                    //     const encryptedData = btoa(
-                    //       JSON.stringify(savePaymentPayload)
-                    //     );
-                    //     const query = new URLSearchParams({
-                    //       status: "success",
-                    //       web_token: dataToShow?.web_token || "",
-                    //       orderID: data.orderID || "",
-                    //       other_info: encryptedData || "",
-                    //     }).toString();
-
-                    //     router.push(`/payment_success?${query}`);
-                    //   } catch (error) {
-                    //     console.error("❌ Error in onApprove:", error);
-                    //     await sendErrorToCMS({
-                    //       name: dataToShow?.name || "Unknown User",
-                    //       email: dataToShow?.email || "Unknown Email",
-                    //       errorMessage: `Something went wrong while approving the PayPal transaction (capture/save step): ${(error as Error).message || "Unknown error in onApprove"}`,
-                    //     });
-                    //     router.push(
-                    //       `/register_details?status=failure&web_token=${dataToShow?.web_token}`
-                    //     );
-                    //   } finally {
-                    //     setIsPending(false);
-                    //   }
-                    // }}
-
-                    onApprove={async (data) => {
-                      try {
-                        const capturePayload = { orderID: data.orderID };
-
-                        const res = await fetch("/api/paypal/capture-order", {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify(capturePayload),
-                        });
-
-                        const captureData = await res.json();
-                        if (!res.ok) throw new Error("Failed to capture order");
-
-                        const savePaymentPayload = {
-                          payment_ref_id: captureData.id,
-                          web_token: dataToShow?.web_token,
-                          total_price: adjustedPriceRef.current,
-                          other_info: actualAmountRef.current,
-                          payment_method: "PayPal",
-                          status: "success",
-                          discount_amt: 0,
-                        };
-
-                        // 1️⃣ Keep existing CMS save-payment call
-                        const saveRes = await fetch(
-                          "/api/paypal/save-payment",
-                          {
+                          const res = await fetch("/api/paypal/create-order", {
                             method: "POST",
                             headers: {
                               "Content-Type": "application/json",
                             },
-                            body: JSON.stringify(savePaymentPayload),
-                          }
-                        );
+                            body: JSON.stringify(payload),
+                          });
 
-                        const saveResult = await saveRes.json();
-                        console.log("✅ save-payment Response:", saveResult);
+                          const data = await res.json();
+                          // console.log("✅ create-order Response:", data);
 
-                        // 2️⃣ Also save to /api/save-payment-user (Blob storage)
-                        const paymentUserPayload = {
-                          transaction_id: captureData.id,
-                          payment_method: "PayPal",
-                          paymentstatus: "success",
-                          total_price: adjustedPriceRef.current,
-                          discount_amt: "0",
-                          other_info: actualAmountRef.current,
-                          status: "1",
-                          created_dt: new Date().toISOString(),
-                          updated_dt: new Date().toISOString(),
-                          web_token: dataToShow?.web_token,
-                          cid: generalInfo?.cid,
-                          site_url: generalInfo?.site_url || "",
-                          attempt: "1",
-                        };
+                          if (!res.ok)
+                            throw new Error(
+                              data?.message || "Failed to create order"
+                            );
 
-                        await fetch("/api/save-payment-user", {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify(paymentUserPayload),
-                        });
+                          return data.orderID;
+                        } catch (error) {
+                          console.error("❌ Error in createOrder:", error);
+                          await sendErrorToCMS({
+                            name: dataToShow?.name || "Unknown User",
+                            email: dataToShow?.email || "Unknown Email",
+                            errorMessage: `Something went wrong while creating the PayPal order: ${(error as Error).message ||
+                              "Unknown error in createOrder"
+                              }`,
+                          });
+                          setIsPending(false);
+                        }
+                      }}
+                      // onApprove={async (data) => {
+                      //   try {
+                      //     const capturePayload = { orderID: data.orderID };
 
-                        // 3️⃣ Redirect to success page
-                        const encryptedData = btoa(
-                          JSON.stringify(savePaymentPayload)
-                        );
-                        const query = new URLSearchParams({
-                          status: "success",
-                          web_token: dataToShow?.web_token || "",
-                          orderID: data.orderID || "",
-                          other_info: encryptedData || "",
-                        }).toString();
+                      //     const res = await fetch("/api/paypal/capture-order", {
+                      //       method: "POST",
+                      //       headers: {
+                      //         "Content-Type": "application/json",
+                      //       },
+                      //       body: JSON.stringify(capturePayload),
+                      //     });
 
-                        router.push(`/payment_success?${query}`);
-                      } catch (error) {
-                        console.error("❌ Error in onApprove:", error);
+                      //     const captureData = await res.json();
+
+                      //     if (!res.ok) throw new Error("Failed to capture order");
+
+                      //     const savePaymentPayload = {
+                      //       payment_ref_id: captureData.id,
+                      //       web_token: dataToShow?.web_token,
+                      //       total_price: adjustedPriceRef.current,
+                      //       other_info: actualAmountRef.current,
+                      //       payment_method: "PayPal",
+                      //       status: "success",
+                      //       discount_amt: 0,
+                      //     };
+
+                      //     const saveRes = await fetch(
+                      //       "/api/paypal/save-payment",
+                      //       {
+                      //         method: "POST",
+                      //         headers: {
+                      //           "Content-Type": "application/json",
+                      //         },
+                      //         body: JSON.stringify(savePaymentPayload),
+                      //       }
+                      //     );
+
+                      //     const saveResult = await saveRes.json();
+                      //     console.log("✅ save-payment Response:", saveResult);
+
+                      //     const encryptedData = btoa(
+                      //       JSON.stringify(savePaymentPayload)
+                      //     );
+                      //     const query = new URLSearchParams({
+                      //       status: "success",
+                      //       web_token: dataToShow?.web_token || "",
+                      //       orderID: data.orderID || "",
+                      //       other_info: encryptedData || "",
+                      //     }).toString();
+
+                      //     router.push(`/payment_success?${query}`);
+                      //   } catch (error) {
+                      //     console.error("❌ Error in onApprove:", error);
+                      //     await sendErrorToCMS({
+                      //       name: dataToShow?.name || "Unknown User",
+                      //       email: dataToShow?.email || "Unknown Email",
+                      //       errorMessage: `Something went wrong while approving the PayPal transaction (capture/save step): ${(error as Error).message || "Unknown error in onApprove"}`,
+                      //     });
+                      //     router.push(
+                      //       `/register_details?status=failure&web_token=${dataToShow?.web_token}`
+                      //     );
+                      //   } finally {
+                      //     setIsPending(false);
+                      //   }
+                      // }}
+
+                      onApprove={async (data) => {
+                        try {
+                          const capturePayload = { orderID: data.orderID };
+
+                          const res = await fetch("/api/paypal/capture-order", {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(capturePayload),
+                          });
+
+                          const captureData = await res.json();
+                          if (!res.ok) throw new Error("Failed to capture order");
+
+                          const savePaymentPayload = {
+                            payment_ref_id: captureData.id,
+                            web_token: dataToShow?.web_token,
+                            total_price: adjustedPriceRef.current,
+                            other_info: actualAmountRef.current,
+                            payment_method: "PayPal",
+                            status: "success",
+                            discount_amt: 0,
+                          };
+
+                          // 1️⃣ Keep existing CMS save-payment call
+                          const saveRes = await fetch(
+                            "/api/paypal/save-payment",
+                            {
+                              method: "POST",
+                              headers: {
+                                "Content-Type": "application/json",
+                              },
+                              body: JSON.stringify(savePaymentPayload),
+                            }
+                          );
+
+                          const saveResult = await saveRes.json();
+                          console.log("✅ save-payment Response:", saveResult);
+
+                          // 2️⃣ Also save to /api/save-payment-user (Blob storage)
+                          const paymentUserPayload = {
+                            transaction_id: captureData.id,
+                            payment_method: "PayPal",
+                            paymentstatus: "success",
+                            total_price: adjustedPriceRef.current,
+                            discount_amt: "0",
+                            other_info: actualAmountRef.current,
+                            status: "1",
+                            created_dt: new Date().toISOString(),
+                            updated_dt: new Date().toISOString(),
+                            web_token: dataToShow?.web_token,
+                            cid: generalInfo?.cid,
+                            site_url: generalInfo?.site_url || "",
+                            attempt: "1",
+                          };
+
+                          await fetch("/api/save-payment-user", {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(paymentUserPayload),
+                          });
+
+                          // 3️⃣ Redirect to success page
+                          const encryptedData = btoa(
+                            JSON.stringify(savePaymentPayload)
+                          );
+                          const query = new URLSearchParams({
+                            status: "success",
+                            web_token: dataToShow?.web_token || "",
+                            orderID: data.orderID || "",
+                            other_info: encryptedData || "",
+                          }).toString();
+
+                          router.push(`/payment_success?${query}`);
+                        } catch (error) {
+                          console.error("❌ Error in onApprove:", error);
+                          await sendErrorToCMS({
+                            name: dataToShow?.name || "Unknown User",
+                            email: dataToShow?.email || "Unknown Email",
+                            errorMessage: `Something went wrong while approving the PayPal transaction (capture/save step): ${(error as Error).message ||
+                              "Unknown error in onApprove"
+                              }`,
+                          });
+                          router.push(
+                            `/register_details?status=failure&web_token=${dataToShow?.web_token}`
+                          );
+                        } finally {
+                          setIsPending(false);
+                        }
+                      }}
+                      onCancel={async (data) => {
+                        console.warn("🟠 [PayPal] onCancel Triggered");
+                        // console.log("❗ Cancel Payload:", data);
+
+                        // Construct a readable cancel message
+                        const cancelMessage = `User canceled the PayPal payment. Order ID: ${data?.orderID || "N/A"
+                          }`;
+
                         await sendErrorToCMS({
                           name: dataToShow?.name || "Unknown User",
                           email: dataToShow?.email || "Unknown Email",
-                          errorMessage: `Something went wrong while approving the PayPal transaction (capture/save step): ${
-                            (error as Error).message ||
-                            "Unknown error in onApprove"
-                          }`,
+                          errorMessage: cancelMessage,
+                        });
+
+                        setShowCancelModal(true);
+                      }}
+                      onError={async (err) => {
+                        console.error("🔴 [PayPal] onError Triggered");
+                        console.error("💥 Error Payload:", err);
+                        await sendErrorToCMS({
+                          name: dataToShow?.name || "Unknown User",
+                          email: dataToShow?.email || "Unknown Email",
+                          errorMessage: `An unexpected error occurred during the PayPal flow: ${JSON.stringify(err) || "No error in PayPal error"
+                            }`,
                         });
                         router.push(
                           `/register_details?status=failure&web_token=${dataToShow?.web_token}`
                         );
-                      } finally {
-                        setIsPending(false);
-                      }
-                    }}
-                    onCancel={async (data) => {
-                      console.warn("🟠 [PayPal] onCancel Triggered");
-                      // console.log("❗ Cancel Payload:", data);
-
-                      // Construct a readable cancel message
-                      const cancelMessage = `User canceled the PayPal payment. Order ID: ${
-                        data?.orderID || "N/A"
-                      }`;
-
-                      await sendErrorToCMS({
-                        name: dataToShow?.name || "Unknown User",
-                        email: dataToShow?.email || "Unknown Email",
-                        errorMessage: cancelMessage,
-                      });
-
-                      setShowCancelModal(true);
-                    }}
-                    onError={async (err) => {
-                      console.error("🔴 [PayPal] onError Triggered");
-                      console.error("💥 Error Payload:", err);
-                      await sendErrorToCMS({
-                        name: dataToShow?.name || "Unknown User",
-                        email: dataToShow?.email || "Unknown Email",
-                        errorMessage: `An unexpected error occurred during the PayPal flow: ${
-                          JSON.stringify(err) || "No error in PayPal error"
-                        }`,
-                      });
-                      router.push(
-                        `/register_details?status=failure&web_token=${dataToShow?.web_token}`
-                      );
-                    }}
-                  />
-                </PayPalScriptProvider>
-              ) : (
-                <p>Loading payment information...</p>
-              )}
+                      }}
+                    />
+                  </PayPalScriptProvider>
+                ) : (
+                  <p>Loading payment information...</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
+      ) : (
+        <p style={{ textAlign: "center" }}>Loading...</p>
+      )}
       {/* {showCancelModal && <CancelModal />} */}
 
       {showModal && (
@@ -1236,6 +1258,35 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
       )}
     </div>
   );
+};
+
+const styles: { [key: string]: React.CSSProperties } = {
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "60vh",
+    textAlign: "center",
+  },
+  failureBox: {
+    maxWidth: "800px",
+    width: "90%",
+    padding: "20px",
+    borderRadius: "8px",
+    boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+    textAlign: "left",
+  },
+  content1: {
+    marginTop: "10px",
+    marginBottom: "0px",
+    textAlign: "center",
+  },
+  headingTitle: {
+    color: "#737373",
+    fontWeight: 600,
+    fontSize: "24px",
+    textAlign: "center",
+  },
 };
 
 export default RegisterDetails;

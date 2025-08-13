@@ -104,6 +104,16 @@ const Footer: React.FC<FooterProps> = ({ generalData, indexPageData }) => {
     return true;
   };
 
+
+  // UTF-8 safe Base64 encoder
+  function utf8ToBase64(str: string) {
+    const bytes = new TextEncoder().encode(str);
+    let binary = "";
+    bytes.forEach((b) => binary += String.fromCharCode(b));
+    return btoa(binary);
+  }
+
+
   // Submit handler
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -128,9 +138,9 @@ const Footer: React.FC<FooterProps> = ({ generalData, indexPageData }) => {
       // const result = await response.json();
 
       const payload = {
-        enquiryname: btoa(formData.enquiryname.trim()),
-        enquiryemail: btoa(formData.enquiryemail.trim()),
-        enquiryquery: btoa(formData.enquiryquery.trim()),
+        enquiryname: utf8ToBase64(formData.enquiryname.trim()),
+        enquiryemail: utf8ToBase64(formData.enquiryemail.trim()),
+        enquiryquery: utf8ToBase64(formData.enquiryquery.trim()),
       };
 
       const response = await fetch("/api/enquiry", {
