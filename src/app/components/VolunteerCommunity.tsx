@@ -128,6 +128,14 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
     return errors;
   };
 
+  // UTF-8 safe Base64 encoder
+  function utf8ToBase64(str: string) {
+    const bytes = new TextEncoder().encode(str);
+    let binary = "";
+    bytes.forEach((b) => binary += String.fromCharCode(b));
+    return btoa(binary);
+  }
+
   const handleCommunitySubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
@@ -147,9 +155,9 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
 
         const fullName = `${communityFormData.fname} ${communityFormData.lname}`.trim();
         const payload = {
-          enquiryname: btoa(fullName.trim()),
-          enquiryemail: btoa(communityFormData.email.trim()),
-          enquiryquery: btoa(""),
+          enquiryname: utf8ToBase64(fullName.trim()),
+          enquiryemail: utf8ToBase64(communityFormData.email.trim()),
+          enquiryquery: utf8ToBase64(""),
         };
 
         const response = await fetch("/api/community-submit", {
@@ -257,9 +265,9 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
     try {
       const fullName = `${formData.firstName} ${formData.lastName}`.trim();
       const payload = {
-        enquiryname: btoa(fullName.trim()),
-        enquiryemail: btoa(formData.email.trim()),
-        enquiryquery: btoa(""),
+        enquiryname: utf8ToBase64(fullName.trim()),
+        enquiryemail: utf8ToBase64(formData.email.trim()),
+        enquiryquery: utf8ToBase64(""),
       };
 
       const response = await fetch("/api/enquiry", {

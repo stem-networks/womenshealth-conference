@@ -704,6 +704,14 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     sendFullFormData(updatedData);
   };
 
+  // UTF-8 safe Base64 encoder
+  function utf8ToBase64(str: string) {
+    const bytes = new TextEncoder().encode(str);
+    let binary = "";
+    bytes.forEach((b) => binary += String.fromCharCode(b));
+    return btoa(binary);
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -826,37 +834,17 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
 
       // Final payload with other_info field
       const payload = {
-        abstract_title: btoa(formData.abstract_title.trim()),
-        title: btoa(formData.title.trim()),
-        name: btoa(formData.name.trim()),
-        country: btoa(formData.country.trim()),
-        email: btoa(formData.email.trim()),
-        alt_email: btoa(formData.alt_email.trim()),
-        phone: btoa(formData.phone.trim()),
-        intrested: btoa(formData.intrested.trim()),
-        upload_abstract_file: btoa(fileUrl.trim()),
-        other_info: btoa(JSON.stringify(otherInfo)), // Moved here as base64 encoded JSON
+        abstract_title: utf8ToBase64(formData.abstract_title.trim()),
+        title: utf8ToBase64(formData.title.trim()),
+        name: utf8ToBase64(formData.name.trim()),
+        country: utf8ToBase64(formData.country.trim()),
+        email: utf8ToBase64(formData.email.trim()),
+        alt_email: utf8ToBase64(formData.alt_email.trim()),
+        phone: utf8ToBase64(formData.phone.trim()),
+        intrested: utf8ToBase64(formData.intrested.trim()),
+        upload_abstract_file: utf8ToBase64(fileUrl.trim()),
+        other_info: utf8ToBase64(JSON.stringify(otherInfo)), // Moved here as base64 encoded JSON
       };
-
-
-      // Prepare payload (Base64 encode here)
-      // const payload = {
-      //   abstract_title: btoa(formData.abstract_title.trim()),
-      //   title: btoa(formData.title.trim()),
-      //   name: btoa(formData.name.trim()),
-      //   country: btoa(formData.country.trim()),
-      //   email: btoa(formData.email.trim()),
-      //   alt_email: btoa(formData.alt_email.trim()),
-      //   phone: btoa(formData.phone.trim()),
-      //   intrested: btoa(formData.intrested.trim()),
-      //   upload_abstract_file: btoa(fileUrl.trim()),
-
-      //   // New fields
-      //   whatsapp_number: btoa(formData.whatsapp_number.trim()),
-      //   city: btoa(formData.city.trim()),
-      //   organization: btoa(formData.organization.trim()),
-      //   message: btoa(formData.message.trim()),
-      // };
 
       const response = await fetch("/api/abstract", {
         method: "POST",

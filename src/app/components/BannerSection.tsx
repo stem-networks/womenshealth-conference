@@ -143,6 +143,14 @@ const BannerSection: React.FC<BannerSectionProps> = ({
     setShowModal5(false);
   };
 
+  // UTF-8 safe Base64 encoder
+  function utf8ToBase64(str: string) {
+    const bytes = new TextEncoder().encode(str);
+    let binary = "";
+    bytes.forEach((b) => binary += String.fromCharCode(b));
+    return btoa(binary);
+  }
+
   const handleSubmitBrochure = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -181,12 +189,12 @@ const BannerSection: React.FC<BannerSectionProps> = ({
         localStorage.setItem("brochureFormSubmitted", Date.now().toString());
 
       const payload = {
-        first_name: btoa(brochureFormData.first_name.trim()),
-        email: btoa(brochureFormData.email.trim()),
-        phone: btoa(brochureFormData.phone.trim()),
-        country: btoa(brochureFormData.country.trim()),
-        message: btoa(brochureFormData.message.trim()),
-        interested_in: btoa(brochureFormData.interested_in.trim()),
+        first_name: utf8ToBase64(brochureFormData.first_name.trim()),
+        email: utf8ToBase64(brochureFormData.email.trim()),
+        phone: utf8ToBase64(brochureFormData.phone.trim()),
+        country: utf8ToBase64(brochureFormData.country.trim()),
+        message: utf8ToBase64(brochureFormData.message.trim()),
+        interested_in: utf8ToBase64(brochureFormData.interested_in.trim()),
         modalType,
       };
 

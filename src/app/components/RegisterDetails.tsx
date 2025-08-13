@@ -8,6 +8,8 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 // import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+// import { toast } from "react-toastify";
+
 // import {
 //   CreateOrderData,
 //   CreateOrderActions,
@@ -54,7 +56,7 @@ interface GeneralInfo {
   clname?: string;
   site_url?: string;
   cid?: string;
-  email?: string;
+  cemail?: string;
 }
 interface RegisterDetailsClientProps {
   generalInfo: GeneralInfo; // Replace `any` with the correct type if available
@@ -65,6 +67,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
   const searchParams = useSearchParams();
   const [details, setDetails] = useState<RegistrationData | null>(null);
   const [errorMsg, setErrorMsg] = useState<string>(""); // ✅ For error message
+  // const [paymentError, setPaymentError] = useState<string | null>(null);
   const [showCancelModal, setShowCancelModal] = useState<boolean>(false);
   const [discountDetails, setDiscountDetails] =
     useState<DiscountDetails | null>(null);
@@ -252,6 +255,8 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
       } catch (error) {
         console.error("Payment check error:", error);
         // We continue to fetch registration details if payment check fails
+        // You can optionally set payment error here if you want a special message
+        setErrorMsg("payment-failed");
       }
 
       // Step 2: Fetch registration details if payment is not confirmed
@@ -612,7 +617,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
       >
         Payment Details
       </h2>
-      {errorMsg === "token-error"? (
+      {errorMsg === "token-error" && (
         <div style={styles.container}>
           <div style={styles.failureBox}>
             <h4 style={styles.headingTitle}>
@@ -620,13 +625,33 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
             </h4>
             <div style={styles.content1}>
               <p>
-                The required access token is missing or invalid. Please verify your registration link or contact the administrator at <Link href={`mailto:${generalInfo.email}`}>{generalInfo.email}</Link>.
+                The required access token is missing or invalid. Please verify your registration link or contact the administrator at <Link href={`mailto:${generalInfo.cemail}`}>{generalInfo.cemail}</Link>.
               </p>
             </div>
           </div>
         </div>
-      ) : details ? (
+      )}
 
+      {errorMsg === "payment-failed" && (
+        <div style={{
+          backgroundColor: "#fff3f3",
+          color: "#a94442",
+          padding: "15px",
+          borderRadius: "8px",
+          border: "1px solid #ebccd1",
+          marginBottom: "15px",
+          textAlign: "center"
+        }}>
+          <strong>Payment Failed: </strong> Something went wrong during payment.
+          Please contact{" "}
+          <Link href={`mailto:${generalInfo.cemail}`}>
+            {generalInfo.cemail}
+          </Link>{" "}
+          for help.
+        </div>
+      )}
+
+      {details && !errorMsg && (
         <div className="auto-container">
           <div className="row clearfix payment-block">
             <div className="col-md-9">
@@ -1117,6 +1142,9 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                               "Unknown error in onApprove"
                               }`,
                           });
+                          // toast.error(
+                          //   "Your payment could not be processed at this time. Please try again or contact support."
+                          // );
                           router.push(
                             `/register_details?status=failure&web_token=${dataToShow?.web_token}`
                           );
@@ -1162,7 +1190,9 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
             </div>
           </div>
         </div>
-      ) : (
+      )}
+
+      {!details && !errorMsg && (
         <p style={{ textAlign: "center" }}>Loading...</p>
       )}
       {/* {showCancelModal && <CancelModal />} */}

@@ -239,6 +239,13 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
     //     }
     // };
 
+    // UTF-8 safe Base64 encoder
+    function utf8ToBase64(str: string) {
+        const bytes = new TextEncoder().encode(str);
+        let binary = "";
+        bytes.forEach((b) => binary += String.fromCharCode(b));
+        return btoa(binary);
+    }
 
     const handleSubmitContact = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -259,10 +266,10 @@ const MainSlider = ({ generalInfo, registerInfo }: MainSliderProps) => {
             try {
 
                 const payload = {
-                    name: btoa(contactFormData.name.trim()),
-                    email: btoa(contactFormData.email.trim()),
-                    phone: btoa(contactFormData.phone.trim()),
-                    query: btoa(contactFormData.query.trim()),
+                    name: utf8ToBase64(contactFormData.name.trim()),
+                    email: utf8ToBase64(contactFormData.email.trim()),
+                    phone: utf8ToBase64(contactFormData.phone.trim()),
+                    query: utf8ToBase64(contactFormData.query.trim()),
                 };
 
                 await fetch("/api/sponsor-exhibitor", {
