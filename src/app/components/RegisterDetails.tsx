@@ -255,8 +255,6 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
       } catch (error) {
         console.error("Payment check error:", error);
         // We continue to fetch registration details if payment check fails
-        // You can optionally set payment error here if you want a special message
-        setErrorMsg("payment-failed");
       }
 
       // Step 2: Fetch registration details if payment is not confirmed
@@ -1142,6 +1140,8 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                               "Unknown error in onApprove"
                               }`,
                           });
+                          // You can optionally set payment error here if you want a special message
+                          setErrorMsg("payment-failed");
                           // toast.error(
                           //   "Your payment could not be processed at this time. Please try again or contact support."
                           // );
