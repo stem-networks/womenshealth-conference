@@ -1,90 +1,58 @@
-// import { put } from "@vercel/blob";
-// import { NextResponse } from "next/server";
-
-// export async function POST(req: Request) {
-//   try {
-//     const formData = await req.formData();
-//     const file = formData.get("file") as File;
-//     const project = formData.get("project") as string;
-
-//     if (!file || !project) {
-//       return NextResponse.json({ error: "Missing file or project" }, { status: 400 });
-//     }
-
-//     const allowedExtensions = ["pdf", "doc", "docx", "rtf"];
-//     const fileExtension = file.name.split(".").pop()?.toLowerCase();
-//     if (!fileExtension || !allowedExtensions.includes(fileExtension)) {
-//       return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
-//     }
-
-//     if (file.size > 2 * 1024 * 1024) {
-//       return NextResponse.json({ error: "File too large (2MB max)" }, { status: 400 });
-//     }
-
-//     // Generate unique name: abstract_<hex_timestamp>.<random_decimal>.<ext>
-//     const hexTimestamp = Date.now().toString(16);
-//     const randomDecimal = Math.random().toString().slice(2, 8);
-//     const uniqueName = `abstract_${hexTimestamp}.${randomDecimal}.${fileExtension}`;
-//     const fileName = `${project}/${uniqueName}`;
-
-//     //  Add logging here to debug
-//     console.log("Uploading file:", fileName);
-
-//     const blob = await put(fileName, file, {
-//       access: "public", // change to "private" if needed
-//     });
-
-//     console.log("Uploaded to:", blob.url);
-
-//     return NextResponse.json({ fileUrl: blob.url });
-//   } catch (error) {
-//     console.error("Upload error:", error);
-//     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
-//   }
-// }
-
-import { put } from "@vercel/blob";
+// app/api/upload/route.ts
 import { NextResponse } from "next/server";
+import { put } from "@vercel/blob";
+
+function sanitizeSegment(s: string) {
+  // letters, numbers, dashes, underscores only
+  return s.replace(/[^a-zA-Z0-9-_]/g, "");
+}
 
 export async function POST(req: Request) {
   try {
-    const formData = await req.formData();
-    const file = formData.get("file") as File;
-    const project = formData.get("project") as string;
+    const form = await req.formData();
+    const file = form.get("file");
+    const projectRaw = (form.get("project") as string) || "uploads";
 
-    if (!file || !project) {
-      return NextResponse.json({ error: "Missing file or project" }, { status: 400 });
+    if (!(file instanceof File)) {
+      return NextResponse.json(
+        { error: "Invalid file payload" },
+        { status: 400 }
+      );
     }
 
+    const project = sanitizeSegment(projectRaw) || "uploads";
+
     const allowedExtensions = ["pdf", "doc", "docx", "rtf"];
-    const fileExtension = file.name.split(".").pop()?.toLowerCase();
-    if (!fileExtension || !allowedExtensions.includes(fileExtension)) {
+    const name = file.name || "upload";
+    const ext = name.includes(".") ? name.split(".").pop()!.toLowerCase() : "";
+    if (!allowedExtensions.includes(ext)) {
       return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      return NextResponse.json({ error: "File too large (2MB max)" }, { status: 400 });
+      return NextResponse.json(
+        { error: "File too large (2MB max)" },
+        { status: 400 }
+      );
     }
 
-    // Generate unique name: abstract_<hex_timestamp>.<random_decimal>.<ext>
     const hexTimestamp = Date.now().toString(16);
     const randomDecimal = Math.random().toString().slice(2, 8);
-    const uniqueName = `abstract_${hexTimestamp}.${randomDecimal}.${fileExtension}`;
-
-    // NEW: Store inside projectName/abstract folder
+    const uniqueName = `abstract_${hexTimestamp}.${randomDecimal}.${ext}`;
     const fileName = `${project}/abstract/${uniqueName}`;
 
-    console.log("Uploading file:", fileName);
-
     const blob = await put(fileName, file, {
-      access: "public", // change to "private" if needed
+      access: "public", // or "private"
+      addRandomSuffix: false, // we already generate a unique name
     });
 
-    console.log("Uploaded to:", blob.url);
-
-    return NextResponse.json({ fileUrl: blob.url });
-  } catch (error) {
-    console.error("Upload error:", error);
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+    return NextResponse.json({ fileUrl: blob.url }, { status: 200 });
+  } catch (err: any) {
+    // Surface the actual error to logs and client
+    console.error("Upload error:", err?.message || err);
+    return NextResponse.json(
+      { error: `Upload failed: ${err?.message || "unknown error"}` },
+      { status: 500 }
+    );
   }
 }
