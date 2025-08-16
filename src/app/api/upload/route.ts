@@ -22,10 +22,12 @@ export async function POST(req: Request) {
 
     const project = sanitizeSegment(projectRaw) || "uploads";
 
-    const allowedExtensions = ["pdf", "doc", "docx", "rtf"];
-    const name = file.name || "upload";
+    const allowedExtensions = ["pdf", "doc", "docx", "rtf"] as const;
+    const name: string = file.name || "upload";
     const ext = name.includes(".") ? name.split(".").pop()!.toLowerCase() : "";
-    if (!allowedExtensions.includes(ext)) {
+    if (
+      !allowedExtensions.includes(ext as (typeof allowedExtensions)[number])
+    ) {
       return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
     }
 
@@ -47,11 +49,17 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ fileUrl: blob.url }, { status: 200 });
-  } catch (err: any) {
+  } catch (err) {
     // Surface the actual error to logs and client
-    console.error("Upload error:", err?.message || err);
+    const message =
+      err instanceof Error
+        ? err.message
+        : typeof err === "string"
+        ? err
+        : "unknown error";
+    console.error("Upload error:", message);
     return NextResponse.json(
-      { error: `Upload failed: ${err?.message || "unknown error"}` },
+      { error: `Upload failed: ${message}` },
       { status: 500 }
     );
   }

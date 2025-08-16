@@ -7,7 +7,7 @@ import Link from "next/link";
 import countries from "../../data/countries";
 import { toast } from "react-toastify";
 
-interface FormData {
+interface FormDataState {
   module_name: string;
   title: string;
   name: string;
@@ -55,7 +55,7 @@ interface FormAutoData {
 }
 
 // Your custom captcha ref type
-interface CaptchaRefType {
+interface CaptchaRefTypeFull {
   focusCaptcha: () => void;
   resetCaptchaInput: () => void;
   refreshCaptcha: () => void;
@@ -66,7 +66,7 @@ type FieldRef =
   | React.RefObject<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
     >
-  | React.RefObject<CaptchaRefType | null>
+  | React.RefObject<CaptchaRefTypeFull | null>
   | null;
 
 interface Errors {
@@ -82,14 +82,23 @@ import map2 from "../../../public/images/images/map.png";
 import { ApiResponse } from "@/types";
 import Captcha, { CaptchaRef } from "./Captcha";
 
-interface generalInfoProps {
+interface GeneralInfoProps {
   generalInfo: ApiResponse;
 }
 
-const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
-  const general = generalInfo?.data || {};
+const AbstractSubmission: React.FC<GeneralInfoProps> = ({ generalInfo }) => {
+  // general's structure is not fully typed; safely access with optional chaining
+  const general = (generalInfo?.data ?? {}) as {
+    site_url?: string;
+    clname?: string;
+    csname?: string;
+    year?: string;
+    clogotext?: string;
+    full_length_dates?: string;
+    venue_p1?: string;
+  };
 
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<FormDataState>({
     module_name: "abstract_save",
     title: "",
     name: "",
@@ -157,7 +166,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
   }>({});
 
   // Extract dynamic project name from general.site_url, sanitize, and keep it safe for server path segments
-  const rawSiteUrl = (general?.site_url as string) || "";
+  const rawSiteUrl = general?.site_url || "";
   const siteHostname = rawSiteUrl
     .replace(/^https?:\/\//, "")
     .replace(/\/.*$/, "") // trim path
@@ -172,21 +181,28 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
   ): Promise<string> {
     if (!file) return "";
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("project", projectName); // used in the server route for path prefix
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("project", projectName); // used in the server route for path prefix
 
     const uploadRes = await fetch("/api/upload", {
       method: "POST",
-      body: formData,
+      body: fd,
     });
 
     // Improved error extraction: try JSON, fallback to text
     if (!uploadRes.ok) {
       let message = "File upload failed";
       try {
-        const data = await uploadRes.json();
-        if (data?.error) message = data.error;
+        const data: unknown = await uploadRes.json();
+        if (
+          data &&
+          typeof data === "object" &&
+          "error" in data &&
+          typeof (data as { error?: unknown }).error === "string"
+        ) {
+          message = (data as { error: string }).error;
+        }
       } catch {
         try {
           const text = await uploadRes.text();
@@ -199,27 +215,29 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     }
 
     // Expecting { fileUrl }
-    let fileUrl = "";
     try {
-      const data = await uploadRes.json();
-      fileUrl = data?.fileUrl || "";
+      const data: unknown = await uploadRes.json();
+      if (
+        data &&
+        typeof data === "object" &&
+        "fileUrl" in data &&
+        typeof (data as { fileUrl?: unknown }).fileUrl === "string"
+      ) {
+        return (data as { fileUrl: string }).fileUrl;
+      }
     } catch {
       // If server returned blob JSON directly, try to parse url field
       try {
         const text = await uploadRes.text();
         // last-resort naive parsing
         const urlMatch = text.match(/https?:\/\/[^\s"]+/);
-        if (urlMatch) fileUrl = urlMatch[0];
+        if (urlMatch) return urlMatch[0];
       } catch {
         // ignore
       }
     }
 
-    if (!fileUrl) {
-      throw new Error("Upload succeeded but no file URL returned");
-    }
-
-    return fileUrl;
+    throw new Error("Upload succeeded but no file URL returned");
   }
 
   function validateAbstractFile(file: File | null): string | null {
@@ -231,9 +249,9 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "text/rtf",
       "application/rtf",
-    ];
+    ] as const;
 
-    if (!allowedTypes.includes(file.type)) {
+    if (!allowedTypes.includes(file.type as (typeof allowedTypes)[number])) {
       return "Invalid file type. Please upload a PDF, DOC, DOCX, or RTF file.";
     }
 
@@ -251,12 +269,12 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     >
   ) => {
     const { name, value } = e.target;
-    const target = e.target as HTMLInputElement;
-    const files = target.files;
+    const target = e.target as HTMLInputElement & { files?: FileList | null };
+    const files = target.files ?? null;
 
     setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
 
-    if (name === "upload_abstract_file" && files) {
+    if (name === "upload_abstract_file" && files && files.length > 0) {
       const file = files[0];
       const allowedTypes = [
         "application/pdf",
@@ -264,9 +282,9 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "text/rtf",
         "application/rtf",
-      ];
+      ] as const;
 
-      if (!allowedTypes.includes(file.type)) {
+      if (!allowedTypes.includes(file.type as (typeof allowedTypes)[number])) {
         setErrors((prevErrors) => ({
           ...prevErrors,
           upload_abstract_file: "Please select a PDF, DOC, DOCX, or RTF file.",
@@ -363,7 +381,9 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
 
       if (!fieldValid) {
         setErrors(newErrors);
-        toast.error(newErrors[fieldName]!);
+        const msg = newErrors[fieldName] ?? "Validation error";
+        toast.error(msg);
+
         switch (fieldName) {
           case "title":
             titleRef.current?.focus();
@@ -405,16 +425,24 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
       setErrors((prevErrors) => ({ ...prevErrors, [fieldName]: "" }));
 
       if (nextFieldRef?.current) {
-        if (
-          "focusCaptcha" in nextFieldRef.current &&
-          typeof (nextFieldRef.current as any).focusCaptcha === "function"
-        ) {
-          (nextFieldRef.current as any).focusCaptcha();
+        // Narrow to either CaptchaRef or a focusable form element
+        const nextObj = nextFieldRef.current;
+        const maybeCaptcha = nextObj as unknown as {
+          focusCaptcha?: () => void;
+        };
+        const maybeFocusable = nextObj as
+          | HTMLInputElement
+          | HTMLSelectElement
+          | HTMLTextAreaElement
+          | null;
+
+        if (maybeCaptcha && typeof maybeCaptcha.focusCaptcha === "function") {
+          maybeCaptcha.focusCaptcha();
         } else if (
-          "focus" in nextFieldRef.current &&
-          typeof (nextFieldRef.current as any).focus === "function"
+          maybeFocusable &&
+          typeof maybeFocusable.focus === "function"
         ) {
-          (nextFieldRef.current as any).focus();
+          maybeFocusable.focus();
         }
       } else if (fieldName === "upload_abstract_file" && !isCaptchaValid) {
         captchaRef.current?.focusCaptcha();
@@ -474,23 +502,23 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
         return null;
       }
 
-      const formData = new FormData();
+      const fd = new FormData();
 
       Object.entries(updatedData).forEach(([key, value]) => {
         const trimmedValue =
-          typeof value === "string" ? value.trim() : (value as any) ?? "";
-        formData.append(key, trimmedValue as string);
+          typeof value === "string" ? value.trim() : value ?? "";
+        fd.append(key, String(trimmedValue));
       });
 
       if (submitStatus) {
-        formData.append("submit_status", submitStatus);
+        fd.append("submit_status", submitStatus);
       }
 
-      const response = await axios.post("/api/send-to-cms", formData, {
+      const response = await axios.post("/api/send-to-cms", fd, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      return response.data;
+      return response.data as unknown;
     } catch (error) {
       console.error("Error sending form data:", error);
       await sendErrorToCMS({
@@ -524,7 +552,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
       ...formAutoData,
       [name]: value,
       submit_status: formAutoData.submit_status || "0",
-    };
+    } as FormAutoData;
 
     setFormAutoData(updatedData);
 
@@ -551,7 +579,7 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     }
 
     // The email is valid at this point, so we can send the data
-    sendFullFormData(updatedData);
+    void sendFullFormData(updatedData);
   };
 
   // UTF-8 safe Base64 encoder
@@ -566,101 +594,114 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
     e.preventDefault();
 
     setErrors({});
-    const formErrors: Errors = {};
+    const nextErrors: Errors = {};
     let firstErrorField: FieldRef = null;
 
     // ====== VALIDATION ======
     if (!formData.title) {
-      formErrors.title = "Title is required";
+      nextErrors.title = "Title is required";
       firstErrorField = titleRef;
     } else if (!formData.name) {
-      formErrors.name = "Name is required";
+      nextErrors.name = "Name is required";
       firstErrorField = nameRef;
     } else if (!formData.email) {
-      formErrors.email = "Email is required";
+      nextErrors.email = "Email is required";
       firstErrorField = emailRef;
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      formErrors.email = "Email is Invalid";
+      nextErrors.email = "Email is Invalid";
       firstErrorField = emailRef;
     } else if (formData.alt_email && !/\S+@\S+\.\S+/.test(formData.alt_email)) {
-      formErrors.alt_email = "Alternative Email is Invalid";
+      nextErrors.alt_email = "Alternative Email is Invalid";
       firstErrorField = altEmailRef;
     } else if (!formData.phone) {
-      formErrors.phone = "Phone number is required";
+      nextErrors.phone = "Phone number is required";
       firstErrorField = phoneRef;
     } else if (!formData.city) {
-      formErrors.city = "City is required";
+      nextErrors.city = "City is required";
       firstErrorField = cityRef;
     } else if (!formData.country) {
-      formErrors.country = "Country is required";
+      nextErrors.country = "Country is required";
       firstErrorField = countryRef;
     } else if (!formData.organization) {
-      formErrors.organization = "Organization is required";
+      nextErrors.organization = "Organization is required";
       firstErrorField = organizationRef;
     } else if (!formData.intrested) {
-      formErrors.intrested = "Interested In is required";
+      nextErrors.intrested = "Interested In is required";
       firstErrorField = intrestedRef;
     } else if (!formData.abstract_title) {
-      formErrors.abstract_title = "Abstract Title is required";
+      nextErrors.abstract_title = "Abstract Title is required";
       firstErrorField = abstractTitleRef;
     } else if (!formData.upload_abstract_file) {
-      formErrors.upload_abstract_file = "Abstract file is required";
+      nextErrors.upload_abstract_file = "Abstract file is required";
       firstErrorField = fileRef;
     }
 
     // ====== CAPTCHA CHECK ======
     if (
-      !formErrors.title &&
-      !formErrors.name &&
-      !formErrors.email &&
-      !formErrors.alt_email &&
-      !formErrors.phone &&
-      !formErrors.city &&
-      !formErrors.country &&
-      !formErrors.organization &&
-      !formErrors.intrested &&
-      !formErrors.abstract_title &&
-      !formErrors.upload_abstract_file
+      !nextErrors.title &&
+      !nextErrors.name &&
+      !nextErrors.email &&
+      !nextErrors.alt_email &&
+      !nextErrors.phone &&
+      !nextErrors.city &&
+      !nextErrors.country &&
+      !nextErrors.organization &&
+      !nextErrors.intrested &&
+      !nextErrors.abstract_title &&
+      !nextErrors.upload_abstract_file
     ) {
       if (
         !captchaValue ||
         !captchaValue.text ||
         captchaValue.text.trim() === ""
       ) {
-        formErrors.captcha = "CAPTCHA is required";
-        setErrors(formErrors);
-        toast.error(formErrors.captcha);
+        nextErrors.captcha = "CAPTCHA is required";
+        setErrors(nextErrors);
+        toast.error(nextErrors.captcha);
         captchaRef.current?.focusCaptcha?.();
         return;
       } else if (!isCaptchaValid) {
-        formErrors.captcha = "Invalid CAPTCHA";
-        setErrors(formErrors);
-        toast.error(formErrors.captcha);
+        nextErrors.captcha = "Invalid CAPTCHA";
+        setErrors(nextErrors);
+        toast.error(nextErrors.captcha);
         captchaRef.current?.focusCaptcha?.();
         return;
       } else {
         const fileError = validateAbstractFile(formData.upload_abstract_file);
         if (fileError) {
-          formErrors.upload_abstract_file = fileError;
+          nextErrors.upload_abstract_file = fileError;
           firstErrorField = fileRef;
         }
       }
     }
 
     // ====== SHOW VALIDATION ERRORS ======
-    if (Object.keys(formErrors).length > 0) {
-      setErrors({ ...formErrors });
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors({ ...nextErrors });
 
-      const firstErrorMessage = Object.values(formErrors)[0];
+      const firstErrorMessage = Object.values(nextErrors)[0];
       toast.error(firstErrorMessage ?? "Validation Error");
 
       const focusable =
         firstErrorField && "current" in firstErrorField
-          ? (firstErrorField as any).current
+          ? firstErrorField.current
           : null;
 
-      if (focusable?.focus) {
-        focusable.focus();
+      if (
+        focusable &&
+        typeof (
+          focusable as
+            | HTMLInputElement
+            | HTMLSelectElement
+            | HTMLTextAreaElement
+        ).focus === "function"
+      ) {
+        (
+          focusable as
+            | HTMLInputElement
+            | HTMLSelectElement
+            | HTMLTextAreaElement
+        ).focus();
       }
 
       return;
@@ -727,8 +768,15 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
       } else {
         let message = "Failed to submit the form";
         try {
-          const errorAbs = await response.json();
-          message = errorAbs?.error || message;
+          const errorAbs: unknown = await response.json();
+          if (
+            errorAbs &&
+            typeof errorAbs === "object" &&
+            "error" in errorAbs &&
+            typeof (errorAbs as { error?: unknown }).error === "string"
+          ) {
+            message = (errorAbs as { error: string }).error;
+          }
         } catch {
           try {
             const text = await response.text();
@@ -1181,20 +1229,18 @@ const AbstractSubmission: React.FC<generalInfoProps> = ({ generalInfo }) => {
               <div className="sq_abmainbox">
                 <div className="sq_abbox1"></div>
                 <div className="sq_abbox2"></div>
-                <span className="nur_wrap11">
-                  {general ? (general as any).clogotext : ""}
-                </span>
+                <span className="nur_wrap11">{general?.clogotext ?? ""}</span>
                 <span className="nur_wrap22">CONFERENCE</span>
                 <span className="nur_wrap33">
-                  {general ? (general as any).full_length_dates : ""}
+                  {general?.full_length_dates ?? ""}
                 </span>
                 <span className="map_l55 sq_map">
                   <Image
                     src={map2}
-                    alt={general ? (general as any).clname : ""}
-                    title={general ? (general as any).clname : ""}
+                    alt={general?.clname ?? ""}
+                    title={general?.clname ?? ""}
                   />
-                  {general ? (general as any).venue_p1 : ""}
+                  {general?.venue_p1 ?? ""}
                 </span>
               </div>
             </div>
