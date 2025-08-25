@@ -5,16 +5,16 @@ export async function POST(req: Request) {
     try {
         const data = await req.json();
 
-        const { name, email } = data;
+        const { enquiryname, enquiryemail } = data;
 
         const cid = process.env.CID || '';
 
         const formData = new FormData();
         formData.append('website_form', btoa('contact_query'));
         formData.append('cid', btoa(cid));
-        formData.append('first_name', name);
+        formData.append('first_name', enquiryname);
         formData.append('last_name', btoa(''));
-        formData.append('email', email);
+        formData.append('email', enquiryemail);
         formData.append('message', btoa(''));
         formData.append('country', btoa(''));
         formData.append('phone', btoa(''));
