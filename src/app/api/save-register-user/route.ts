@@ -12,7 +12,14 @@
 
 //         const web_token = defaultValue(incoming.web_token, `${Date.now()}_${Math.floor(Math.random() * 100000)}`);
 
-//         const BLOB_PATH = `registration/${web_token}.json`;
+//         // ✅ Extract project name from site_url (or fallback)
+//         const siteUrl = incoming.site_url || "";
+//         const projectName = siteUrl
+//             ? siteUrl.replace(/^https?:\/\//, "").replace(".com", "")
+//             : "default_project";
+
+//         // ✅ Store inside projectName/registration folder
+//         const BLOB_PATH = `${projectName}/registration/${web_token}.json`;
 
 //         const newEntry = {
 //             id: defaultValue(incoming.id, "0") as string | null,
@@ -63,15 +70,18 @@
 //             cid: defaultValue(incoming.cid),
 //             description: "",
 //             other_info: null,
+//             site_url: siteUrl,            
+
 //         };
 
-//         // Check if a blob with the same token already exists
+//         // ✅ Check if a blob with the same token already exists in this folder
 //         const blobs = await list();
 //         const alreadyExists = blobs.blobs.find(b => b.pathname === BLOB_PATH);
 //         if (alreadyExists) {
 //             return NextResponse.json({ success: false, error: "Token already exists" }, { status: 409 });
 //         }
 
+//         // ✅ Upload to the correct folder path
 //         const uploaded = await put(BLOB_PATH, JSON.stringify(newEntry, null, 2), {
 //             access: "public",
 //             contentType: "application/json",
@@ -83,7 +93,6 @@
 //         return NextResponse.json({ success: false, error: "Unable to save registration data" }, { status: 500 });
 //     }
 // }
-
 
 import { put, list } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
@@ -109,7 +118,7 @@ export async function POST(req: NextRequest) {
 
         const newEntry = {
             id: defaultValue(incoming.id, "0") as string | null,
-            edition_id: defaultValue(incoming.edition_id, "0"),
+            // edition_id: defaultValue(incoming.edition_id, "0"),
             title: defaultValue(incoming.title),
             name: defaultValue(incoming.name),
             email: defaultValue(incoming.email),
@@ -127,36 +136,36 @@ export async function POST(req: NextRequest) {
             occupancy_price: defaultValue(incoming.occupancy_price),
             accompanying: defaultValue(incoming.accompanying),
             accompanying_price: defaultValue(incoming.accompanying_price),
-            sub_type: defaultValue(incoming.sub_type),
+            // sub_type: defaultValue(incoming.sub_type),
             reg_type: defaultValue(incoming.reg_type),
             price_type: defaultValue(incoming.price_type),
             discount_reg: defaultValue(incoming.discount_reg),
             discount_accom: defaultValue(incoming.discount_accom),
             total_price: defaultValue(incoming.total_price),
-            currency_rate: defaultValue(incoming.currency_rate),
-            created_dt: defaultValue(incoming.created_dt),
-            updated_dt: defaultValue(incoming.updated_dt),
+            // currency_rate: defaultValue(incoming.currency_rate),
+            // created_dt: defaultValue(incoming.created_dt),
+            // updated_dt: defaultValue(incoming.updated_dt),
             status: defaultValue(incoming.status),
-            url_link: null,
+            // url_link: null,
             reg_date: defaultValue(incoming.reg_date),
-            transaction_id: null,
-            attempt: defaultValue(incoming.attempt, "1"),
-            viewed_by: null,
-            viewed_status: "0",
-            viewed_dt: defaultValue(incoming.viewed_dt),
-            reply_status: "0",
-            reply_by: null,
-            reply_dt: defaultValue(incoming.reply_dt),
+            // transaction_id: null,
+            // attempt: defaultValue(incoming.attempt, "1"),
+            // viewed_by: null,
+            // viewed_status: "0",
+            // viewed_dt: defaultValue(incoming.viewed_dt),
+            // reply_status: "0",
+            // reply_by: null,
+            // reply_dt: defaultValue(incoming.reply_dt),
             type: "Registration",
             email_check_status: "0",
-            created_by: "User",
-            received_dt: defaultValue(incoming.received_dt),
-            payment_type: "",
+            // created_by: "User",
+            // received_dt: defaultValue(incoming.received_dt),
+            // payment_type: "",
             web_token: web_token,
             cid: defaultValue(incoming.cid),
-            description: "",
+            // description: "",
             other_info: null,
-            site_url: siteUrl,            
+            site_url: siteUrl,
 
         };
 

@@ -182,40 +182,64 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
       (dataToShow?.reg_price || 0) * (dataToShow?.participants || 0);
   }
 
-  const convertToDDMMYYYY = (dateStr: string) => {
-    const [year, month, day] = dateStr.split("-");
-    return `${day}-${month}-${year}`;
-  };
+  // const convertToDDMMYYYY = (dateStr: string) => {
+  //   const [year, month, day] = dateStr.split("-");
+  //   return `${day}-${month}-${year}`;
+  // };
+
+  // const formatDateWithDay = (dateStr: string) => {
+  //   if (dateStr === "NA") return "NA";
+
+  //   const [day, month, year] = dateStr.split("-");
+  //   const dateObj = new Date(`${year}-${month}-${day}`);
+
+  //   const daysOfWeek = [
+  //     "Sunday",
+  //     "Monday",
+  //     "Tuesday",
+  //     "Wednesday",
+  //     "Thursday",
+  //     "Friday",
+  //     "Saturday",
+  //   ];
+  //   const months = [
+  //     "Jan",
+  //     "Feb",
+  //     "Mar",
+  //     "Apr",
+  //     "May",
+  //     "Jun",
+  //     "Jul",
+  //     "Aug",
+  //     "Sep",
+  //     "Oct",
+  //     "Nov",
+  //     "Dec",
+  //   ];
+
+  //   const dayName = daysOfWeek[dateObj.getUTCDay()];
+  //   const monthName = months[parseInt(month) - 1];
+  //   const formattedDay = day.padStart(2, "0");
+
+  //   return `${monthName} ${formattedDay}, ${year} (${dayName})`;
+  // };
+
 
   const formatDateWithDay = (dateStr: string) => {
-    if (dateStr === "NA") return "NA";
+    if (!dateStr || dateStr === "NA") return "NA";
 
+    // Expecting DD-MM-YYYY
     const [day, month, year] = dateStr.split("-");
-    const dateObj = new Date(`${year}-${month}-${day}`);
+
+    const dateObj = new Date(`${year}-${month}-${day}`); // YYYY-MM-DD (valid)
+
+    if (isNaN(dateObj.getTime())) return "Invalid Date";
 
     const daysOfWeek = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
+      "Sunday", "Monday", "Tuesday", "Wednesday",
+      "Thursday", "Friday", "Saturday",
     ];
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     const dayName = daysOfWeek[dateObj.getUTCDay()];
     const monthName = months[parseInt(month) - 1];
@@ -223,6 +247,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
 
     return `${monthName} ${formattedDay}, ${year} (${dayName})`;
   };
+
 
   useEffect(() => {
     if (dataToShow?.email) {
@@ -674,7 +699,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                               <td className="re_p3">Check-in Date:</td>
                               <td className="re_p3 text-right fw-600">
                                 {formatDateWithDay(
-                                  convertToDDMMYYYY(dataToShow.checkin_date)
+                                  dataToShow.checkin_date
                                 )}
                               </td>
                             </tr>
@@ -685,9 +710,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                             <tr>
                               <td className="re_p3 brb-none">Check-out Date:</td>
                               <td className="re_p3 brb-none text-right fw-600">
-                                {formatDateWithDay(
-                                  convertToDDMMYYYY(dataToShow.checkout_date)
-                                )}
+                                {formatDateWithDay(dataToShow.checkout_date)}
                               </td>
                             </tr>
                           )}
