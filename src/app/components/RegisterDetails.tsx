@@ -885,6 +885,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                           // console.log("🔵 [PayPal] onClick Triggered");
                           console.log("🟡 Click Payload:", { data, actions });
                         }}
+
                         createOrder={async () => {
                           // console.log("🟢 [PayPal] createOrder Triggered");
                           setIsPending(true);
@@ -986,13 +987,17 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                               attempt: "1",
                             };
 
-                            await fetch("/api/save-payment-user", {
+                            // ✅ Ensure blob is saved successfully
+                            const blobRes = await fetch("/api/save-payment-user", {
                               method: "POST",
-                              headers: {
-                                "Content-Type": "application/json",
-                              },
+                              headers: { "Content-Type": "application/json" },
                               body: JSON.stringify(paymentUserPayload),
                             });
+
+                            const blobResult = await blobRes.json();
+                            if (!blobRes.ok || !blobResult.success) {
+                              throw new Error("Failed to save payment in blob storage");
+                            }
 
                             // 3️⃣ Redirect to success page
                             const encryptedData = btoa(
