@@ -40,6 +40,66 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
     console.error("Error decoding payment data:", error);
   }
 
+  // useEffect(() => {
+  //   const handlePayment = async () => {
+  //     if (!web_token) {
+  //       setPaymentStatus("error");
+  //       setLoading(false);
+  //       return;
+  //     }
+
+  //     // Extract project name from site_url
+  //     const rawSiteUrl = general?.site_url || "";
+  //     const projectName = rawSiteUrl
+  //       .replace(/^https?:\/\//, "")
+  //       .replace(".com", "")
+  //       .trim();
+
+  //     // If payment was marked success
+  //     if (status === "success") {
+  //       try {
+  //         const response = await fetch("/api/payment/confirm", {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({
+  //             projectName,
+  //             web_token,
+  //           }),
+  //         });
+
+  //         console.log(
+  //           "Payment Confirm",
+  //           new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })
+  //         );
+
+  //         const result = await response.json();
+  //         console.log("payment results after fetching 111", result);
+
+  //         if (result.success) {
+  //           // Directly show final success content (do not redirect)
+  //           setPaymentStatus("success");
+  //           setLoading(false);
+  //           return;
+  //         }
+  //       } catch (error) {
+  //         console.error("Payment processing error:", error);
+  //       }
+  //     }
+  //   };
+
+  //   handlePayment();
+  // }, [
+  //   status,
+  //   web_token,
+  //   orderID,
+  //   other_info,
+  //   otherInfoObject.total_price,
+  //   otherInfoObject.other_info,
+  //   otherInfoObject.discount_amt,
+  // ]);
+
   useEffect(() => {
     const handlePayment = async () => {
       if (!web_token) {
@@ -48,14 +108,6 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
         return;
       }
 
-      // Extract project name from site_url
-      const rawSiteUrl = general?.site_url || "";
-      const projectName = rawSiteUrl
-        .replace(/^https?:\/\//, "")
-        .replace(".com", "")
-        .trim();
-
-      // If payment was marked success
       if (status === "success") {
         try {
           const response = await fetch("/api/payment/confirm", {
@@ -64,41 +116,41 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              projectName,
+              projectName: (general?.site_url || "")
+                .replace(/^https?:\/\//, "")
+                .replace(".com", "")
+                .trim(),
               web_token,
             }),
           });
 
-          console.log(
-            "Payment Confirm",
-            new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })
-          );
-
           const result = await response.json();
-          console.log("payment results after fetching 111", result);
+          console.log("Payment confirm result:", result);
 
           if (result.success) {
-            // Directly show final success content (do not redirect)
             setPaymentStatus("success");
-            setLoading(false);
-            return;
+          } else {
+            setPaymentStatus("not_done");
           }
         } catch (error) {
           console.error("Payment processing error:", error);
+          setPaymentStatus("error");
+        } finally {
+          setLoading(false); // always stop loading
         }
+      } else {
+        setPaymentStatus("error");
+        setLoading(false);
       }
     };
 
     handlePayment();
-  }, [
-    status,
-    web_token,
+  }, [status, web_token, general?.site_url,
     orderID,
     other_info,
     otherInfoObject.total_price,
     otherInfoObject.other_info,
-    otherInfoObject.discount_amt,
-  ]);
+    otherInfoObject.discount_amt,]);
 
   return (
     <div style={styles.container}>

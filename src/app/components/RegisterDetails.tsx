@@ -928,71 +928,6 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                             setIsPending(false);
                           }
                         }}
-                        // onApprove={async (data) => {
-                        //   try {
-                        //     const capturePayload = { orderID: data.orderID };
-
-                        //     const res = await fetch("/api/paypal/capture-order", {
-                        //       method: "POST",
-                        //       headers: {
-                        //         "Content-Type": "application/json",
-                        //       },
-                        //       body: JSON.stringify(capturePayload),
-                        //     });
-
-                        //     const captureData = await res.json();
-
-                        //     if (!res.ok) throw new Error("Failed to capture order");
-
-                        //     const savePaymentPayload = {
-                        //       payment_ref_id: captureData.id,
-                        //       web_token: dataToShow?.web_token,
-                        //       total_price: adjustedPriceRef.current,
-                        //       other_info: actualAmountRef.current,
-                        //       payment_method: "PayPal",
-                        //       status: "success",
-                        //       discount_amt: 0,
-                        //     };
-
-                        //     const saveRes = await fetch(
-                        //       "/api/paypal/save-payment",
-                        //       {
-                        //         method: "POST",
-                        //         headers: {
-                        //           "Content-Type": "application/json",
-                        //         },
-                        //         body: JSON.stringify(savePaymentPayload),
-                        //       }
-                        //     );
-
-                        //     const saveResult = await saveRes.json();
-                        //     console.log("✅ save-payment Response:", saveResult);
-
-                        //     const encryptedData = btoa(
-                        //       JSON.stringify(savePaymentPayload)
-                        //     );
-                        //     const query = new URLSearchParams({
-                        //       status: "success",
-                        //       web_token: dataToShow?.web_token || "",
-                        //       orderID: data.orderID || "",
-                        //       other_info: encryptedData || "",
-                        //     }).toString();
-
-                        //     router.push(`/payment_success?${query}`);
-                        //   } catch (error) {
-                        //     console.error("❌ Error in onApprove:", error);
-                        //     await sendErrorToCMS({
-                        //       name: dataToShow?.name || "Unknown User",
-                        //       email: dataToShow?.email || "Unknown Email",
-                        //       errorMessage: `Something went wrong while approving the PayPal transaction (capture/save step): ${(error as Error).message || "Unknown error in onApprove"}`,
-                        //     });
-                        //     router.push(
-                        //       `/register_details?status=failure&web_token=${dataToShow?.web_token}`
-                        //     );
-                        //   } finally {
-                        //     setIsPending(false);
-                        //   }
-                        // }}
 
                         onApprove={async (data) => {
                           try {
@@ -1092,6 +1027,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
                             setIsPending(false);
                           }
                         }}
+
                         onCancel={async (data) => {
                           console.warn("🟠 [PayPal] onCancel Triggered");
                           // console.log("❗ Cancel Payload:", data);
@@ -1108,6 +1044,7 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
 
                           setShowCancelModal(true);
                         }}
+
                         onError={async (err) => {
                           console.error("🔴 [PayPal] onError Triggered");
                           console.error("💥 Error Payload:", err);
