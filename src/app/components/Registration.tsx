@@ -177,7 +177,6 @@ const Registration: React.FC<RegisterProps> = ({
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // console.log("Form data sent successfully");
     } catch (err) {
       console.error("Error saving form data:", err);
       await sendErrorToCMS({
@@ -1829,6 +1828,56 @@ const Registration: React.FC<RegisterProps> = ({
               </button>
             </div>
           </form>
+        </div>
+      </div>
+
+      <div className="cont_fram_wrap wow fadeInUp" data-wow-delay="400ms" data-wow-duration="1000ms">
+        <div className="auto-container">
+          <div className="row clearfix">
+            <div className="col-md-11 mar_center">
+              <div className="confr_sty1">
+                <h3 className="mb_156">Registration Benefits for In-Person Attendees:</h3>
+                <h4>As an in-person attendee at our conference, you will enjoy the following benefits:</h4>
+                <ul>
+                  <li>Eligibility to attend all conference sessions, workshops and poster sessions </li>
+                  <li>Oral presenters will have a 25-minute presentation followed by a 5-minute Q&A.</li>
+                  <li>Refreshments (morning and evening) and lunch daily (during conference days)</li>
+                  <li>Attendees will receive hard copies of both the abstract book and the conference proceedings.</li>
+                  <li>Endorsed certificate for presenters or attendance certificate for non-presenters</li>
+                  <li>Conference photo coverage</li>
+                </ul>
+                {/* <h4>Note: Participants registered under Listener and accompanying category are not allowed
+                        to present their
+                        papers in Oral or Poster sessions.</h4> */}
+              </div>
+
+              <div className="confr_sty1">
+                <h3>Registration Benefits for Virtual Attendees: </h3>
+                <h4>If you attend the conference virtually, you will receive the following benefits:</h4>
+                <ul>
+                  <li>Live zoom presentation slot (20 minutes presentation and Q&A) if you are an oral presenter
+                    attending In person </li>
+                  <li>Pre-recorded video presentation slot (20 minutes presentation) if you are a virtual presenter</li>
+                  <li>Full virtual conference experience through zoom</li>
+                  <li>Access to all keynotes, plenary sessions, technical sessions, and workshops</li>
+                  <li>Ability to engage with other presenters and attendees online</li>
+                  <li>Abstract book and conference proceedings in soft copy</li>
+                  <li>Virtual Participation certificate</li>
+                </ul>
+              </div>
+
+              <div className="confr_sty1">
+                <h3>Cancellation Policy:</h3>
+                <ul>
+                  <li>A full refund, minus a processing fee, will be issued for cancellations made 60 days before the conference begins.</li>
+                  <li>Registrations or accommodations cancelled within 60 days of the conference start date are non-refundable; however, they can be transferred to your colleague/friend or to an upcoming event.</li>
+                  <li>For more queries regarding our cancellation policy please write an email to us at<br></br>
+                    <Link href='contact@stemnetwork.info' title='contact@stemnetwork.info'>contact@stemnetwork.info</Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
