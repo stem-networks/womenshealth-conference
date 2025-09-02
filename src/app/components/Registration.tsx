@@ -1872,7 +1872,7 @@ const Registration: React.FC<RegisterProps> = ({
                   <li>A full refund, minus a processing fee, will be issued for cancellations made 60 days before the conference begins.</li>
                   <li>Registrations or accommodations cancelled within 60 days of the conference start date are non-refundable; however, they can be transferred to your colleague/friend or to an upcoming event.</li>
                   <li>For more queries regarding our cancellation policy please write an email to us at<br></br>
-                    <Link href='contact@stemnetwork.info' title='contact@stemnetwork.info'>contact@stemnetwork.info</Link>
+                    <Link href='mailto:contact@stemnetwork.info' title='contact@stemnetwork.info'>contact@stemnetwork.info</Link>
                   </li>
                 </ul>
               </div>
