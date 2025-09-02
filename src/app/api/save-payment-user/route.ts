@@ -6,13 +6,23 @@ export async function POST(req: NextRequest) {
     try {
         const incoming = await req.json();
 
-        const defaultValue = (
-            val: string | number | null | undefined,
-            fallback = "wmty"
-        ): string | number => {
-            return val === undefined || val === null || val === ""
-                ? fallback
-                : val;
+        // const defaultValue = (
+        //     val: string | number | null | undefined,
+        //     fallback = "wmty"
+        // ): string | number => {
+        //     return val === undefined || val === null || val === ""
+        //         ? fallback
+        //         : val;
+        // };
+
+        const defaultValue = <T extends string | number>(
+            val: T | null | undefined,
+            fallback?: T
+        ): T | null => {
+            if (val === undefined || val === null || val === "") {
+                return fallback !== undefined ? fallback : null;
+            }
+            return val;
         };
 
         const web_token = defaultValue(
