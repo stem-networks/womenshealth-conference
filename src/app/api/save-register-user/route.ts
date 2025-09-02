@@ -101,7 +101,14 @@ export async function POST(req: NextRequest) {
     try {
         const incoming = await req.json();
 
-        const defaultValue = (val: string | number | null | undefined, fallback = "wmty"): string | number => {
+        // const defaultValue = (val: string | number | null | undefined, fallback = "wmty"): string | number => {
+        //     return val === undefined || val === null || val === "" ? fallback : val;
+        // };
+
+        const defaultValue = (
+            val: string | number | null | undefined,
+            fallback: string | number = "N/A"
+        ): string | number => {
             return val === undefined || val === null || val === "" ? fallback : val;
         };
 
