@@ -1,16 +1,196 @@
 import React from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
+import Image from "next/image";
+import Link from "next/link";
+import { getBaseUrl } from '@/lib/getBaseUrl';
+import { ApiResponse } from '@/types';
+import { Metadata } from 'next';
+
+interface Speaker {
+    id: number;
+    image: string;
+    name: string;
+    institution: string;
+    country: string;
+    altText: string;
+}
+
+const speakersData: Speaker[] = [
+    {
+        id: 1,
+        image: "/images/images/Lumin_Wang.png",
+        name: "Lumin Wang",
+        institution: "University of Michigan",
+        country: "USA",
+        altText: "Lumin Wang",
+    },
+    {
+        id: 2,
+        image: "/images/images/Thomas_Fassler.jpg",
+        name: "Thomas Fassler",
+        institution: "Technical University of Munich",
+        country: "Germany",
+        altText: "Thomas Fassler",
+    },
+    {
+        id: 3,
+        image: "/images/images/Muhammet_S_Toprak.png",
+        name: "Muhammet S. Toprak",
+        institution: "KTH Royal Institute of Technology",
+        country: "Sweden",
+        altText: "Muhammet S. Toprak",
+    },
+    {
+        id: 4,
+        image: "/images/images/changquan_Lai.jpg",
+        name: "Changquan Lai",
+        institution: "Nanyang Technological University (NTU)",
+        country: "Singapore",
+        altText: "Changquan Lai",
+    },
+    {
+        id: 5,
+        image: "/images/images/Ankur_Sood.jpg",
+        name: "Ankur Sood",
+        institution: "Yeungnam University",
+        country: "South Korea",
+        altText: "Ankur Sood",
+    },
+    {
+        id: 6,
+        image: "/images/images/Sumanta_Sahoo.jpg",
+        name: "Sumanta Sahoo",
+        institution: "Yeungnam University",
+        country: "South Korea",
+        altText: "Sumanta Sahoo",
+    },
+    {
+        id: 7,
+        image: "/images/images/Tungyang_Chen.jpg",
+        name: "Tungyang Chen",
+        institution: "National Cheng Kung University",
+        country: "Taiwan",
+        altText: "Tungyang Chen",
+    },
+    {
+        id: 8,
+        image: "/images/images/Yang_Wei_Lin.jpg",
+        name: "Yang-Wei Lin",
+        institution: "National Changhua University of Education",
+        country: "Taiwan",
+        altText: "Yang-Wei Lin",
+    },
+    {
+        id: 9,
+        image: "/images/images/Xiaolong_Wang.png",
+        name: "Xiaolong Wang",
+        institution: "Lanzhou Institute of Physics, Chinese Academy of Sciences",
+        country: "China",
+        altText: "Xiaolong Wang",
+    },
+    {
+        id: 10,
+        image: "/images/images/Guojiang_Wan.png",
+        name: "Guojiang Wan",
+        institution: "Southwest Jiaotong University",
+        country: "China",
+        altText: "Guojiang Wan",
+    },
+    {
+        id: 11,
+        image: "/images/images/Hu_Yi.jpg",
+        name: "Hu Yi",
+        institution: "The Hong Kong Polytechnic University",
+        country: "China",
+        altText: "Hu Yi",
+    },
+    {
+        id: 12,
+        image: "/images/images/Syazwani_Mohd_Zaki.jpg",
+        name: "Syazwani Mohd Zaki",
+        institution: "International Islamic University Malaysia (IIUM)",
+        country: "Malaysia",
+        altText: "Syazwani Mohd Zaki",
+    },
+    {
+        id: 13,
+        image: "/images/images/Leelakrishna_Reddy.jpg",
+        name: "Leelakrishna Reddy",
+        institution: "University of Johannesburg",
+        country: "South Africa",
+        altText: "Leelakrishna Reddy",
+    },
+    {
+        id: 14,
+        image: "/images/images/Karthikeyani_Anbukumaran.png",
+        name: "Karthikeyani Anbukumaran",
+        institution: "Guru Nanak College, University of Madras",
+        country: "India",
+        altText: "Karthikeyani Anbukumaran",
+    },
+    {
+        id: 15,
+        image: "/images/images/Ashok_Mahajan.jpg",
+        name: "Ashok Mahajan",
+        institution: "Swami Ramanand Teerth Marathwada University",
+        country: "India",
+        altText: "Ashok Mahajan",
+    },
+    {
+        id: 16,
+        image: "/images/images/Leonard_Mwaikambo.png",
+        name: "Leonard Mwaikambo",
+        institution: "University of Dar es Salaam",
+        country: "Tanzania",
+        altText: "Leonard Mwaikambo",
+    },
+];
+
+async function fetchGeneralDataStatic(): Promise<ApiResponse> {
+    const baseUrl = getBaseUrl();
+    const res = await fetch(`${baseUrl}/api/general`, {
+        next: { revalidate: 3600 }, // Cache for 1 hour
+    });
+    if (!res.ok) throw new Error("Failed to fetch general data statically");
+    return res.json();
+}
+
+// SEO Metadata
+export async function generateMetadata(): Promise<Metadata> {
+    try {
+        const generalData = await fetchGeneralDataStatic();
+        const meta = generalData?.pages?.speakers?.[0] || {
+            title: "Speakers",
+            content: "Explore the Speakers of the conference.",
+            meta_keywords: "",
+        };
+
+        // Canonical
+        // const baseUrl = process.env.BASE_URL || "";
+        const canonicalPath = "/speakers"; // hardcode since we know this is sessions page
+        const canonicalURL = `${getBaseUrl()}${canonicalPath}`;
+
+        return {
+            title: meta.title,
+            description: meta.content,
+            keywords: meta.meta_keywords,
+            metadataBase: new URL(getBaseUrl()),
+            alternates: {
+                canonical: canonicalURL,
+            },
+        };
+    } catch (error) {
+        console.error("Metadata generation error Speakers:", error);
+        return {
+            title: "Speakers",
+            description: "Explore the Speakers of the conference.",
+            keywords: "",
+        };
+    }
+}
 
 const speakers = () => {
     return (
         <div>
-            {/* <Head>
-                <title>{speakers ? speakers[0]?.title : ''}</title>
-                <meta name="description" content={speakers ? speakers[0]?.content : ''} />
-                <meta name="keywords" content={speakers ? speakers[0]?.meta_keywords : ''} />
-                <link rel="canonical" href={canonicalUrl} />
-            </Head> */}
 
             <div className="brand_wrap">
                 <div className="auto-container">
@@ -23,8 +203,9 @@ const speakers = () => {
                 </div>
             </div>
 
-            <h2 className="abs_wrap5 wow fadeInUp" data-wow-delay="400ms" data-wow-duration="1000ms">Our Speakers</h2>
-            <div className="speakers-section first-design">
+            <h2 className="abs_wrap5 wow fadeInUp" data-wow-delay="400ms" data-wow-duration="1000ms">Our Speakers 2025</h2>
+
+            <div className="speakers-sections members-main-block">
                 <div className='auto-container'>
                     <div className='row clearfix'>
                         <div className='col-lg-12 col-md-12 mar_center'>
@@ -32,192 +213,40 @@ const speakers = () => {
                                 <div className='col-lg-12 col-md-12 wow fadeInUp animated' data-wow-delay='400ms'
                                     data-wow-duration='1000ms'>
 
-                                    <div className="members-card-block">
-                                        <div className="row-member row">
-                                            {/* <!-- Speaker 1 --> */}
-                                            <div className="col-lg-3 col-md-6 col-sm-6 mb-4 members-specific-space">
-                                                <div className="card text-center p-3 border">
-                                                    <div className="custom-border-wrapper">
-                                                        <div className="image-wrapper mb-3">
-                                                            <Image
-                                                                src="/images/images/eliane_silva.webp"
-                                                                alt="Eliane Silva"
-                                                                title="Eliane Silva"
-                                                                width={200}
-                                                                height={200}
-                                                                className="rounded-circle img-fluid"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="speaker-details normal-design">
-                                                        <h3>Eliane Silva</h3>
-                                                        <p>University of Porto</p>
-                                                        <p>Portugal</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* <!-- Speaker 2 --> */}
-                                            <div className="col-lg-3 col-md-6 col-sm-6 mb-4 members-specific-space">
-                                                <div className="card text-center p-3 border">
-                                                    <div className="custom-border-wrapper">
-                                                        <div className="image-wrapper mb-3">
-                                                            <Image
-                                                                src="/images/images/malgorzata_masierek.jpg"
-                                                                alt="Malgorzata Masierek"
-                                                                title="Malgorzata Masierek"
-                                                                width={200}
-                                                                height={200}
-                                                                className="rounded-circle img-fluid"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="speaker-details normal-design">
-                                                        <h3>Malgorzata Masierek</h3>
-                                                        <p>Bioton S.A</p>
-                                                        <p>Poland</p>
+                                    <div className="">
+                                        <section className="blog">
+                                            {/* <!-- container Start--> */}
+                                            <div className="row aos-init aos-animate" data-aos="fade-up" data-aos-duration="400">
+                                                <div className="col-md-12 col-12">
+                                                    <div className="grid-main-members-gap">
+                                                        {speakersData.map((member, index) => (
+                                                            <div
+                                                                key={index}
+                                                                className={`each-member-gap ${index >= 3 ? 'member-row-gap' : ''}`}
+                                                            >
+                                                                <div className="grid-res-gap member-resp-gap">
+                                                                    <div className="grid-res-item">
+                                                                        <Image
+                                                                            src={member.image}
+                                                                            alt={member.name}
+                                                                            title={member.name}
+                                                                            width={200}
+                                                                            height={200}
+                                                                            className="rounded-circle img-fluid"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="inner-content">
+                                                                        <h3>{member.name}</h3>
+                                                                        <p className="members-p1 member-country">{member.country}</p>
+                                                                        <p className="members-p1">{member.institution}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            {/* <!-- Speaker 3 --> */}
-                                            <div className="col-lg-3 col-md-6 col-sm-6 mb-4 members-specific-space">
-                                                <div className="card text-center p-3 border">
-                                                    <div className="custom-border-wrapper">
-                                                        <div className="image-wrapper mb-3">
-                                                            <Image
-                                                                src="/images/images/kayhan_Hulya.JPG"
-                                                                alt="Kayhan Hulya"
-                                                                title="Kayhan Hulya"
-                                                                width={200}
-                                                                height={200}
-                                                                className="rounded-circle img-fluid"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="speaker-details normal-design">
-                                                        <h3>Kayhan Hulya</h3>
-                                                        <p>Istanbul University</p>
-                                                        <p>United Kingdom</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* <!-- Speaker 4 --> */}
-                                            <div className="col-lg-3 col-md-6 col-sm-6 mb-4 members-specific-space">
-                                                <div className="card text-center p-3 border">
-                                                    <div className="custom-border-wrapper">
-                                                        <div className="image-wrapper mb-3">
-                                                            <Image
-                                                                src="/images/images/sadee_Wolfgang.png"
-                                                                alt="Sadee Wolfgang"
-                                                                title="Sadee Wolfgang"
-                                                                width={200}
-                                                                height={200}
-                                                                className="rounded-circle img-fluid"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="speaker-details normal-design">
-                                                        <h3>Sadee Wolfgang</h3>
-                                                        <p>The Ohio State University</p>
-                                                        <p>United States</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* <!-- Speaker 5 --> */}
-                                            <div className="col-lg-3 col-md-6 col-sm-6 mb-4 member-spacing">
-                                                <div className="card text-center p-3 border">
-                                                    <div className="custom-border-wrapper">
-                                                        <div className="image-wrapper mb-3">
-                                                            <Image
-                                                                src="/images/images/nigel_Smart.jpg"
-                                                                alt="Nigel J Smart"
-                                                                title="Nigel J Smart"
-                                                                width={200}
-                                                                height={200}
-                                                                className="rounded-circle img-fluid"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="speaker-details normal-design">
-                                                        <h3>Nigel J Smart</h3>
-                                                        <p>University of Manchester</p>
-                                                        <p>United states</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* <!-- Speaker 6 --> */}
-                                            <div className="col-lg-3 col-md-6 col-sm-6 mb-4 member-spacing">
-                                                <div className="card text-center p-3 border">
-                                                    <div className="custom-border-wrapper">
-                                                        <div className="image-wrapper mb-3">
-                                                            <Image
-                                                                src="/images/images/khojasteh_Joharchi.jpg"
-                                                                alt="Khojasteh Joharchi"
-                                                                title="Khojasteh Joharchi"
-                                                                width={200}
-                                                                height={200}
-                                                                className="rounded-circle img-fluid"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="speaker-details normal-design">
-                                                        <h3>Khojasteh Joharchi</h3>
-                                                        <p>Shahid Beheshti University of Medical Science</p>
-                                                        <p>Iran</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* <!-- Speaker 7 --> */}
-                                            <div className="col-lg-3 col-md-6 col-sm-6 mb-4 member-spacing">
-                                                <div className="card text-center p-3 border">
-                                                    <div className="custom-border-wrapper">
-                                                        <div className="image-wrapper mb-3">
-                                                            <Image
-                                                                src="/images/images/mirzaeei_shahla.webp"
-                                                                alt="Mirzaeei Shahla"
-                                                                title="Mirzaeei Shahla"
-                                                                width={200}
-                                                                height={200}
-                                                                className="rounded-circle img-fluid"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="speaker-details normal-design">
-                                                        <h3>Mirzaeei Shahla</h3>
-                                                        <p>Kermanshah University of Medical Science</p>
-                                                        <p>Iran</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* <!-- Speaker 8 --> */}
-                                            <div className="col-lg-3 col-md-6 col-sm-6 mb-4 member-spacing">
-                                                <div className="card text-center p-3 border">
-                                                    <div className="custom-border-wrapper">
-                                                        <div className="image-wrapper mb-3">
-                                                            <Image
-                                                                src="/images/images/rafael_Vazquez_Duhalt.png"
-                                                                alt="Rafael Vazquez Duhalt"
-                                                                title="Rafael Vazquez Duhalt"
-                                                                width={200}
-                                                                height={200}
-                                                                className="rounded-circle img-fluid"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="speaker-details normal-design">
-                                                        <h3>Rafael Vazquez Duhalt</h3>
-                                                        <p>National Autonomous University of Mexico</p>
-                                                        <p>Mexico</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        </section>
                                     </div>
                                 </div>
                             </div>
@@ -227,6 +256,7 @@ const speakers = () => {
                     </div>
                 </div>
             </div>
+
         </div>
     )
 }

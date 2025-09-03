@@ -11,7 +11,7 @@ interface Session {
 interface GeneralInfo {
   clogotext?: string;
   full_length_dates?: string;
-  venue_p1?: string;
+  venue_p2?: string;
   confkeyword?: string;
 }
 
@@ -56,7 +56,7 @@ const SessionsComponent = ({
               <span className="nur_wrap3">
                 {generalInfo?.full_length_dates || ""}
               </span>
-              <span className="nur_wrap4">{generalInfo?.venue_p1 || ""}</span>
+              <span className="nur_wrap4">{generalInfo?.venue_p2 || ""}</span>
             </div>
           </div>
 

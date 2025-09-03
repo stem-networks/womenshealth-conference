@@ -19,6 +19,7 @@ interface VenueProps {
 
 const Venue: React.FC<VenueProps> = ({ onelinerVenueInfo }) => {
 
+    // console.log('Venue', onelinerVenueInfo.venueImages)
     const venueImages: VenueImages = onelinerVenueInfo?.venueImages || {};
 
     return (
@@ -64,6 +65,7 @@ const Venue: React.FC<VenueProps> = ({ onelinerVenueInfo }) => {
                                                         className="gallery_wra15"
                                                         priority={index < 3} // Priority for first 3 images
                                                     // onError={(e) => {
+                                                    //     console.log(e);
                                                     //     console.error("Image failed to load:", imagePath);
                                                     // }}
                                                     />

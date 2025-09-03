@@ -134,34 +134,7 @@ const Registration: React.FC<RegisterProps> = ({
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-  // const sendFullFormData = useCallback(async (data: FormData) => {
-  //   try {
-  //     const formDataObj = new FormData();
-  //     Object.entries(data).forEach(([key, value]) => {
-  //       if (
-  //         typeof value === "string" ||
-  //         typeof value === "number" ||
-  //         typeof value === "boolean"
-  //       ) {
-  //         formDataObj.append(key, String(value));
-  //       } else if (value instanceof Blob) {
-  //         formDataObj.append(key, value);
-  //       } else if (value !== undefined && value !== null) {
-  //         formDataObj.append(key, JSON.stringify(value));
-  //       }
-  //     });
-
-  //     await axios.post("/api/send-to-cms", formDataObj, {
-  //       headers: { "Content-Type": "multipart/form-data" },
-  //     });
-
-  //   } catch (err) {
-  //     console.error("Error saving form data:", err);
-  //   }
-  // }, []);
-
   // Handler for selecting participant type
-
   const sendFullFormData = useCallback(async (data: FormData) => {
     try {
       // First check if email exists and is valid
@@ -171,9 +144,24 @@ const Registration: React.FC<RegisterProps> = ({
       }
 
       const formDataObj = new FormData();
+      // Object.entries(data).forEach(([key, value]) => {
+      //   if (
+      //     typeof value === "string" ||
+      //     typeof value === "number" ||
+      //     typeof value === "boolean"
+      //   ) {
+      //     formDataObj.append(key, String(value));
+      //   } else if (value instanceof Blob) {
+      //     formDataObj.append(key, value);
+      //   } else if (value !== undefined && value !== null) {
+      //     formDataObj.append(key, JSON.stringify(value));
+      //   }
+      // });
+
       Object.entries(data).forEach(([key, value]) => {
-        if (
-          typeof value === "string" ||
+        if (typeof value === "string") {
+          formDataObj.append(key, value.trim()); // Trim string
+        } else if (
           typeof value === "number" ||
           typeof value === "boolean"
         ) {
@@ -235,15 +223,15 @@ const Registration: React.FC<RegisterProps> = ({
   const getCategoryFromParticipant = (participant: string): string => {
     switch (participant) {
       case "Listener (In-Person)":
-        return "1_Listener-In-Person_listener-in-person";
+        return "listener-in-person";
       case "Presenter (In-Person)":
-        return "2_Presenter-In-Person_presenter-in-person";
+        return "presenter-in-person";
       case "Student/Young Researcher":
-        return "3_Young-Researcher-In-Person_young-researcher-in-person";
+        return "young-researcher-in-person";
       case "Listener (Virtual)":
-        return "4_Listener-Virtual_listener-virtual";
+        return "listener-virtual";
       case "Presenter (Virtual)":
-        return "5_Presenter-Virtual_presenter-virtual";
+        return "presenter-virtual";
       default:
         return "";
     }
@@ -711,6 +699,14 @@ const Registration: React.FC<RegisterProps> = ({
     });
   }, [totalPrice]);
 
+  // UTF-8 safe Base64 encoder
+  function utf8ToBase64(str: string) {
+    const bytes = new TextEncoder().encode(str);
+    let binary = "";
+    bytes.forEach((b) => binary += String.fromCharCode(b));
+    return btoa(binary);
+  }
+
   const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setLoading(true);
@@ -792,49 +788,103 @@ const Registration: React.FC<RegisterProps> = ({
     const updatedFormData = { ...formData, submit_status: "1" };
     sendFullFormData(updatedFormData);
 
+    // const rawWebToken = `${Date.now()}_${Math.floor(Math.random() * 1000000)}`;
+    const rawWebToken = `${Math.floor(Date.now() / 1000)}_${Math.floor(Math.random() * 32768)}`;
+    const encodedWebToken = utf8ToBase64(rawWebToken);
+
     // Prepare API payload
     const postData = {
-      module_name: "registration_save",
-      keys: {
-        data: [
-          {
-            title: formData.title,
-            name: formData.name,
-            email: formData.email,
-            alt_email: formData.alt_email,
-            phone: formData.phone,
-            whatsapp_number: formData.whatsapp,
-            institution: formData.organization,
-            country: formData.country,
-            reg_category: formData.intrested,
-            occupency_text: formData.other_info["Selected Accommodation"],
-            occupancy:
-              formData.other_info["selected Accommodation Price"].toString(),
-            check_insel: formData.other_info["check In Date"],
-            check_outsel: formData.other_info["check Out Date"],
-            nights: formData.other_info["Num of Nights"].toString(),
-            no_of_participants: formData.no_participants.toString(),
-            no_of_accompanying: formData.no_accompanying.toString(),
-            reg_tot_hidden:
-              formData.other_info["Registration Price"].toString(),
-            price_of_each_accompanying:
-              formData.other_info["Price Per Accompanying Person"].toString(),
-            final_amt_input: formData.other_info["Total Price"].toString(),
-          },
-        ],
-      },
+      title: utf8ToBase64(formData.title.trim()),
+      name: utf8ToBase64(formData.name.trim()),
+      email: utf8ToBase64(formData.email.trim()),
+      alt_email: utf8ToBase64(formData.alt_email.trim() || ""),
+      phone: utf8ToBase64(formData.phone.trim()),
+      whatsapp_number: utf8ToBase64(formData.whatsapp.trim() || ""),
+      institution: utf8ToBase64(formData.organization.trim()),
+      country: utf8ToBase64(formData.country.trim()),
+      reg_category: utf8ToBase64(formData.intrested.trim()),
+      occupency_text: utf8ToBase64(formData.other_info["Selected Accommodation"]),
+      occupancy: utf8ToBase64(formData.other_info["selected Accommodation Price"].toString()),
+      check_insel: utf8ToBase64(formData.other_info["check In Date"]),
+      check_outsel: utf8ToBase64(formData.other_info["check Out Date"]),
+      nights: utf8ToBase64(formData.other_info["Num of Nights"].toString()),
+      no_of_participants: utf8ToBase64(formData.no_participants.toString()),
+      no_of_accompanying: utf8ToBase64(formData.no_accompanying.toString()),
+      reg_tot_hidden: utf8ToBase64(formData.other_info["Registration Price"].toString()),
+      price_of_each_accompanying: utf8ToBase64(formData.other_info["Price Per Accompanying Person"].toString()),
+      final_amt_input: utf8ToBase64(formData.other_info["Total Price"].toString()),
+      web_token: encodedWebToken,
+      // description: btoa(formData.description || ""),
     };
 
     try {
-      const response = await axios.post("/api/register", postData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+      // 1. Submit to CMS API
+      await axios.post("/api/register", postData, {
+        headers: { "Content-Type": "application/json" },
       });
 
-      const token = response.data?.data;
-      if (token) {
-        router.push(`/register_details?web_token=${token}`);
+      // 2. Prepare payload for saving to JSON blob
+      const registerUserPayload = {
+        title: formData.title.trim(),
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        alt_email: formData.alt_email.trim() || "",
+        phone: formData.phone.trim(),
+        whatsapp: formData.whatsapp.trim() || "",
+        institution: formData.organization.trim(),
+        country: formData.country.trim(),
+        // sub_type: formData.intrested.trim(),
+        reg_type: formData.intrested.trim().toLowerCase().replace(/ /g, "-"),
+        participants: formData.no_participants.toString(),
+        accompanying: formData.no_accompanying.toString(),
+        reg_price: formData.other_info["Registration Price"].toString(),
+        accompanying_price: formData.other_info["Price Per Accompanying Person"].toString(),
+        occupancy: formData.other_info["Selected Accommodation"],
+        occupancy_price: formData.other_info["selected Accommodation Price"].toString(),
+        checkin_date: formData.other_info["check In Date"],
+        checkout_date: formData.other_info["check Out Date"],
+        nights: formData.other_info["Num of Nights"].toString(),
+        total_price: formData.other_info["Total Price"].toString(),
+        price_type: "USD",
+        discount_reg: "0",
+        discount_accom: "0",
+        // currency_rate: "1",
+        // created_dt: new Date().toISOString().split("T")[0] + " 00:00:00",
+        // updated_dt: new Date().toISOString().split("T")[0] + " 00:00:00",
+        reg_date: new Date().toISOString(),
+        // viewed_dt: new Date().toISOString(),
+        // reply_dt: new Date().toISOString(),
+        // received_dt: new Date().toISOString(),
+        // attempt: "1",
+        status: "1",
+        type: "Registration",
+        email_check_status: "0",
+        // created_by: "User",
+        // payment_type: "",
+        web_token: rawWebToken,
+        cid: general.cid,
+        // description: "",
+        // url_link: null,
+        // transaction_id: null,
+        // viewed_by: null,
+        // viewed_status: "0",
+        // reply_status: "0",
+        other_info: null,
+        id: Date.now().toString(), // You can use an ID generator or UUID if needed
+        // edition_id: "0",
+
+        // New field so API can detect project name
+        site_url: general?.site_url || "",
+      };
+
+      // 3. Send to your save-register-user API
+      await axios.post("/api/save-register-user", registerUserPayload, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      // 4. Redirect to register_details
+      if (rawWebToken) {
+        router.push(`/register_details?web_token=${rawWebToken}`);
       } else {
         console.error("Web token not found in response");
         await sendErrorToCMS({
@@ -842,7 +892,6 @@ const Registration: React.FC<RegisterProps> = ({
           email: formData?.email || "Unknown Email",
           errorMessage: `Web token is missing in the API response.`,
         });
-        // await logError("Web token is missing in the API response.");
       }
     } catch (error) {
       console.error("Error submitting registration:", error);
@@ -852,8 +901,6 @@ const Registration: React.FC<RegisterProps> = ({
         email: formData?.email || "Unknown Email",
         errorMessage: `Failed to submit registration form: ${(error as Error).message || "No error message"}`,
       });
-
-      // await logError("Registration failed: something went wrong.");
     }
 
     setLoading(false);
@@ -1029,27 +1076,6 @@ const Registration: React.FC<RegisterProps> = ({
   if (!isHydrated) {
     return null;
   }
-
-  // const logError = useCallback(
-  //   async (message: string) => {
-  //     try {
-  //       const payload = new FormData();
-  //       payload.append("form_based", "Registration Form");
-  //       payload.append("error_message", message);
-  //       payload.append("name", formData.name);
-  //       payload.append("email", formData.email);
-
-  //       await fetch("/api/send-to-telegram", {
-  //         method: "POST",
-  //         body: payload,
-  //       });
-  //     } catch (err) {
-  //       console.error("Error logging error:", err);
-  //     }
-  //   },
-  //   [formData.name, formData.email]
-  // );
-
 
 
   // sendError to Telegram 
@@ -1367,7 +1393,7 @@ const Registration: React.FC<RegisterProps> = ({
                               </th>
                               <th className="sty_m1-2">Discount %</th>
                               <th className="sty_m1-3">
-                                Final Registration Fee
+                                Early Bird Registration Fee
                               </th>
                             </tr>
                           </thead>
@@ -1435,7 +1461,7 @@ const Registration: React.FC<RegisterProps> = ({
                               </th>
                               <th className="sty_m1-2">Discount %</th>
                               <th className="sty_m1-3">
-                                Final Registration Fee
+                                Discounted Registration Fee
                               </th>
                             </tr>
                           </thead>
@@ -1462,9 +1488,9 @@ const Registration: React.FC<RegisterProps> = ({
                                       {item.type}
                                     </td>
                                     <td className="mak1">
-                                      <>{item.standard_price}</>
+                                      <s>{item.standard_price}</s>
                                     </td>
-                                    <td className="mak1">-</td>
+                                    <td className="mak1">{item.min}%</td>
                                     <td className="mak1 active">
                                       ${item.total}{" "}
                                       <span className="tick-mark">✓</span>
@@ -1802,6 +1828,56 @@ const Registration: React.FC<RegisterProps> = ({
               </button>
             </div>
           </form>
+        </div>
+      </div>
+
+      <div className="cont_fram_wrap wow fadeInUp" data-wow-delay="400ms" data-wow-duration="1000ms">
+        <div className="auto-container">
+          <div className="row clearfix">
+            <div className="col-md-11 mar_center">
+              <div className="confr_sty1">
+                <h3 className="mb_156">Registration Benefits for In-Person Attendees:</h3>
+                <h4>As an in-person attendee at our conference, you will enjoy the following benefits:</h4>
+                <ul>
+                  <li>Eligibility to attend all conference sessions, workshops and poster sessions </li>
+                  <li>Oral presenters will have a 25-minute presentation followed by a 5-minute Q&A.</li>
+                  <li>Refreshments (morning and evening) and lunch daily (during conference days)</li>
+                  <li>Attendees will receive hard copies of both the abstract book and the conference proceedings.</li>
+                  <li>Endorsed certificate for presenters or attendance certificate for non-presenters</li>
+                  <li>Conference photo coverage</li>
+                </ul>
+                {/* <h4>Note: Participants registered under Listener and accompanying category are not allowed
+                        to present their
+                        papers in Oral or Poster sessions.</h4> */}
+              </div>
+
+              <div className="confr_sty1">
+                <h3>Registration Benefits for Virtual Attendees: </h3>
+                <h4>If you attend the conference virtually, you will receive the following benefits:</h4>
+                <ul>
+                  <li>Live zoom presentation slot (20 minutes presentation and Q&A) if you are an oral presenter
+                    attending In person </li>
+                  <li>Pre-recorded video presentation slot (20 minutes presentation) if you are a virtual presenter</li>
+                  <li>Full virtual conference experience through zoom</li>
+                  <li>Access to all keynotes, plenary sessions, technical sessions, and workshops</li>
+                  <li>Ability to engage with other presenters and attendees online</li>
+                  <li>Abstract book and conference proceedings in soft copy</li>
+                  <li>Virtual Participation certificate</li>
+                </ul>
+              </div>
+
+              <div className="confr_sty1">
+                <h3>Cancellation Policy:</h3>
+                <ul>
+                  <li>A full refund, minus a processing fee, will be issued for cancellations made 60 days before the conference begins.</li>
+                  <li>Registrations or accommodations cancelled within 60 days of the conference start date are non-refundable; however, they can be transferred to your colleague/friend or to an upcoming event.</li>
+                  <li>For more queries regarding our cancellation policy please write an email to us at<br></br>
+                    <Link href='mailto:contact@stemnetwork.info' title='contact@stemnetwork.info'>contact@stemnetwork.info</Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

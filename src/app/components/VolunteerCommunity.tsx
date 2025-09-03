@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import axios from "axios";
+// import axios from "axios";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import { ApiResponse, IndexPageData } from "@/types";
@@ -11,7 +11,7 @@ type FormDataType = {
   firstName: string;
   lastName: string;
   email: string;
-  category: string;
+  // category: string;
 };
 
 type FormErrorType = {
@@ -25,7 +25,7 @@ type CommunityFormData = {
   email: string;
   fname: string;
   lname: string;
-  category: string;
+  // category: string;
 };
 
 type CommunityFormErrors = {
@@ -87,7 +87,6 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
     firstName: "",
     lastName: "",
     email: "",
-    category: "volunteer",
   });
 
   const firstNameRef = useRef<HTMLInputElement>(null);
@@ -104,7 +103,6 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
       email: "",
       fname: "",
       lname: "",
-      category: "joinourcommunity",
     }
   );
 
@@ -130,6 +128,14 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
     return errors;
   };
 
+  // UTF-8 safe Base64 encoder
+  function utf8ToBase64(str: string) {
+    const bytes = new TextEncoder().encode(str);
+    let binary = "";
+    bytes.forEach((b) => binary += String.fromCharCode(b));
+    return btoa(binary);
+  }
+
   const handleCommunitySubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
@@ -140,21 +146,38 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
 
     if (Object.keys(errors).length === 0) {
       try {
-        const fullName = `${communityFormData.fname} ${communityFormData.lname}`;
-        await axios.post("/api/community-submit", {
-          name: fullName,
-          email: communityFormData.email,
-          category: communityFormData.category,
+        // const fullName = `${communityFormData.fname} ${communityFormData.lname}`;
+        // await axios.post("/api/community-submit", {
+        //   name: fullName,
+        //   email: communityFormData.email,
+        //   category: communityFormData.category,
+        // });
+
+        const fullName = `${communityFormData.fname} ${communityFormData.lname}`.trim();
+        const payload = {
+          enquiryname: utf8ToBase64(fullName.trim()),
+          enquiryemail: utf8ToBase64(communityFormData.email.trim()),
+          enquiryquery: utf8ToBase64(""),
+        };
+
+        const response = await fetch("/api/community-submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
         });
 
-        setShowModal2(true);
-        setCommunityFormData({
-          email: "",
-          fname: "",
-          lname: "",
-          category: "joinourcommunity",
-        });
-        setCommunityFormErrors({}); // Clear previous errors
+        if (response.ok) {
+          setShowModal2(true);
+          setCommunityFormData({
+            email: "",
+            fname: "",
+            lname: "",
+          });
+          setCommunityFormErrors({}); // Clear previous errors
+        } else {
+          const errorDataCom = await response.json();
+          toast.error(errorDataCom?.error || "Submission failed. Please try again.");
+        }
       } catch (error) {
         console.error("Error submitting community form:", error);
       } finally {
@@ -240,28 +263,36 @@ const VolunteerCommunity: React.FC<VolunteerCommunityProps> = ({
 
     // Submit form
     try {
-      const fullName = `${formData.firstName} ${formData.lastName}`;
-      await axios.post("/api/enquiry", {
-        enquiryname: fullName,
-        enquiryemail: formData.email,
-        enquiryquery: "",
-        category: formData.category,
+      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+      const payload = {
+        enquiryname: utf8ToBase64(fullName.trim()),
+        enquiryemail: utf8ToBase64(formData.email.trim()),
+        enquiryquery: utf8ToBase64(""),
+      };
+
+      const response = await fetch("/api/enquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
-      // toast.success("Form submitted successfully!"); 
-      setShowModal(false);
-      setShowModal3(true);
+      if (response.ok) {
+        setShowModal(false);
+        setShowModal3(true);
 
-      // Clear everything
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        category: "volunteer",
-      });
-      setUserAnswer("");
-      setFormErrors({});
-      // setError("");
+        // Clear everything
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+        });
+        setUserAnswer("");
+        setFormErrors({});
+        // setError("");
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData?.error || "Submission failed. Please try again.");
+      }
     } catch (err) {
       toast.error("Something went wrong. Please try again later.");
       console.error(err);

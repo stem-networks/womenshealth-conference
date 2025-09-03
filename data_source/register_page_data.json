@@ -3,13 +3,13 @@
         {
             "id": "1",
             "single": "200",
-            "doubl": "230",
+            "doubl": "270",
             "tri": "0",
-            "accompanying": "180",
+            "accompanying": "150",
             "created_dt": "0000-00-00 00:00:00",
             "updated_dt": "2024-05-10 12:45:31",
             "status": "1",
-            "cid": "10029"
+            "cid": "8"
         }
     ],
     "checkdates_text": {
@@ -28,16 +28,16 @@
     },
     "checkdates": {
         "1": [
-            "30-09-2025",
-            "01-10-2025",
-            "02-10-2025",
-            "03-10-2025"
+            "04-08-2026",
+            "05-08-2026",
+            "06-08-2026",
+            "07-08-2026"
         ],
         "2": [
-            "02-10-2025",
-            "03-10-2025",
-            "04-10-2025",
-            "05-10-2025"
+            "06-08-2026",
+            "07-08-2026",
+            "08-08-2026",
+            "09-08-2026"
         ]
     },
     "conference_date": "March 17-19, 2025",
@@ -80,27 +80,27 @@
     },
     "increment_price": {
         "Presenter (In-Person)": {
-            "Standard Registration Fee": "$1599",
-            "total": "849",
-            "min": "47",
+            "Standard Registration Fee": "$1399",
+            "total": "699",
+            "min": "50",
             "conference_dt": "2025-09-21"
         },
         "Listener (In-Person)": {
-            "Standard Registration Fee": "$1299",
-            "total": "949",
-            "min": "27",
+            "Standard Registration Fee": "$1499",
+            "total": "749",
+            "min": "50",
             "conference_dt": "2025-09-21"
         },
         "Presenter (Virtual)": {
             "Standard Registration Fee": "$299",
-            "total": "299",
-            "min": "-",
+            "total": "149",
+            "min": "50",
             "conference_dt": "2025-09-21"
         },
         "Listener (Virtual)": {
-            "Standard Registration Fee": "$399",
-            "total": "399",
-            "min": "-",
+            "Standard Registration Fee": "$359",
+            "total": "179",
+            "min": "50",
             "conference_dt": "2025-09-21"
         },
         "Student/Young Researcher": {

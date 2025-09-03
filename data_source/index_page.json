@@ -7,7 +7,7 @@
         },
         "important_dates": {
             "category": "important_dates",
-            "content": "Stay ahead by marking your calendars with these crucial deadlines for the upcoming NWGC 2025. Timely registration and submissions will ensure you make the most of this premier event.",
+            "content": "Stay ahead by marking your calendars with these crucial deadlines for the upcoming NWGC 2026. Timely registration and submissions will ensure you make the most of this premier event.",
             "headding": "Important dates"
         },
         "Explore_Our_Comprehensive_Networking_Services": {
@@ -17,7 +17,7 @@
         },
         "Be_A_Volunteer": {
             "category": "Be_A_Volunteer",
-            "content": "Become one of the most valued volunteers at the Nursing, Womens Health and Gynecology Conference 2025, while creating memorable experiences. Network, discuss and meet the key professionals in the health care industry while bringing great adding value to your life with the global nursing community. Seize this volunteering opportunity now.",
+            "content": "Become one of the most valued volunteers at the Nursing Conference 2026, while creating memorable experiences. Network, discuss and meet the key professionals in the health care industry while bringing great adding value to your life with the global nursing community. Seize this volunteering opportunity now.",
             "headding": "Be A Volunteer"
         },
         "Submit_Your_Abstract": {
@@ -32,7 +32,7 @@
         },
         "footer_content": {
             "category": "footer_content",
-            "content": "Connect with us at our Nursing, Womens Health and Gynecology Conference for insightful sessions, interactive workshops, and networking opportunities that empower you to make a meaningful impact in the field of nursing.",
+            "content": "Connect with us at our Nursing Conference for insightful sessions, interactive workshops, and networking opportunities that empower you to make a meaningful impact in the field of nursing.",
             "headding": "Footer content"
         },
         "offers_content": {
@@ -73,11 +73,11 @@
             "banner_conent_id": "3",
             "image": "images/banner.jpg",
             "headding": "Empowering Nurses: Innovations, Leadership, and Future Challenges in Healthcare",
-            "tag_line": "NWGC-October 02-03, 2025 in Geneva, Switzerland",
-            "content": "Engage with the experts of the profession at the Nursing, Womens Health and Gynecology Conference! Engage with powerful keynote sessions, expert panels, and innovative ideas in healthcare. Download our brochure here to learn more about this event this October and book your spot now!",
+            "tag_line": "Nursing-NWGC August 06-07, 2026 in Singapore",
+            "content": "Engage with the experts of the profession at the Nursing Conference! Engage with powerful keynote sessions, expert panels, and innovative ideas in healthcare. Download our brochure here to learn more about this event this October and book your spot now!",
             "page": "index",
             "status": "1",
-            "cid": "10029"
+            "cid": "10015"
         },
         "24": {
             "banner_conent_id": "24",
@@ -87,7 +87,7 @@
             "content": "Be a part of a uniquely enriching experience at our Conferences! Engage with pioneering \r\n            strategies, connect with top professionals, and elevate your expertise through dynamic workshops and discussions.\r\n            Secure your  place today for unrivaled insights into the future.",
             "page": "home",
             "status": "1",
-            "cid": "10029"
+            "cid": "8"
         }
     },
     "sessions": [
@@ -145,29 +145,29 @@
     "important_dates": [
         {
             "text": "First Round of Abstract Submission Deadline",
-            "date": "29<sub>th</sub> <span>August <br> 2025</span>"
+            "date": "22<sub>nd</sub> <span>September <br> 2025</span>"
         },
         {
             "text": "Early Bird Registration Deadline",
-            "date": "29<sub>th</sub> <span>August <br> 2025</span>"
+            "date": "22<sub>nd</sub> <span>September <br> 2025</span>"
         }
     ],
     "venue_images": {
+        "1": {
+            "image": "images/g1.webp",
+            "alt_text": "Marina Bay Sands"
+        },
         "2": {
             "image": "images/g2.webp",
-            "alt_text": "The land of cheese & chocolates"
-        },
-        "4": {
-            "image": "images/g4.webp",
-            "alt_text": "Lake Lucerne Switzerland"
+            "alt_text": "Clarke Quay"
         },
         "3": {
             "image": "images/g3.webp",
-            "alt_text": "Trave live"
+            "alt_text": "Little India"
         },
-        "1": {
-            "image": "images/g1.webp",
-            "alt_text": "Zermatt"
+        "4": {
+            "image": "images/g4.webp",
+            "alt_text": "Gardens by the Bay"
         }
     }
 }

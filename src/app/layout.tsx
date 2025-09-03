@@ -10,9 +10,9 @@ import {
   RegistrationInfo,
 } from "@/types";
 import Header from "./components/Header";
-// import Footer from "./components/Footer";
-// import PartneredContent from "./components/PartneredContent";
-// import { ToastContainer } from "react-toastify";
+import Footer from "./components/Footer";
+import PartneredContent from "./components/PartneredContent";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getBaseUrl } from "@/lib/getBaseUrl";
 import {
@@ -20,8 +20,8 @@ import {
   emptyIndexPageData,
   emptyRegisterInfo,
 } from "@/lib/fallbacks";
-// import MediaCollaborators from "./components/MediaCollaborators";
-// import WhatsAppWidget from "./components/WhatsAppWidget";
+import WhatsAppWidget from "./components/WhatsAppWidget";
+import MediaCollaborators from "./components/MediaCollaborators";
 
 async function safeFetch<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
   try {
@@ -122,7 +122,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [generaldata] = await Promise.all([
+  const [generaldata, indexPageData, registerData] = await Promise.all([
     safeFetch<ApiResponse>(fetchGeneralData, emptyApiResponse),
     safeFetch<IndexPageData>(fetchIndexPageData, emptyIndexPageData),
     safeFetch<RegistrationInfo>(fetchRegisterPageData, emptyRegisterInfo),
@@ -156,11 +156,11 @@ export default async function RootLayout({
       name: general?.venue_p1,
       address: {
         "@type": "PostalAddress",
-        streetAddress: `Location: ${general?.location_name || ''}, ${general?.loc_address || ''}, ${general?.v2}, ${general?.v1}.`,
+        streetAddress: `Location: ${general?.venue_p1 || ""}.`,
         addressLocality: general?.v1,
-        addressRegion: general?.venue_p2,
+        addressRegion: general?.v2,
         postalCode: ".",
-        addressCountry: general?.venue_p2,
+        addressCountry: general?.v2,
       },
     },
     offers: {
@@ -200,19 +200,19 @@ export default async function RootLayout({
       </head>
       <body>
         {/* Toast container - only one instance needed */}
-        {/* <ToastContainer
+        <ToastContainer
           position="top-right"
           autoClose={3000}
           hideProgressBar={false}
           newestOnTop
           closeOnClick
-        /> */}
-        <Header /> 
+        />
+        <Header generalData={generaldata} registerData={registerData} />
         {children}
-        {/* <MediaCollaborators />
+        <MediaCollaborators />
         <PartneredContent />
-        <Footer indexPageData={indexPageData} generalData={generaldata} />*/}
-        {/* <WhatsAppWidget />  */}
+        <Footer indexPageData={indexPageData} generalData={generaldata} />
+        <WhatsAppWidget />
       </body>
     </html>
   );

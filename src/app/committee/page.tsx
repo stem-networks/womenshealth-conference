@@ -1,171 +1,115 @@
-import Link from "next/link";
-import Image from "next/image";
-import { getBaseUrl } from "@/lib/getBaseUrl";
-import { Metadata } from "next";
-import { ApiResponse } from "@/types";
+import React from 'react'
+import Link from 'next/link'
+import Image from 'next/image';
 
-interface Speaker {
+interface Member {
     id: number;
     image: string;
     name: string;
-    institution: string;
     country: string;
+    institution: string;
     altText: string;
 }
 
-const membersData: Speaker[] = [
-    {
-        id: 1,
-        image: "/images/images/david.webp",
-        name: "David Zechman",
-        institution: "The Zechman Group",
-        country: "USA",
-        altText: "David Zechman",
-    },
-    {
-        id: 2,
-        image: "/images/images/irina.webp",
-        name: "Irina Koyfman",
-        institution: "Affinity Expert",
-        country: "USA",
-        altText: "Irina Koyfman",
-    },
-    {
-        id: 3,
-        image: "/images/images/lisa.webp",
-        name: "Lisa Grubb",
-        institution: "Johns Hopkins School of Nursing",
-        country: "USA",
-        altText: "Lisa Grubb",
-    },
-    {
-        id: 4,
-        image: "/images/images/paraskevi.webp",
-        name: "Paraskevi Theofilou",
-        institution: "University of Peloponnese",
-        country: "Greece",
-        altText: "Paraskevi Theofilou",
-    },
-    {
-        id: 5,
-        image: "/images/images/Baljit.webp",
-        name: "Baljit Kaur Gill",
-        institution: "Hong kong metropolitan university",
-        country: "China",
-        altText: "Baljit Kaur Gill",
-    },
-    {
-        id: 6,
-        image: "/images/images/Conway.webp",
-        name: "Kelly J. Conway",
-        institution: "Rocky mountain university",
-        country: "USA",
-        altText: "Kelly J. Conway",
-    },
-    {
-        id: 7,
-        image: "/images/images/Laurin.webp",
-        name: "Laurin Mooney",
-        institution: "Resilience Engineering Association",
-        country: "France",
-        altText: "Laurin Mooney",
-    },
-    {
-        id: 8,
-        image: "/images/images/Nirupama.webp",
-        name: "Nirupama Esther Jerome",
-        institution: "Pinnacle Clinical Research",
-        country: "USA",
-        altText: "Nirupama Esther Jerome",
-    },
-    {
-        id: 9,
-        image: "/images/images/sergey_suchkov.webp",
-        name: 'Sergey Suchkov',
-        institution: 'R&D Director of the National Center for Human Photosynthesis',
-        country: 'Mexico',
-        altText: 'Sergey Suchkov',
-    },
-    {
-        id: 10,
-        image: "/images/images/simon_treissman.webp",
-        name: 'Dr. Simon Treissman',
-        institution: 'Founder and CEO',
-        country: 'Canada',
-        altText: 'Dr. Simon Treissman',
-    },
-
-    {
-        id: 11,
-        image: "/images/images/vanitha_rajakumar.webp",
-        name: 'Vanitha Rajakumar',
-        country: 'Kuwait',
-        institution: 'Royale Hayat Hospital',
-        altText: 'Vanitha Rajakumar',
-    },
-    {
-        id: 12,
-        image: "/images/images/prabha_Grace.jpg",
-        name: 'Prabha Grace',
-        institution: 'Carmel College of Nursing',
-        country: 'India',
-        altText: 'Prabha Grace',
-    },
-    {
-        id: 13,
-        image: "/images/images/qiuyi_yan.webp",
-        name: 'Dr. Qiuyi Yan',
-        institution: 'Teaching Management Section: The School of Nursing, Gulin Medical University',
-        country: 'China',
-        altText: 'Dr. Qiuyi Yan',
-    },
-];
-
-async function fetchGeneralDataStatic(): Promise<ApiResponse> {
-    const baseUrl = getBaseUrl();
-    const res = await fetch(`${baseUrl}/api/general`, {
-        next: { revalidate: 3600 }, // Cache for 1 hour
-    });
-    if (!res.ok) throw new Error("Failed to fetch general data statically");
-    return res.json();
-}
-
-// SEO Metadata
-export async function generateMetadata(): Promise<Metadata> {
-    try {
-        const generalData = await fetchGeneralDataStatic();
-        const meta = generalData?.pages?.planning_committee?.[0] || {
-            title: "Planning Committee",
-            content: "Explore the Planning Committee members of the conference.",
-            meta_keywords: "",
-        };
-
-        // Canonical
-        // const baseUrl = process.env.BASE_URL || "";
-        const canonicalPath = "/committee"; // hardcode since we know this is sessions page
-        const canonicalURL = `${getBaseUrl()}${canonicalPath}`;
-
-        return {
-            title: meta.title,
-            description: meta.content,
-            keywords: meta.meta_keywords,
-            metadataBase: new URL(getBaseUrl()),
-            alternates: {
-                canonical: canonicalURL,
-            },
-        };
-    } catch (error) {
-        console.error("Metadata generation error guidelines:", error);
-        return {
-            title: "Planning Committee",
-            description: "Explore the Planning Committee members of the conference.",
-            keywords: "",
-        };
-    }
-}
 const committee = () => {
+
+    const members: Member[] = [
+        {
+            id: 1,
+            image: "/images/images/Thomas.png",
+            name: "Thomas J. Webster",
+            country: "United States",
+            institution: "Hebei University of Technology",
+            altText: "Thomas J. Webster"
+        },
+        {
+            id: 2,
+            image: "/images/images/ravi_maharjan.webp",
+            name: "Ravi Maharjan",
+            country: "South Korea",
+            institution: "Dongguk University",
+            altText: "Ravi Maharjan"
+        },
+        {
+            id: 3,
+            image: "/images/images/giovanni.webp",
+            name: "Giovanni Pagano",
+            country: "Italy",
+            institution: "University of Naples Federico II",
+            altText: "Giovanni Pagano"
+        },
+        {
+            id: 4,
+            image: "/images/images/keerti_Maheshwari.jpeg",
+            name: "Keerti Maheshwari",
+            country: "India",
+            institution: "Delhi Pharmaceutical Sciences and Research University",
+            altText: "Keerti Maheshwari"
+        },
+        {
+            id: 5,
+            image: "/images/images/Jaswanth.webp",
+            name: "B.H. Jaswanth Gowda",
+            country: "United Kingdom",
+            institution: "Queen's University Belfast",
+            altText: "B.H. Jaswanth Gowda"
+        },
+        {
+            id: 6,
+            image: "/images/images/rodica_olteanu.jpg",
+            name: "Rodica Olteanu",
+            country: "Romania",
+            institution: "Colentina Clinical Hospital",
+            altText: "Rodica Olteanu"
+        }
+        // {
+        //   id: 7,
+        //   image: "/images/images/member7.jpg",
+        //   name: "Dr. Sarah Johnson",
+        //   country: "Canada",
+        //   institution: "University of Toronto",
+        //   altText: "Dr. Sarah Johnson"
+        // },
+        // {
+        //   id: 8,
+        //   image: "/images/images/member8.jpg",
+        //   name: "Prof. Michael Chen",
+        //   country: "Australia",
+        //   institution: "University of Sydney",
+        //   altText: "Prof. Michael Chen"
+        // },
+        // {
+        //   id: 9,
+        //   image: "/images/images/member9.jpg",
+        //   name: "Dr. Elena Rodriguez",
+        //   country: "Spain",
+        //   institution: "University of Barcelona",
+        //   altText: "Dr. Elena Rodriguez"
+        // },
+        // {
+        //   id: 10,
+        //   image: "/images/images/member10.jpg",
+        //   name: "Prof. James Wilson",
+        //   country: "Germany",
+        //   institution: "Technical University of Munich",
+        //   altText: "Prof. James Wilson"
+        // }
+    ];
+
+    // Split members into rows of 3 for better layout control
+    const memberRows = [];
+    for (let i = 0; i < members.length; i += 3) {
+        memberRows.push(members.slice(i, i + 3));
+    }
+
     return (
         <div>
+            {/* <Head>
+                <title>{planning_committee ? planning_committee[0]?.title : ''}</title>
+                <meta name="description" content={planning_committee ? planning_committee[0]?.content : ''} />
+                <meta name="keywords" content={planning_committee ? planning_committee[0]?.meta_keywords : ''} />
+                <link rel="canonical" href={canonicalUrl} />
+            </Head> */}
             <div className="brand_wrap">
                 <div className="auto-container">
                     <div className="row">
@@ -178,8 +122,7 @@ const committee = () => {
             </div>
 
             <h2 className="abs_wrap5 wow fadeInUp" data-wow-delay="400ms" data-wow-duration="1000ms">Our Planning Committee</h2>
-
-            <div className="speakers-section first-design">
+            <div className="speakers-sections members-main-block">
                 <div className='auto-container'>
                     <div className='row clearfix'>
                         <div className='col-lg-12 col-md-12 mar_center'>
@@ -187,41 +130,40 @@ const committee = () => {
                                 <div className='col-lg-12 col-md-12 wow fadeInUp animated' data-wow-delay='400ms'
                                     data-wow-duration='1000ms'>
 
-                                    <div className="">
-                                        <div className='members-card-block committee-spacing'>
-                                            <div className="row-member row">
-                                                {membersData.map((speaker, index) => (
-                                                    <div
-                                                        className={`col-lg-3 col-md-6 col-sm-6 mb-4 ${index < 4
-                                                            ? 'members-specific-space'
-                                                            : 'member-spacing'
-                                                            }`}
-                                                        key={index}
-                                                    >
-                                                        <div className="card text-center p-3 border">
-                                                            <div className="custom-border-wrapper">
-                                                                <div className="image-wrapper mb-3">
-                                                                    <Image
-                                                                        src={speaker.image}
-                                                                        alt={speaker.name}
-                                                                        title={speaker.name}
-                                                                        width={200}
-                                                                        height={200}
-                                                                        className="rounded-circle img-fluid"
-                                                                    />
+                                    <section className="blog">
+                                        <div className="row aos-init aos-animate"
+                                            data-aos="fade-up"
+                                            data-aos-duration="400">
+                                            <div className="col-md-12 col-12">
+                                                {memberRows.map((row, rowIndex) => (
+                                                    <div key={`row-${rowIndex}`} className="grid-main-members-gap">
+                                                        {row.map((member) => (
+                                                            <div key={member.id} className={`each-member-gap ${rowIndex > 0 ? 'member-row-gap' : ''}`}>
+                                                                <div className="grid-res-gap member-resp-gap">
+                                                                    <div className="grid-res-item">
+                                                                        <Image
+                                                                            src={member.image}
+                                                                            alt={member.altText}
+                                                                            title={member.name}
+                                                                            width={200}
+                                                                            height={200}
+                                                                            className="rounded-circle img-fluid"
+                                                                            priority={rowIndex === 0} // Priority for first row only
+                                                                        />
+                                                                    </div>
+                                                                    <div className="inner-content">
+                                                                        <h3>{member.name}</h3>
+                                                                        <p className='members-p1 member-country'>{member.country}</p>
+                                                                        <p className='members-p1'>{member.institution}</p>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            <div className="speaker-details normal-design">
-                                                                <h3>{speaker.name}</h3>
-                                                                <p>{speaker.institution}</p>
-                                                                <p>{speaker.country}</p>
-                                                            </div>
-                                                        </div>
+                                                        ))}
                                                     </div>
                                                 ))}
                                             </div>
                                         </div>
-                                    </div>
+                                    </section>
                                 </div>
                             </div>
                         </div>

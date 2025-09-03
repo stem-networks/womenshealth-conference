@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import axios from "axios";
 import { ApiResponse } from "@/types";
 
 interface PaymentSuccessProps {
@@ -41,6 +40,66 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
     console.error("Error decoding payment data:", error);
   }
 
+  // useEffect(() => {
+  //   const handlePayment = async () => {
+  //     if (!web_token) {
+  //       setPaymentStatus("error");
+  //       setLoading(false);
+  //       return;
+  //     }
+
+  //     // Extract project name from site_url
+  //     const rawSiteUrl = general?.site_url || "";
+  //     const projectName = rawSiteUrl
+  //       .replace(/^https?:\/\//, "")
+  //       .replace(".com", "")
+  //       .trim();
+
+  //     // If payment was marked success
+  //     if (status === "success") {
+  //       try {
+  //         const response = await fetch("/api/payment/confirm", {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({
+  //             projectName,
+  //             web_token,
+  //           }),
+  //         });
+
+  //         console.log(
+  //           "Payment Confirm",
+  //           new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })
+  //         );
+
+  //         const result = await response.json();
+  //         console.log("payment results after fetching 111", result);
+
+  //         if (result.success) {
+  //           // Directly show final success content (do not redirect)
+  //           setPaymentStatus("success");
+  //           setLoading(false);
+  //           return;
+  //         }
+  //       } catch (error) {
+  //         console.error("Payment processing error:", error);
+  //       }
+  //     }
+  //   };
+
+  //   handlePayment();
+  // }, [
+  //   status,
+  //   web_token,
+  //   orderID,
+  //   other_info,
+  //   otherInfoObject.total_price,
+  //   otherInfoObject.other_info,
+  //   otherInfoObject.discount_amt,
+  // ]);
+
   useEffect(() => {
     const handlePayment = async () => {
       if (!web_token) {
@@ -49,8 +108,7 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
         return;
       }
 
-      // If payment was marked success
-      if (status === "success" && orderID && other_info) {
+      if (status === "success") {
         try {
           const response = await fetch("/api/payment/confirm", {
             method: "POST",
@@ -58,79 +116,41 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              payment_ref_id: orderID,
+              projectName: (general?.site_url || "")
+                .replace(/^https?:\/\//, "")
+                .replace(".com", "")
+                .trim(),
               web_token,
-              payment_method: "PayPal",
-              status: "success",
-              total_price: otherInfoObject.total_price || "N/A",
-              other_info: otherInfoObject.other_info || "N/A",
-              discount_amt: otherInfoObject.discount_amt || 0,
             }),
           });
 
           const result = await response.json();
+          console.log("Payment confirm result:", result);
 
           if (result.success) {
-            // Directly show final success content (do not redirect)
             setPaymentStatus("success");
-            setLoading(false);
-            return;
+          } else {
+            setPaymentStatus("not_done");
           }
         } catch (error) {
           console.error("Payment processing error:", error);
+          setPaymentStatus("error");
+        } finally {
+          setLoading(false); // always stop loading
         }
-      }
-
-      // If orderID is missing or processing failed, check actual status
-      // try {
-      //   const paymentCheckData = {
-      //     module_name: "payment_check",
-      //     keys: { data: [{ web_token }] },
-      //     cid: process.env.NEXT_PUBLIC_CID,
-      //   };
-
-      //   const response = await axios.post(process.env.NEXT_PUBLIC_API_URL || "",
-      //     paymentCheckData
-      //   );
-      //   const resData = response.data;
-
-      //   if (resData.status === 200 && resData.data) {
-      //     setPaymentStatus("success");
-      //   } else {
-      //     setPaymentStatus("not_done");
-      //   }
-      // } catch (error) {
-      //   console.error("Payment check failed:", error);
-      //   setPaymentStatus("error");
-      // } finally {
-      //   setLoading(false);
-      // }
-
-      try {
-        const res = await axios.post("/api/payment-check", { web_token });
-        const resData = res.data;
-
-        if (resData.status === 200 && resData.data) {
-          setPaymentStatus("success");
-        } else {
-          setPaymentStatus("not_done");
-        }
-      } catch (error) {
-        console.error("Client: Payment check failed", error);
+      } else {
         setPaymentStatus("error");
+        setLoading(false);
       }
     };
 
     handlePayment();
-  }, [
-    status,
-    web_token,
+  }, [status, web_token, general?.site_url,
     orderID,
     other_info,
     otherInfoObject.total_price,
     otherInfoObject.other_info,
-    otherInfoObject.discount_amt,
-  ]);
+    otherInfoObject.discount_amt,]);
 
   return (
     <div style={styles.container}>

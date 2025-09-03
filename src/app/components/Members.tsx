@@ -1,7 +1,7 @@
 'use client';
 
 import Image from "next/image";
-import Link from "next/link";
+// import Link from "next/link";
 
 interface Speaker {
   id: number;
@@ -15,71 +15,72 @@ interface Speaker {
 const membersData: Speaker[] = [
   {
     id: 1,
-    image: "/images/images/david.webp",
-    name: "David Zechman",
-    institution: "The Zechman Group",
+    image: "/images/images/Ephraim_Suhir.jpg",
+    name: "Ephraim Suhir",
+    institution: "Portland State University",
     country: "USA",
-    altText: "David Zechman",
+    altText: "Ephraim Suhir",
   },
   {
     id: 2,
-    image: "/images/images/irina.webp",
-    name: "Irina Koyfman",
-    institution: "Affinity Expert",
-    country: "USA",
-    altText: "Irina Koyfman",
+    image: "/images/images/Milan.webp",
+    name: "Milan Kooplikkattil Sadan",
+    institution: "Imperial College London",
+    country: "UK",
+    altText: "Milan Kooplikkattil Sadan",
   },
   {
     id: 3,
-    image: "/images/images/lisa.webp",
-    name: "Lisa Grubb",
-    institution: "Johns Hopkins School of Nursing",
-    country: "USA",
-    altText: "Lisa Grubb",
+    image: "/images/images/john.webp",
+    name: "John Zhou",
+    institution: "University of Technology Sydney",
+    country: "Australia",
+    altText: "John Zhou",
   },
   {
     id: 4,
-    image: "/images/images/paraskevi.webp",
-    name: "Paraskevi Theofilou",
-    institution: "University of Peloponnese",
-    country: "Greece",
-    altText: "Paraskevi Theofilou",
+    image: "/images/images/nasimuddin.webp",
+    name: "Nasimuddin",
+    institution: "Institute for Infocomm Research",
+    country: "Singapore",
+    altText: "Nasimuddin",
   },
   {
     id: 5,
-    image: "/images/images/Baljit.webp",
-    name: "Baljit Kaur Gill",
-    institution: "Hong kong metropolitan university",
+    image: "/images/images/Junling.webp",
+    name: "Junling Shi",
+    institution: "Northwestern Polytechnical University",
     country: "China",
-    altText: "Baljit Kaur Gill",
+    altText: "Junling Shi",
   },
   {
     id: 6,
-    image: "/images/images/Conway.webp",
-    name: "Kelly J. Conway",
-    institution: "Rocky mountain university",
-    country: "USA",
-    altText: "Kelly J. Conway",
+    image: "/images/images/Yuhong.webp",
+    name: "Yuhong Zhao",
+    institution: "North University of China",
+    country: "China",
+    altText: "Yuhong Zhao",
   },
   {
     id: 7,
-    image: "/images/images/Laurin.webp",
-    name: "Laurin Mooney",
-    institution: "Resilience Engineering Association",
-    country: "France",
-    altText: "Laurin Mooney",
+    image: "/images/images/sergey.webp",
+    name: "Sergey Suchkov",
+    institution:
+      "N.D. Zelinskii Institute for Organic Chemistry of the Russian Academy of Sciences, Moscow",
+    country: "Russia",
+    altText: "Sergey Suchkov",
   },
   {
     id: 8,
-    image: "/images/images/Nirupama.webp",
-    name: "Nirupama Esther Jerome",
-    institution: "Pinnacle Clinical Research",
-    country: "USA",
-    altText: "Nirupama Esther Jerome",
+    image: "/images/images/sait.webp",
+    name: "Sait Eren San",
+    institution: "Kocaeli University",
+    country: "Turkey",
+    altText: "Sait Eren San",
   },
 ];
 
-const Speakers = () => {
+const Members = () => {
   return (
     <div className="speakers-section first-design">
       <div className="import_wrap">
@@ -91,7 +92,7 @@ const Speakers = () => {
               data-wow-duration="1000ms"
             >
               <h2>
-                Our <span>Planning Committee</span>
+                Our <span>Planning Committee 2025</span>
               </h2>
             </div>
           </div>
@@ -132,7 +133,7 @@ const Speakers = () => {
             </div>
           </div>
 
-          <div className="members-view-all-btn-block">
+          {/* <div className="members-view-all-btn-block">
             <Link
               href="/committee"
               title="View All"
@@ -140,11 +141,11 @@ const Speakers = () => {
             >
               View All
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
   );
 };
 
-export default Speakers;
+export default Members;

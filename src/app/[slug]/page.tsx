@@ -24,10 +24,6 @@ type PageProps = {
     searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-// const SESSION_API_URL = process.env.SESSION_API_URL as string;
-// const BASE_URL = process.env.BASE_URL || "";
-
-
 async function fetchGeneralDataStatic(): Promise<ApiResponse> {
     const baseUrl = getBaseUrl();
     const res = await fetch(`${baseUrl}/api/general`, {
@@ -37,36 +33,7 @@ async function fetchGeneralDataStatic(): Promise<ApiResponse> {
     return res.json();
 }
 
-// async function fetchTopicBySlug(slug: string): Promise<TopicDetails | null> {
-//     try {
-//         const res = await fetch(`${SESSION_API_URL}?urlFormat=${slug}`, {
-//             cache: 'no-store',
-//         });
-
-//         if (!res.ok) return null;
-
-//         const data = await res.json();
-//         const matched = data.find((item: TopicDetails) => item.urlFormat === slug);
-//         return matched || null;
-//     } catch (error) {
-//         console.error('Error fetching topic by slug:', error);
-//         return null;
-//     }
-// }
-
-// async function fetchAllTopics(): Promise<TopicDetails[]> {
-//     try {
-//         const res = await fetch(SESSION_API_URL, { cache: 'no-store' });
-//         if (!res.ok) return [];
-//         const data = await res.json();
-//         return data;
-//     } catch (error) {
-//         console.error('Error fetching all topics:', error);
-//         return [];
-//     }
-// }
-
-// ✅ Fetch all topics
+//  Fetch all topics
 async function fetchAllTopics(): Promise<TopicDetails[]> {
     const res = await fetch(`${getBaseUrl()}/api/session-content`, {
         cache: 'no-store',
@@ -75,7 +42,7 @@ async function fetchAllTopics(): Promise<TopicDetails[]> {
     return json.data ?? [];
 }
 
-// ✅ Find a topic by slug
+//  Find a topic by slug
 async function fetchTopicBySlug(slug: string): Promise<TopicDetails | null> {
     const topics = await fetchAllTopics();
     return topics.find((item) => item.urlFormat === slug) || null;
@@ -115,7 +82,8 @@ const TopicPage = async ({ params }: PageProps) => {
 
     if (!topic) return notFound();
 
-    const relatedTopics = allTopics.filter((item) => item.urlFormat !== slug);
+    // const relatedTopics = allTopics.filter((item) => item.urlFormat !== slug);
+    const relatedTopics = allTopics;
 
     const renderContent = () => {
         if (Array.isArray(topic.content)) {
@@ -176,23 +144,6 @@ const TopicPage = async ({ params }: PageProps) => {
 
                             <div className="auto-container topics-block-container">
                                 <h3>Other Relevant Topics</h3>
-                                {/* <div className="topics-grid other-topics-block">
-                  {relatedTopics.length > 0 ? (
-                    relatedTopics.map((item, index) => (
-                      <div key={index} className="topic-item">
-                        <Link
-                          href={`/${item.urlFormat}`}
-                          title={item.sessionTopic}
-                          className="topic-link"
-                        >
-                          {item.sessionTopic}
-                        </Link>
-                      </div>
-                    ))
-                  ) : (
-                    <p>No topics available at the moment.</p>
-                  )}
-                </div> */}
                                 <TopicsGrid topics={relatedTopics} className="topics-grid other-topics-block" />
                             </div>
 

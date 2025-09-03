@@ -1,5 +1,4 @@
 // app/list-of-topics/page.tsx
-
 import React from 'react';
 import Link from 'next/link';
 import { Metadata } from 'next';
@@ -11,10 +10,6 @@ interface Topic {
     sessionTopic: string;
     urlFormat: string;
 }
-
-// const SESSION_API_URL = process.env.SESSION_API_URL as string;
-// const BASE_URL = process.env.BASE_URL || "";
-
 
 async function fetchGeneralDataStatic(): Promise<ApiResponse> {
     const baseUrl = getBaseUrl();
