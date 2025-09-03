@@ -8975,7 +8975,8 @@ li {
 	transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
 }
 
-.topic-link:hover {
+.topic-link:hover,
+.topic-link.active {
 	background-color: var(--secondary-color);
 	color: #fff;
 	transform: translateY(-3px);
@@ -10217,4 +10218,13 @@ input[text]:focus {
 		width: 50px !important;
 		height: 50px !important;
 	}
+}
+
+/* Payment Failuire Button  */
+.tryButton {
+	background-color: var(--primary-color);
+}
+
+.tryButton:hover {
+	background-color: var(--secondary-color);
 }

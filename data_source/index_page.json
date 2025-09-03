@@ -17,22 +17,22 @@
         },
         "Be_A_Volunteer": {
             "category": "Be_A_Volunteer",
-            "content": "Become one of the most valued volunteers at the Nursing Conference 2026, while creating memorable experiences. Network, discuss and meet the key professionals in the health care industry while bringing great adding value to your life with the global nursing community. Seize this volunteering opportunity now.",
+            "content": "Be a part of the team as a Volunteer for Nursing 2026 and become a vital contributor to the success of this international event. Volunteering is an excellent chance to gain significant experience, make professional connections, and be part of shaping the future of nursing.",
             "headding": "Be A Volunteer"
         },
         "Submit_Your_Abstract": {
             "category": "Submit_Your_Abstract",
-            "content": "Be a voice of progress in nursing! Share your expertise and help shape the future of healthcare. Submit your abstract and inspire change.",
+            "content": "We are happy to invite researchers, practitioners, educators, and healthcare professionals worldwide to submit their abstracts for oral or poster presentation at Nursing 2026. This is your chance to present novel research, exchange clinical practice, and promote the future of nursing and healthcare.",
             "headding": "Submit Your Abstract"
         },
         "sessions": {
             "category": "sessions",
-            "content": "Experience a tailored journey of discovery at our sessions at global nursing conference, where knowledge meets innovation forge meaningful connections that drive progress in nursing industry.",
+            "content": "At Nursing-2026, our scientific sessions are designed to bring together leading nurses, healthcare professionals, researchers, and educators from around the world. Each session highlights the latest advancements in nursing practice, education, research, and leadership, while fostering collaboration and knowledge-sharing across specialties.",
             "headding": "Sessions"
         },
         "footer_content": {
             "category": "footer_content",
-            "content": "Connect with us at our Nursing Conference for insightful sessions, interactive workshops, and networking opportunities that empower you to make a meaningful impact in the field of nursing.",
+            "content": "Welcome to Nursing 2026 Conference, where international nursing experts, researchers, and healthcare leaders come together to exchange innovations, foster collaboration, and drive patient care and healthcare excellence for the future.",
             "headding": "Footer content"
         },
         "offers_content": {
@@ -74,7 +74,7 @@
             "image": "images/banner.jpg",
             "headding": "Empowering Nurses: Innovations, Leadership, and Future Challenges in Healthcare",
             "tag_line": "Nursing-NWGC August 06-07, 2026 in Singapore",
-            "content": "Engage with the experts of the profession at the Nursing Conference! Engage with powerful keynote sessions, expert panels, and innovative ideas in healthcare. Download our brochure here to learn more about this event this October and book your spot now!",
+            "content": "Find out all the information regarding Nursing-2026 in our official conference brochure. The brochure contains all the information you need from keynote speakers and scientific sessions to registration packages and networking.",
             "page": "index",
             "status": "1",
             "cid": "10015"
@@ -92,54 +92,54 @@
     },
     "sessions": [
         {
-            "text": "1. Advanced Nursing Practice and Clinical Innovations",
-            "link": "advanced-nursing-practice-and-clinical-innovations",
-            "session_short_name": "Advanced Nursing Practice and Clinical Innovations"
+            "text": "1. AI in Nursing",
+            "link": "ai-in-nursing",
+            "session_short_name": "AI in Nursing"
         },
         {
-            "text": "2.\tNursing Education and Workforce Development",
-            "link": "nursing-education-and-workforce-development",
-            "session_short_name": "Nursing Education and Workforce Development"
+            "text": "2. Digital Health",
+            "link": "digital-health",
+            "session_short_name": "Digital Health"
         },
         {
-            "text": "3.\tPatient Safety and Quality Care",
-            "link": "patient-safety-and-quality-care",
-            "session_short_name": "Patient Safety and Quality Care"
+            "text": "3. Telehealth",
+            "link": "telehealth",
+            "session_short_name": "Telehealth"
         },
         {
-            "text": "4.\tMental Health Nursing",
-            "link": "mental-health-nursing",
-            "session_short_name": "Mental Health Nursing"
+            "text": "4. Sustainable Nursing",
+            "link": "sustainable-nursing",
+            "session_short_name": "Sustainable Nursing"
         },
         {
-            "text": "5.\tCommunity and Public Health Nursing",
-            "link": "community-and-public-health-nursing",
-            "session_short_name": "Community and Public Health Nursing"
+            "text": "5. Mental Health",
+            "link": "mental-health",
+            "session_short_name": "Mental Health"
         },
         {
-            "text": "6.\tPediatric and Geriatric Nursing",
-            "link": "pediatric-and-geriatric-nursing",
-            "session_short_name": "Pediatric and Geriatric Nursing"
+            "text": "6. Genomics",
+            "link": "genomics",
+            "session_short_name": "Genomics"
         },
         {
-            "text": "7. Nursing Informatics and Technology  Integration",
-            "link": "nursing-informatics-and-technology-integration",
-            "session_short_name": "Nursing Informatics and Technology  Integration"
+            "text": "7. Nursing Leadership",
+            "link": "nursing-leadership",
+            "session_short_name": "Nursing Leadership"
         },
         {
-            "text": "8.Global Health and Nursing",
-            "link": "global-health-and-nursing",
-            "session_short_name": "Global Health and Nursing"
+            "text": "8. Simulation in Education",
+            "link": "simulation-in-education",
+            "session_short_name": "Simulation in Education"
         },
         {
-            "text": "9.\tNursing leadership and Management",
-            "link": "nursing-leadership-and-management",
-            "session_short_name": "Nursing leadership and Management"
+            "text": "9. Global Health",
+            "link": "global-health",
+            "session_short_name": "Global Health"
         },
         {
-            "text": "10. Leading diverse nursing force",
-            "link": "leading-diverse-nursing-force",
-            "session_short_name": "Leading diverse nursing force"
+            "text": "10. Nursing Informatics",
+            "link": "nursing-informatics",
+            "session_short_name": "Nursing Informatics"
         }
     ],
     "important_dates": [
