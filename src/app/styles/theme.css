@@ -89,14 +89,14 @@ a {
 }
 
 .sticky-header .logo {
-	padding: 6px 0px 2px;
+	padding: 0px 0px 0px;
 	max-width: 125px;
 }
 
 .sticky-header .logo .sti-logo {
 	width: 100%;
 	height: auto;
-	margin: -5px 0px 0px;
+	margin: -7px 0 -6px;
 }
 
 .banner_wrap {
