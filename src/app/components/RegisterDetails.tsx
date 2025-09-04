@@ -121,11 +121,31 @@ const RegisterDetails = ({ generalInfo }: RegisterDetailsClientProps) => {
       }
 
       // Extract project name from site_url
-      const rawSiteUrl = generalInfo?.site_url || "";
-      const projectName = rawSiteUrl
-        .replace(/^https?:\/\//, "")
-        .replace(".com", "")
-        .trim();
+      // const rawSiteUrl = generalInfo?.site_url || "";
+      // const projectName = rawSiteUrl
+      //   .replace(/^https?:\/\//, "")
+      //   .replace(".com", "")
+      //   .trim();
+
+      const siteUrl = generalInfo.site_url || "";
+      let projectName = "default_project";
+
+      if (siteUrl) {
+        try {
+          const { hostname } = new URL(siteUrl);
+          const parts = hostname.split(".");
+
+          if (parts.length > 2) {
+            // Has subdomain → take only the first part
+            projectName = parts[0];
+          } else {
+            // No subdomain → take the domain name without TLD
+            projectName = parts[0];
+          }
+        } catch (e) {
+          console.error("Invalid siteUrl:", siteUrl, e);
+        }
+      }
 
       try {
         // Step 1: Check payment confirmation

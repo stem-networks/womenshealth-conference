@@ -114,13 +114,33 @@ export async function POST(req: NextRequest) {
 
         const web_token = defaultValue(incoming.web_token, `${Date.now()}_${Math.floor(Math.random() * 100000)}`);
 
-        // ✅ Extract project name from site_url (or fallback)
-        const siteUrl = incoming.site_url || "";
-        const projectName = siteUrl
-            ? siteUrl.replace(/^https?:\/\//, "").replace(".com", "")
-            : "default_project";
+        //  Extract project name from site_url (or fallback)
+        // const siteUrl = incoming.site_url || "";
+        // const projectName = siteUrl
+        //     ? siteUrl.replace(/^https?:\/\//, "").replace(".com", "")
+        //     : "default_project";
 
-        // ✅ Store inside projectName/registration folder
+        const siteUrl = incoming.site_url || "";
+        let projectName = "default_project";
+
+        if (siteUrl) {
+            try {
+                const { hostname } = new URL(siteUrl);
+                const parts = hostname.split(".");
+
+                if (parts.length > 2) {
+                    // Has subdomain → take only the first part
+                    projectName = parts[0];
+                } else {
+                    // No subdomain → take the domain name without TLD
+                    projectName = parts[0];
+                }
+            } catch (e) {
+                console.error("Invalid siteUrl:", siteUrl, e);
+            }
+        }
+
+        // Store inside projectName/registration folder
         const BLOB_PATH = `${projectName}/registration/${web_token}.json`;
 
         const newEntry = {

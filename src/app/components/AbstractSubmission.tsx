@@ -30,8 +30,8 @@ interface CaptchaRefType {
 
 type PossibleRef =
   | React.RefObject<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
-    >
+    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
+  >
   | React.RefObject<CaptchaRefType | null>;
 
 interface FormAutoData {
@@ -64,8 +64,8 @@ interface CaptchaRefTypeFull {
 // FieldRef type union includes both types of refs
 type FieldRef =
   | React.RefObject<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
-    >
+    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null
+  >
   | React.RefObject<CaptchaRefTypeFull | null>
   | null;
 
@@ -166,13 +166,38 @@ const AbstractSubmission: React.FC<GeneralInfoProps> = ({ generalInfo }) => {
   }>({});
 
   // Extract dynamic project name from general.site_url, sanitize, and keep it safe for server path segments
+  // const rawSiteUrl = general?.site_url || "";
+  // const siteHostname = rawSiteUrl
+  //   .replace(/^https?:\/\//, "")
+  //   .replace(/\/.*$/, "") // trim path
+  //   .replace(/\.[a-z]+$/i, ""); // drop TLD like .com
+  // const sanitizedProject =
+  //   (siteHostname || "uploads").replace(/[^a-zA-Z0-9-_]/g, "") || "uploads";
+
+  // Extract dynamic project name from general.site_url, sanitize, and keep it safe for server path segments
   const rawSiteUrl = general?.site_url || "";
-  const siteHostname = rawSiteUrl
-    .replace(/^https?:\/\//, "")
-    .replace(/\/.*$/, "") // trim path
-    .replace(/\.[a-z]+$/i, ""); // drop TLD like .com
-  const sanitizedProject =
-    (siteHostname || "uploads").replace(/[^a-zA-Z0-9-_]/g, "") || "uploads";
+
+  const sanitizedProject = (() => {
+    try {
+      if (!rawSiteUrl) return "uploads";
+
+      // Use URL to reliably get hostname
+      const { hostname } = new URL(rawSiteUrl);
+
+      // Split by dot
+      const parts = hostname.split(".");
+
+      // Take the first part (subdomain if exists, else domain)
+      let projectName = parts[0] || "uploads";
+
+      // Sanitize: only allow letters, numbers, dash, underscore
+      projectName = projectName.replace(/[^a-zA-Z0-9-_]/g, "");
+
+      return projectName || "uploads";
+    } catch {
+      return "uploads";
+    }
+  })();
 
   // Upload File to CMS (server route expects multipart with "file" and "project")
   async function uploadFile(
@@ -529,8 +554,8 @@ const AbstractSubmission: React.FC<GeneralInfoProps> = ({ generalInfo }) => {
           (error instanceof Error
             ? error.message
             : typeof error === "string"
-            ? error
-            : JSON.stringify(error)),
+              ? error
+              : JSON.stringify(error)),
         formBased: "CMS Abstract Form Submission",
       });
       return null;
@@ -691,16 +716,16 @@ const AbstractSubmission: React.FC<GeneralInfoProps> = ({ generalInfo }) => {
         focusable &&
         typeof (
           focusable as
-            | HTMLInputElement
-            | HTMLSelectElement
-            | HTMLTextAreaElement
+          | HTMLInputElement
+          | HTMLSelectElement
+          | HTMLTextAreaElement
         ).focus === "function"
       ) {
         (
           focusable as
-            | HTMLInputElement
-            | HTMLSelectElement
-            | HTMLTextAreaElement
+          | HTMLInputElement
+          | HTMLSelectElement
+          | HTMLTextAreaElement
         ).focus();
       }
 
@@ -815,8 +840,7 @@ const AbstractSubmission: React.FC<GeneralInfoProps> = ({ generalInfo }) => {
     email,
     errorMessage,
     formBased = "Abstract Form",
-    siteName = `${general.clname || "N/A"} (${general.csname || "N/A"} - ${
-      general.year || "N/A"
+    siteName = `${general.clname || "N/A"} (${general.csname || "N/A"} - ${general.year || "N/A"
     })`,
   }: {
     name: string;
