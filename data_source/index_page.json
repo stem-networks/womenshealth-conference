@@ -73,11 +73,11 @@
             "banner_conent_id": "3",
             "image": "images/banner.jpg",
             "headding": "Empowering Nurses: Innovations, Leadership, and Future Challenges in Healthcare",
-            "tag_line": "Nursing-NWGC August 06-07, 2026 in Singapore",
+            "tag_line": "Womens Health & Midwifery-NWGC August 06-07, 2026 in Singapore",
             "content": "Find out all the information regarding Nursing-2026 in our official conference brochure. The brochure contains all the information you need from keynote speakers and scientific sessions to registration packages and networking.",
             "page": "index",
             "status": "1",
-            "cid": "10015"
+            "cid": "10030"
         },
         "24": {
             "banner_conent_id": "24",
@@ -87,7 +87,7 @@
             "content": "Be a part of a uniquely enriching experience at our Conferences! Engage with pioneering \r\n            strategies, connect with top professionals, and elevate your expertise through dynamic workshops and discussions.\r\n            Secure your  place today for unrivaled insights into the future.",
             "page": "home",
             "status": "1",
-            "cid": "8"
+            "cid": "10030"
         }
     },
     "sessions": [
