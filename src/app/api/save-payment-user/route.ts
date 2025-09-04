@@ -31,10 +31,31 @@ export async function POST(req: NextRequest) {
         );
 
         // Extract project name from site_url
+        // const siteUrl = incoming.site_url || "";
+        // const projectName = siteUrl
+        //     ? siteUrl.replace(/^https?:\/\//, "").replace(".com", "")
+        //     : "default_project";
+
+        // Extract project name from site_url
         const siteUrl = incoming.site_url || "";
-        const projectName = siteUrl
-            ? siteUrl.replace(/^https?:\/\//, "").replace(".com", "")
-            : "default_project";
+        let projectName = "default_project";
+
+        if (siteUrl) {
+            try {
+                const { hostname } = new URL(siteUrl);
+                const parts = hostname.split(".");
+
+                if (parts.length > 2) {
+                    // Has subdomain → take only the first part
+                    projectName = parts[0];
+                } else {
+                    // No subdomain → take the domain name without TLD
+                    projectName = parts[0];
+                }
+            } catch (e) {
+                console.error("Invalid siteUrl:", siteUrl, e);
+            }
+        }
 
         // Store inside projectName/payment folder
         const BLOB_PATH = `${projectName}/payment/${web_token}.json`;

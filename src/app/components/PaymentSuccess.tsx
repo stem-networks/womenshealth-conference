@@ -110,16 +110,30 @@ const PaymentSuccess: React.FC<PaymentSuccessProps> = ({ generalData }) => {
 
       if (status === "success") {
         try {
+
+          // Extract projectName safely
+          const projectName = (() => {
+            try {
+              if (!general?.site_url) return "default_project";
+
+              const { hostname } = new URL(general.site_url);
+              const parts = hostname.split(".");
+
+              // If subdomain exists → take first part
+              // Else → take the domain name without TLD
+              return parts[0];
+            } catch {
+              return "default_project";
+            }
+          })();
+
           const response = await fetch("/api/payment/confirm", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              projectName: (general?.site_url || "")
-                .replace(/^https?:\/\//, "")
-                .replace(".com", "")
-                .trim(),
+              projectName,
               web_token,
             }),
           });
