@@ -9,6 +9,7 @@ export async function POST(req: NextRequest) {
     for (const [key, value] of formData.entries()) {
       forwardFormData.append(key, value);
     }
+    forwardFormData.append("cid", process.env.CID || ""); // enforce on server
 
     const response = await fetch(`${process.env.CMS_URL}`, {
       method: "POST",
