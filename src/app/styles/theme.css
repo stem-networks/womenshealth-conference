@@ -463,7 +463,7 @@ a {
 }
 
 .banner_wrap p {
-	max-width: 530px;
+	/* max-width: 530px; */
 	font-size: 19px;
 }
 

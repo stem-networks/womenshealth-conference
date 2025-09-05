@@ -17,22 +17,22 @@
         },
         "Be_A_Volunteer": {
             "category": "Be_A_Volunteer",
-            "content": "Be a part of the team as a Volunteer for Nursing 2026 and become a vital contributor to the success of this international event. Volunteering is an excellent chance to gain significant experience, make professional connections, and be part of shaping the future of nursing.",
+            "content": "Join the team as a Volunteer for <b>Women's Health & Midwifery 2026</b> and become an integral part of this global event's success. Volunteering provides a valuable chance to gain practical experience, create professional networks, and play a role in improving women's health and midwifery globally.",
             "headding": "Be A Volunteer"
         },
         "Submit_Your_Abstract": {
             "category": "Submit_Your_Abstract",
-            "content": "Share your research, innovations, and clinical insights with global nursing professionals at Nursing-2026. Submit your abstract today and inspire the future of healthcare.",
+            "content": "Submit your case studies, research, or innovations in midwifery and women's health for poster or oral presentation at Women's Health & Midwifery 2026—connect with world leaders and define the future of healthcare.",
             "headding": "Submit Your Abstract"
         },
         "sessions": {
             "category": "sessions",
-            "content": "At Nursing-2026, our scientific sessions are designed to bring together leading nurses, healthcare professionals, researchers, and educators from around the world. Each session highlights the latest advancements in nursing practice, education, research, and leadership, while fostering collaboration and knowledge-sharing across specialties.",
+            "content": "At Women's Health & Midwifery 2026, our scientific sessions are carefully crafted to bring together prominent midwives, healthcare professionals, researchers, and educators from around the world. Each session addresses the newest developments in women's health, maternity care, reproductive medicine, and practice in midwifery, while promoting collaboration, innovation, and exchange of knowledge to enhance outcomes for women globally.",
             "headding": "Sessions"
         },
         "footer_content": {
             "category": "footer_content",
-            "content": "Welcome to Nursing 2026 Conference, where international nursing experts, researchers, and healthcare leaders come together to exchange innovations, foster collaboration, and drive patient care and healthcare excellence for the future.",
+            "content": "Welcome to Women’s Health & Midwifery 2026, where global midwives, healthcare professionals, researchers, and leaders unite to share innovations, foster collaboration, and advance women’s health, maternal care, and midwifery practices for a healthier future.",
             "headding": "Footer content"
         },
         "offers_content": {
@@ -72,9 +72,9 @@
         "3": {
             "banner_conent_id": "3",
             "image": "images/banner.jpg",
-            "headding": "Empowering Nurses: Innovations, Leadership, and Future Challenges in Healthcare",
+            "headding": "Bridging knowledge and practice to transform women’s health and maternal care",
             "tag_line": "Womens Health & Midwifery-NWGC August 06-07, 2026 in Singapore",
-            "content": "Find out all the information regarding Nursing-2026 in our official conference brochure. The brochure contains all the information you need from keynote speakers and scientific sessions to registration packages and networking.",
+            "content": "Discover the full information of <b>Women's Health & Midwifery 2026</b>, such as conference topics, scientific sessions, keynote speakers, and networking. The brochure sheds light on the benefits of participation, abstract submission rules, and guidelines. Download now and join a global forum aimed at promoting women's health, maternal care, and midwifery practice.",
             "page": "index",
             "status": "1",
             "cid": "10030"
@@ -92,54 +92,54 @@
     },
     "sessions": [
         {
-            "text": "1. AI in Nursing",
-            "link": "ai-in-nursing",
-            "session_short_name": "AI in Nursing"
+            "text": "1.\tPregnant Women: Holistic Care and Support",
+            "link": "advanced-nursing-practice-and-clinical-innovations",
+            "session_short_name": "Advanced Nursing Practice and Clinical Innovations"
         },
         {
-            "text": "2. Digital Health",
-            "link": "digital-health",
-            "session_short_name": "Digital Health"
+            "text": "2.\tMaternal Healthcare and Postnatal Care",
+            "link": "nursing-education-and-workforce-development",
+            "session_short_name": "Nursing Education and Workforce Development"
         },
         {
-            "text": "3. Telehealth",
-            "link": "telehealth",
-            "session_short_name": "Telehealth"
+            "text": "3.\tAntenatal Care During Your Pregnancy",
+            "link": "patient-safety-and-quality-care",
+            "session_short_name": "Patient Safety and Quality Care"
         },
         {
-            "text": "4. Sustainable Nursing",
-            "link": "sustainable-nursing",
-            "session_short_name": "Sustainable Nursing"
+            "text": "4.\tPerinatal Outcomes in Pregnancy",
+            "link": "mental-health-nursing",
+            "session_short_name": "Mental Health Nursing"
         },
         {
-            "text": "5. Mental Health",
-            "link": "mental-health",
-            "session_short_name": "Mental Health"
+            "text": "5.\tBreast Feeding and Mother Care",
+            "link": "community-and-public-health-nursing",
+            "session_short_name": "Community and Public Health Nursing"
         },
         {
-            "text": "6. Genomics",
-            "link": "genomics",
-            "session_short_name": "Genomics"
+            "text": "6.\tInduction of Labour",
+            "link": "pediatric-and-geriatric-nursing",
+            "session_short_name": "Pediatric and Geriatric Nursing"
         },
         {
-            "text": "7. Nursing Leadership",
-            "link": "nursing-leadership",
-            "session_short_name": "Nursing Leadership"
+            "text": "7.\tGynecologic and Obstetrics",
+            "link": "nursing-informatics-and-technology-integration",
+            "session_short_name": "Nursing Informatics and Technology  Integration"
         },
         {
-            "text": "8. Simulation in Education",
-            "link": "simulation-in-education",
-            "session_short_name": "Simulation in Education"
+            "text": "8.\tEmbryo Ethics",
+            "link": "global-health-and-nursing",
+            "session_short_name": "Global Health and Nursing"
         },
         {
-            "text": "9. Global Health",
-            "link": "global-health",
-            "session_short_name": "Global Health"
+            "text": "9.\tMedical disorders in pregnancy and complications",
+            "link": "nursing-leadership-and-management",
+            "session_short_name": "Nursing leadership and Management"
         },
         {
-            "text": "10. Nursing Informatics",
-            "link": "nursing-informatics",
-            "session_short_name": "Nursing Informatics"
+            "text": "10.\tReproductive Biology: Foundations and Advances",
+            "link": "leading-diverse-nursing-force",
+            "session_short_name": "Leading diverse nursing force"
         }
     ],
     "important_dates": [
